@@ -5,10 +5,14 @@
 package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
+import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+@Logged
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
@@ -19,6 +23,18 @@ public class Robot extends TimedRobot {
       new HootAutoReplay().withTimestampReplay().withJoystickReplay();
 
   public Robot() {
+    Epilogue.configure(
+        config -> {
+          if (isSimulation()) {
+            // If running in simulation, then we'd want to re-throw any errors that
+            // occur so we can debug and fix them!
+            config.errorHandler = ErrorHandler.crashOnError();
+          }
+
+          // Change the root data path
+          config.root = "Telemetry";
+        });
+    Epilogue.bind(this);
     m_robotContainer = new RobotContainer();
   }
 
