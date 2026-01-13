@@ -12,14 +12,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.utils.simulation.MapleSimSwerveDrivetrain;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -226,21 +229,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
   }
 
+  private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain = null;
+
   private void startSimThread() {
-    m_lastSimTime = Utils.getCurrentTimeSeconds();
-
+    mapleSimSwerveDrivetrain =
+        new MapleSimSwerveDrivetrain(
+            Seconds.of(kSimLoopPeriod),
+            Pounds.of(115),
+            Inches.of(30),
+            Inches.of(30),
+            DCMotor.getKrakenX60Foc(1),
+            DCMotor.getKrakenX60Foc(1),
+            1.2,
+            getModuleLocations(),
+            getPigeon2(),
+            getModules(),
+            TunerConstants.FrontLeft,
+            TunerConstants.FrontRight,
+            TunerConstants.BackLeft,
+            TunerConstants.BackRight);
     /* Run simulation at a faster rate so PID gains behave more reasonably */
-    m_simNotifier =
-        new Notifier(
-            () -> {
-              final double currentTime = Utils.getCurrentTimeSeconds();
-              double deltaTime = currentTime - m_lastSimTime;
-              m_lastSimTime = currentTime;
-
-              /* use the measured time delta, get battery voltage from WPILib */
-              updateSimState(deltaTime, RobotController.getBatteryVoltage());
-            });
+    m_simNotifier = new Notifier(mapleSimSwerveDrivetrain::update);
     m_simNotifier.startPeriodic(kSimLoopPeriod);
+  }
+
+  public Pose2d getSimpose() {
+    if (mapleSimSwerveDrivetrain == null) return new Pose2d();
+    return mapleSimSwerveDrivetrain.mapleSimDrive.getSimulatedDriveTrainPose();
+  }
+
+  @Override
+  public void resetPose(Pose2d pose) {
+    if (this.mapleSimSwerveDrivetrain != null)
+      mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(pose);
+    Timer.delay(0.1); // wait for simulation to update
+    super.resetPose(pose);
   }
 
   /**
