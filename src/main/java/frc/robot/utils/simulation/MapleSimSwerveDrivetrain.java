@@ -275,11 +275,8 @@ public class MapleSimSwerveDrivetrain {
                 .withKV(1.91)
                 .withKA(0)
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
-        .withSteerMotorGearRatio(16.0)
         // Adjust friction voltages
         .withDriveFrictionVoltage(Volts.of(0.1))
-        .withSteerFrictionVoltage(Volts.of(0.05))
-        // Adjust steer inertia
-        .withSteerInertia(KilogramSquareMeters.of(0.05));
+        .withSteerFrictionVoltage(Volts.of(0.05));
   }
 }
