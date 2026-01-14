@@ -80,7 +80,6 @@ public class Climber extends SubsystemBase implements AutoCloseable {
     return setpoint;
   }
 
-  // stop motor from moving and enter break mode by default
   public void stopMotor() {
     motor.stopMotor();
   }
