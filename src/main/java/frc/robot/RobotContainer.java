@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 
 @Logged
 public class RobotContainer {
@@ -41,6 +43,8 @@ public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+  public final Climber climber = new Climber();
 
   public RobotContainer() {
     configureBindings();
@@ -104,5 +108,13 @@ public class RobotContainer {
             .withTimeout(5.0),
         // Finally idle for the rest of auton
         drivetrain.applyRequest(() -> idle));
+  }
+
+  public Command climbTo(ClimberState state) {
+    return Commands.sequence(
+        climber
+            .run(() -> climber.goToState(state))
+            .until(() -> climber.atSetpoint())
+            .andThen(() -> climber.stopMotor()));
   }
 }

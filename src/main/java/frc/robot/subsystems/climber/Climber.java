@@ -32,7 +32,7 @@ public class Climber extends SubsystemBase {
     motor.setControl(request.withPosition(climberMap.get(state)));
   }
 
-  public void close() {
+  public void stopMotor() {
     motor.stopMotor();
   }
 
