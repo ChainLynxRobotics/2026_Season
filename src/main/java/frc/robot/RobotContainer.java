@@ -9,7 +9,9 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import org.ironmaple.simulation.SimulatedArena;
 
 @Logged
 public class RobotContainer {
@@ -44,6 +47,12 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
+    if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
+  }
+
+  public Pose3d[] getGamePieces() {
+    if (RobotBase.isReal()) return new Pose3d[0];
+    return SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel");
   }
 
   private void configureBindings() {
