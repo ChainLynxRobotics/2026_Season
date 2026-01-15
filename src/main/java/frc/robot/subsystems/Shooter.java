@@ -97,7 +97,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Command flywheelSysid() {
     var routine =
         new SysIdRoutine(
-            new SysIdRoutine.Config(),
+            new SysIdRoutine.Config(Volts.of(1).per(Second), Volts.of(6.5), null, null),
             new SysIdRoutine.Mechanism(this::flywheelVoltageDrive, null, this));
     return sequence(
         routine
