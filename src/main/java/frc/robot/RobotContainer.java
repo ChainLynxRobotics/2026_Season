@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Shooter;
 import org.ironmaple.simulation.SimulatedArena;
 
 @Logged
@@ -44,6 +45,8 @@ public class RobotContainer {
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+  public final Shooter shooter = new Shooter();
 
   public RobotContainer() {
     configureBindings();
