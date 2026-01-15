@@ -95,5 +95,4 @@ public class RobotMath {
   public static <U extends Unit> boolean isMeasureNaN(Measure<U> measure) {
     return Double.isNaN(measure.baseUnitMagnitude());
   }
-    
 }
