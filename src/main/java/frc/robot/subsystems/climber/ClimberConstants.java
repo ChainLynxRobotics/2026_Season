@@ -13,6 +13,7 @@ import java.util.Map;
 public class ClimberConstants {
   public static final int kClimberId = -1;
   public static final int kGearRatio = -1;
+  public static final Angle kSetpointTolerance = Rotations.of(-1);
 
   public enum ClimberState {
     TOP,
