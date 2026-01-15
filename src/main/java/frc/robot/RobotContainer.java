@@ -130,7 +130,7 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    joystick.a().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(10)));
+    joystick.a().whileTrue(shooter.flywheelSysid());
   }
 
   public Rotation2d getAngleToHub() {
