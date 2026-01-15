@@ -1,9 +1,9 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.Constants.*;
-import static frc.robot.subsystems.ShooterConstants.*;
+import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
