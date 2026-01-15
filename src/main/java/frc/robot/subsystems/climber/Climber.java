@@ -20,7 +20,7 @@ public class Climber extends SubsystemBase {
 
   public Climber() {
     TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
-    
+
     MotionMagicConfigs motionMagicConfigs =
         talonFXConfigs
             .MotionMagic
@@ -48,6 +48,7 @@ public class Climber extends SubsystemBase {
   }
   // checks internal encoder to setpoint + and - a certain tolerance
   public boolean atSetpoint() {
-    return RobotMath.measureWithinBounds(getPosition(), setpoint.minus(kSetpointTolerance), setpoint.plus(kSetpointTolerance));
+    return RobotMath.measureWithinBounds(
+        getPosition(), setpoint.minus(kSetpointTolerance), setpoint.plus(kSetpointTolerance));
   }
 }
