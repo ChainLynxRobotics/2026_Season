@@ -82,7 +82,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     if (hoodLimitSwitch.get()) {
       hoodMotor.setPosition(Degrees.of(90));
     }
-    ;
   }
 
   @Override
