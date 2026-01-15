@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -72,12 +73,24 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return flywheelMotor.getPosition().getValue();
   }
 
+  public double getFlywheelPositionRotations() {
+    return getFlywheelPosition().in(Rotations);
+  }
+
   public AngularVelocity getFlywheelVelocity() {
     return flywheelMotor.getVelocity().getValue();
   }
 
+  public double getFlywheelVelocityRpS() {
+    return getFlywheelVelocity().in(RotationsPerSecond);
+  }
+
   public Voltage getFlywheelVoltage() {
     return flywheelMotor.getMotorVoltage().getValue();
+  }
+
+  public ControlModeValue getControlMode() {
+    return flywheelMotor.getControlMode().getValue();
   }
 
   public Command setFlywheelVelocity(AngularVelocity velocity) {
