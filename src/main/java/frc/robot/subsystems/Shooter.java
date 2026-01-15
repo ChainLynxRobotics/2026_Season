@@ -8,6 +8,7 @@ import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
@@ -19,6 +20,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 @Logged
@@ -65,8 +68,16 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotor.close();
   }
 
+  public Angle getFlywheelPosition() {
+    return flywheelMotor.getPosition().getValue();
+  }
+
   public AngularVelocity getFlywheelVelocity() {
     return flywheelMotor.getVelocity().getValue();
+  }
+
+  public Voltage getFlywheelVoltage() {
+    return flywheelMotor.getMotorVoltage().getValue();
   }
 
   public Command setFlywheelVelocity(AngularVelocity velocity) {
@@ -81,6 +92,22 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     Command command = run(() -> hoodMotor.set(0.01)).until(hoodLimitSwitch::get);
     command.addRequirements(this);
     return command;
+  }
+
+  public Command flywheelSysid() {
+    var routine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(this::flywheelVoltageDrive, null, this));
+    return sequence(
+        routine.quasistatic(Direction.kForward).until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
+        routine.quasistatic(Direction.kReverse).until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())),
+        routine.dynamic(Direction.kForward).until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
+        routine.dynamic(Direction.kReverse).until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())));
+  }
+
+  private void flywheelVoltageDrive(Voltage voltage) {
+    flywheelMotor.setControl(new VoltageOut(voltage));
   }
 
   final MotionMagicVoltage request = new MotionMagicVoltage(0);
