@@ -17,7 +17,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -28,7 +28,7 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class Shooter extends SubsystemBase implements AutoCloseable {
   private final TalonFX flywheelMotor;
   private final MotionMagicVelocityVoltage flywheelMotionMagic;
-  private FlywheelSim flywheelSim = null;
+  private DCMotorSim flywheelSim = null;
   private TalonFXSimState flywheelMotorSim;
 
   private final TalonFX hoodMotor;
@@ -49,8 +49,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     this.flywheelMotorSim = flywheelMotor.getSimState();
     this.flywheelSim =
-        new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(
+        new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(
                 DCMotor.getKrakenX60Foc(1),
                 kFlywheelMOI.in(KilogramSquareMeters),
                 kFlywheelGearRatio),
@@ -140,6 +140,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     flywheelSim.update(kDT.in(Seconds));
 
+    flywheelMotorSim.setRawRotorPosition(flywheelSim.getAngularPosition());
     flywheelMotorSim.setRotorVelocity(flywheelSim.getAngularVelocity());
     flywheelMotorSim.setRotorAcceleration(flywheelSim.getAngularAcceleration());
   }
