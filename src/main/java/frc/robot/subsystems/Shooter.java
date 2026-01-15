@@ -100,10 +100,18 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             new SysIdRoutine.Config(),
             new SysIdRoutine.Mechanism(this::flywheelVoltageDrive, null, this));
     return sequence(
-        routine.quasistatic(Direction.kForward).until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
-        routine.quasistatic(Direction.kReverse).until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())),
-        routine.dynamic(Direction.kForward).until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
-        routine.dynamic(Direction.kReverse).until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())));
+        routine
+            .quasistatic(Direction.kForward)
+            .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
+        routine
+            .quasistatic(Direction.kReverse)
+            .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())),
+        routine
+            .dynamic(Direction.kForward)
+            .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
+        routine
+            .dynamic(Direction.kReverse)
+            .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())));
   }
 
   private void flywheelVoltageDrive(Voltage voltage) {
