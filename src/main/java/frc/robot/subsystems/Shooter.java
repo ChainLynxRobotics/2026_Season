@@ -2,26 +2,31 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.ShooterConstants.*;
+import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 @Logged
 public class Shooter extends SubsystemBase implements AutoCloseable {
   private final TalonFX flywheelMotor;
   private final MotionMagicVelocityVoltage flywheelMotionMagic;
   private FlywheelSim flywheelSim = null;
+  private TalonFXSimState flywheelMotorSim;
 
   private final TalonFX hoodMotor;
   private final DigitalInput hoodLimitSwitch;
@@ -39,7 +44,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     if (RobotBase.isReal()) return;
 
-    this.flywheelSim = new FlywheelSim(null, DCMotor.getKrakenX60Foc(1), null);
+    this.flywheelMotorSim = flywheelMotor.getSimState();
+    this.flywheelSim =
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(
+                DCMotor.getKrakenX60Foc(1),
+                kFlywheelMOI.in(KilogramSquareMeters),
+                kFlywheelGearRatio),
+            DCMotor.getKrakenX60Foc(1));
   }
 
   public void stop() {
@@ -79,11 +91,21 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   @Override
   public void periodic() {
-    if (hoodLimitSwitch.get()) {
+    if (hoodLimitSwitch.get()
+        && RobotBase.isReal()
+        && isWithinTolerance(getHoodPosition(), Degrees.of(90), Degrees.of(0.01))) {
       hoodMotor.setPosition(Degrees.of(90));
     }
   }
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    flywheelMotorSim.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
+    flywheelSim.setInputVoltage(flywheelMotorSim.getMotorVoltage());
+
+    flywheelSim.update(kDT.in(Seconds));
+
+    flywheelMotorSim.setRotorVelocity(flywheelSim.getAngularVelocity());
+    flywheelMotorSim.setRotorAcceleration(flywheelSim.getAngularAcceleration());
+  }
 }

@@ -101,6 +101,8 @@ public class RobotContainer {
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    joystick.a().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(10)));
   }
 
   public Command getAutonomousCommand() {

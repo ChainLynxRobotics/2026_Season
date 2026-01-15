@@ -9,25 +9,27 @@ import edu.wpi.first.units.measure.*;
 public class ShooterConstants {
 
   public static final Distance kFlywheelRadius = Inches.of(2);
-  public static final int kFlywheelCANId = 0;
+  public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.0003511676);
+  public static final int kFlywheelCANId = 25;
   private static final double kFlywheelS = 0;
   private static final double kFlywheelA = 0;
   private static final double kFlywheelV = 0;
   private static final double kFlywheelP = 0;
   private static final double kFlywheelI = 0;
   private static final double kFlywheelD = 0;
-  public static final double kFlywheelGearRatio = 0;
+  public static final double kFlywheelGearRatio = 1;
   private static final Slot0Configs kFlywheelSlot0Configs =
-  new Slot0Configs()
-      .withKS(kFlywheelS)
-      .withKA(kFlywheelA)
-      .withKV(kFlywheelV)
-      .withKP(kFlywheelP)
-      .withKI(kFlywheelI)
-      .withKD(kFlywheelD);
-  public static final TalonFXConfiguration kFlyWheelConfig = new TalonFXConfiguration().withSlot0(kFlywheelSlot0Configs);
+      new Slot0Configs()
+          .withKS(kFlywheelS)
+          .withKA(kFlywheelA)
+          .withKV(kFlywheelV)
+          .withKP(kFlywheelP)
+          .withKI(kFlywheelI)
+          .withKD(kFlywheelD);
+  public static final TalonFXConfiguration kFlyWheelConfig =
+      new TalonFXConfiguration().withSlot0(kFlywheelSlot0Configs);
 
-  public static final int kHoodCANId = 1;
+  public static final int kHoodCANId = 26;
   public static final int kHoodLimitSwitchId = 0;
   private static final double kHoodS = 0;
   private static final double kHoodA = 0;
