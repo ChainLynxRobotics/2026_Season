@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.*;
 
 public class ShooterConstants {
@@ -26,8 +27,14 @@ public class ShooterConstants {
           .withKP(kFlywheelP)
           .withKI(kFlywheelI)
           .withKD(kFlywheelD);
-  public static final TalonFXConfiguration kFlyWheelConfig =
-      new TalonFXConfiguration().withSlot0(kFlywheelSlot0Configs);
+
+  private static TalonFXConfiguration generateFlywheelConfig() {
+    var config = new TalonFXConfiguration().withSlot0(kFlywheelSlot0Configs);
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    return config;
+  }
+
+  public static final TalonFXConfiguration kFlyWheelConfig = generateFlywheelConfig();
 
   public static final int kHoodCANId = 26;
   public static final int kHoodLimitSwitchId = 0;
