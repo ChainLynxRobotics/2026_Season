@@ -36,6 +36,7 @@ public class ShooterConstants {
     config.MotionMagic.MotionMagicJerk = 75;
     return config;
   }
+  protected static final double kEstimatedFlywheelSpeedToFuelSpeed = 0.3;
 
   public static final TalonFXConfiguration kFlyWheelConfig = generateFlywheelConfig();
 
