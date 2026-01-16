@@ -104,7 +104,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   @Logged
-  public ControlModeValue getControlMode() {
+  public ControlModeValue getFlywheelControlMode() {
     return flywheelMotor.getControlMode().getValue();
   }
 
