@@ -140,7 +140,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
         routine
             .dynamic(Direction.kReverse)
-            .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())));
+            .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero()))).withName("Flywheel sysid");
   }
 
   private void flywheelVoltageDrive(Voltage voltage) {
