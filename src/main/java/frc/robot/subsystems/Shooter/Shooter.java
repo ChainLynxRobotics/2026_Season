@@ -211,9 +211,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     flywheelMotor.setControl(new VoltageOut(voltage));
   }
 
-  final MotionMagicVoltage request = new MotionMagicVoltage(0);
+  final MotionMagicVoltage request = new MotionMagicVoltage(0).withEnableFOC(true);
 
-  public Command func1(Angle position) {
+  public Command setHoodAngle(Angle position) {
     return runOnce(() -> hoodMotor.setControl(request.withPosition(position)));
   }
 
@@ -236,5 +236,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     flywheelMotorSim.setRawRotorPosition(flywheelSim.getAngularPosition());
     flywheelMotorSim.setRotorVelocity(flywheelSim.getAngularVelocity());
     flywheelMotorSim.setRotorAcceleration(flywheelSim.getAngularAcceleration());
+
+    hoodMotorSim.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
+    hoodSim.setInputVoltage(hoodMotorSim.getMotorVoltage());
+
+    hoodSim.update(kDT.in(Seconds));
+
+    hoodMotorSim.setRawRotorPosition(flywheelSim.getAngularPosition());
+    hoodMotorSim.setRotorVelocity(flywheelSim.getAngularVelocity());
+    hoodMotorSim.setRotorAcceleration(flywheelSim.getAngularAcceleration());
   }
 }
