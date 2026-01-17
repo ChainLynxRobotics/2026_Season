@@ -123,10 +123,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return flywheelMotor.getControlMode().getValue();
   }
 
+  public Pose3d convertRobotPoseToShooterPose(Pose3d robotPose) {
+    return kShooterLocation.transformBy(new Transform3d(new Pose3d(), robotPose));
+  }
+
   public ShooterSetpoint getCurrentSetpoint() {
-    var shooterFieldLocation =
-        kShooterLocation.transformBy(
-            new Transform3d(new Pose3d(), new Pose3d(drivetrainPose.get())));
+    var shooterFieldLocation = convertRobotPoseToShooterPose(new Pose3d(drivetrainPose.get()));
     var shooterDistance =
         Meters.of(
             Math.sqrt(
