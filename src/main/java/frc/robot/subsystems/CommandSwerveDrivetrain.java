@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.subsystems.vision.Vision.VisionPose;
 import frc.robot.utils.simulation.MapleSimSwerveDrivetrain;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -327,5 +328,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   @Override
   public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
     return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
+  }
+
+  public Pose2d getSimulatedDrivetrainPose() {
+    return getState().Pose;
+  }
+
+  public void passVisionPose(VisionPose pose) {
+    addVisionMeasurement(
+        pose.pose().toPose2d(), Utils.fpgaToCurrentTime(pose.timestamp()), pose.deviation());
   }
 }
