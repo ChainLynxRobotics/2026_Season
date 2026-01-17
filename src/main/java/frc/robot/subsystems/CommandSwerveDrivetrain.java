@@ -239,12 +239,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               });
     }
 
-    addVisionMeasurement(
+    var fudgeLocation =
         kHubLocation
             .toPose2d()
-            .transformBy(new Transform2d(Meters.of(-1.55582), Meters.zero(), new Rotation2d())),
-        Utils.getSystemTimeSeconds(),
-        VecBuilder.fill(0, 0, 0));
+            .transformBy(
+                new Transform2d(
+                    (Meters.of(((Math.sin(Timer.getFPGATimestamp()) + 1) * 5.13788 / -2) - 1)),
+                    Meters.zero(),
+                    new Rotation2d()));
+
+    addVisionMeasurement(fudgeLocation, Utils.getSystemTimeSeconds(), VecBuilder.fill(0, 0, 0));
+    mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(fudgeLocation);
   }
 
   private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain = null;
