@@ -60,6 +60,7 @@ public class RobotContainer {
 
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
+  @Logged(name = "Shooter")
   public final Shooter shooter = new Shooter();
 
   public RobotContainer() {
