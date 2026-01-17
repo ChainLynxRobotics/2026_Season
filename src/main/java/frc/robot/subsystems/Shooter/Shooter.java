@@ -93,32 +93,26 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return "";
   }
 
-  
   public Angle getFlywheelPosition() {
     return flywheelMotor.getPosition().getValue();
   }
 
-  
   public double getFlywheelPositionRotations() {
     return getFlywheelPosition().in(Rotations);
   }
 
-  
   public AngularVelocity getFlywheelVelocity() {
     return flywheelMotor.getVelocity().getValue();
   }
 
- 
   public double getFlywheelVelocityRpS() {
     return getFlywheelVelocity().in(RotationsPerSecond);
   }
 
-  
   public Voltage getFlywheelVoltage() {
     return flywheelMotor.getMotorVoltage().getValue();
   }
 
- 
   public ControlModeValue getFlywheelControlMode() {
     return flywheelMotor.getControlMode().getValue();
   }
@@ -177,7 +171,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity));
   }
 
-  
   public Angle getHoodPosition() {
     return hoodMotor.getPosition().getValue();
   }
