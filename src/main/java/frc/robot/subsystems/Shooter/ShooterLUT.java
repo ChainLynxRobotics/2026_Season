@@ -11,7 +11,7 @@ public class ShooterLUT {
   public static ShooterSetpoint getSpeedAndRotation(Distance distance) {
     return new ShooterSetpoint(
         MetersPerSecond.of(kShooterSpeedMap.get(distance.in(Meters))),
-        Rotations.of(kShooterAngleMap.get(distance.in(Meters))));
+        Degrees.of(kShooterAngleMap.get(distance.in(Meters))));
   }
 
   private static final InterpolatingDoubleTreeMap kShooterSpeedMap = generateSpeedMap();
