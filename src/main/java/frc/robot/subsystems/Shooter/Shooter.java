@@ -237,8 +237,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     hoodSim.update(kDT.in(Seconds));
 
-    hoodMotorSim.setRawRotorPosition(flywheelSim.getAngularPosition());
-    hoodMotorSim.setRotorVelocity(flywheelSim.getAngularVelocity());
-    hoodMotorSim.setRotorAcceleration(flywheelSim.getAngularAcceleration());
+    hoodMotorSim.setRawRotorPosition(hoodSim.getAngularPosition());
+    hoodMotorSim.setRotorVelocity(hoodSim.getAngularVelocity());
+    hoodMotorSim.setRotorAcceleration(hoodSim.getAngularAcceleration());
   }
 }
