@@ -47,10 +47,11 @@ public class RobotContainer {
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   @Logged(name = "Shooter")
-  public final Shooter shooter = new Shooter();
+  public final Shooter shooter = new Shooter(() -> drivetrain.getState().Pose);
 
   public RobotContainer() {
     configureBindings();
+    shooter.setDefaultCommand(shooter.runShooterControl());
     if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
   }
 
