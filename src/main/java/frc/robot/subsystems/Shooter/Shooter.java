@@ -78,7 +78,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 kFlywheelGearRatio),
             DCMotor.getKrakenX60Foc(1));
 
-    this.hoodMotorSim = flywheelMotor.getSimState();
+    this.hoodMotorSim = hoodMotor.getSimState();
     this.hoodSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
