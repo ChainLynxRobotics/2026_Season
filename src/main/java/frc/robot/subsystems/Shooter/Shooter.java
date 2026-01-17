@@ -78,6 +78,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotor.close();
   }
 
+  public String currentCommand() {
+    if (this.getCurrentCommand() != null) return this.getCurrentCommand().getName();
+
+    return "";
+  }
+
   @Logged
   public Angle getFlywheelPosition() {
     return flywheelMotor.getPosition().getValue();
