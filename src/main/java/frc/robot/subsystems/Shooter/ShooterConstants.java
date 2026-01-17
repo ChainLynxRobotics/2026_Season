@@ -39,6 +39,17 @@ public class ShooterConstants {
     config.MotionMagic.MotionMagicAcceleration = 500;
     config.MotionMagic.MotionMagicCruiseVelocity = 250;
     config.MotionMagic.MotionMagicJerk = 75;
+    config.Feedback.SensorToMechanismRatio = kFlywheelGearRatio;
+    return config;
+  }
+
+  private static TalonFXConfiguration generateHoodConfig() {
+    var config = new TalonFXConfiguration().withSlot0(kHoodSlot0Configs);
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotionMagic.MotionMagicAcceleration = 500;
+    config.MotionMagic.MotionMagicCruiseVelocity = 250;
+    config.MotionMagic.MotionMagicJerk = 75;
+    config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
     return config;
   }
 
@@ -64,6 +75,5 @@ public class ShooterConstants {
           .withKP(kHoodP)
           .withKI(kHoodI)
           .withKD(kHoodD);
-  public static final TalonFXConfiguration kHoodConfig =
-      new TalonFXConfiguration().withSlot0(kHoodSlot0Configs);
+  public static final TalonFXConfiguration kHoodConfig = generateHoodConfig();
 }
