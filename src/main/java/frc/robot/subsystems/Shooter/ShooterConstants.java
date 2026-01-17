@@ -36,11 +36,13 @@ public class ShooterConstants {
     config.MotionMagic.MotionMagicJerk = 75;
     return config;
   }
+
   protected static final double kEstimatedFlywheelSpeedToFuelSpeed = 0.3;
 
   public static final TalonFXConfiguration kFlyWheelConfig = generateFlywheelConfig();
 
   public static final int kHoodCANId = 26;
+  public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(1);
   public static final int kHoodLimitSwitchId = 0;
   private static final double kHoodS = 0;
   private static final double kHoodA = 0;
@@ -48,7 +50,7 @@ public class ShooterConstants {
   private static final double kHoodP = 0;
   private static final double kHoodI = 0;
   private static final double kHoodD = 0;
-  public static final double kHoodGearRatio = 0;
+  public static final double kHoodGearRatio = 1;
   private static final Slot0Configs kHoodSlot0Configs =
       new Slot0Configs()
           .withKS(kHoodS)
