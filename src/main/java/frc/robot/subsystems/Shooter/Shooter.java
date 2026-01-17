@@ -97,6 +97,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotor.close();
   }
 
+  public Voltage getHoodVoltage() {
+    return hoodMotor.getMotorVoltage().getValue();
+  }
+
   public String currentCommand() {
     if (this.getCurrentCommand() != null) return this.getCurrentCommand().getName();
 
