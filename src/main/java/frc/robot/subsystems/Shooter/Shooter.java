@@ -111,6 +111,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return flywheelMotor.getPosition().getValue();
   }
 
+  public double getFlywheelSetpoint() {
+    return flywheelMotor.getClosedLoopReference().getValueAsDouble();
+  }
+
   public double getFlywheelPositionRotations() {
     return getFlywheelPosition().in(Rotations);
   }
@@ -261,6 +265,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotorSim.setRotorAcceleration(hoodSim.getAngularAcceleration());
   }
 
+  public Angle getSetpointRotation() {
+    return getCurrentSetpoint().rotation();
+  }
+
   public void shootSimulatedProjectile() {
     SimulatedArena.getInstance()
         .addGamePieceProjectile(
@@ -272,6 +280,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 kShooterLocation.getMeasureZ(),
                 convertAngularVelocityToLinear(
                     getFlywheelVelocity().times(kEstimatedFlywheelSpeedToFuelSpeed)),
-                getHoodPosition()));
+                getCurrentSetpoint().rotation()));
   }
 }
