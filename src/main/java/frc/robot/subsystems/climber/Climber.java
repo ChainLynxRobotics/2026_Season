@@ -1,22 +1,30 @@
 package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.utils.RobotMath;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 @Logged
