@@ -106,6 +106,7 @@ public class RobotContainer {
 
     joystick.a().whileTrue(shooter.flywheelSysid());
     joystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
+    joystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
   }
 
   public Command getAutonomousCommand() {
