@@ -5,9 +5,14 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.*;
 
 public class ShooterConstants {
+  public static final Pose3d kShooterLocation = new Pose3d();
+  public static final Pose3d kHubLocation =
+      new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
 
   public static final Distance kFlywheelRadius = Inches.of(2);
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.0009885367);
