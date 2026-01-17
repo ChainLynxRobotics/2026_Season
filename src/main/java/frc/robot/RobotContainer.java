@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 
@@ -48,6 +49,9 @@ public class RobotContainer {
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   public final Climber climber = new Climber(new TalonFX(0, new CANBus("blinky")));
+
+  public final Vision vision =
+      new Vision(drivetrain::passVisionPose, drivetrain::getSimulatedDrivetrainPose);
 
   public RobotContainer() {
     configureBindings();
