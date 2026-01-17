@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
@@ -44,7 +46,7 @@ public class RobotContainer {
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  public final Climber climber = new Climber();
+  public final Climber climber = new Climber(new TalonFX(0, new CANBus("blinky")));
 
   public RobotContainer() {
     configureBindings();
@@ -113,7 +115,7 @@ public class RobotContainer {
   public Command climbTo(ClimberState state) {
     return Commands.sequence(
         climber
-            .run(() -> climber.goToState(state))
+            .run(() -> climber.setStateSetpoint(state))
             .until(() -> climber.atSetpoint())
             .andThen(() -> climber.stopMotor()));
   }
