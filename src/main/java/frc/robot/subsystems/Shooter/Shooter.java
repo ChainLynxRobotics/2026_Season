@@ -13,6 +13,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
@@ -23,10 +26,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
+import java.util.function.Supplier;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 @Logged
 public class Shooter extends SubsystemBase implements AutoCloseable {
+  private final Supplier<Pose2d> drivetrainPose;
+
   private final TalonFX flywheelMotor;
   private final MotionMagicVelocityVoltage flywheelMotionMagic;
   public DCMotorSim flywheelSim = null;
@@ -37,7 +44,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public DCMotorSim hoodSim = null;
   public TalonFXSimState hoodMotorSim;
 
-  public Shooter() {
+  public Shooter(Supplier<Pose2d> drivetrainPose) {
+    this.drivetrainPose = drivetrainPose;
+
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);
 
     this.flywheelMotor = new TalonFX(kFlywheelCANId);
@@ -114,8 +123,56 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return flywheelMotor.getControlMode().getValue();
   }
 
+  public ShooterSetpoint getCurrentSetpoint() {
+    var shooterFieldLocation =
+        kShooterLocation.transformBy(
+            new Transform3d(new Pose3d(), new Pose3d(drivetrainPose.get())));
+    var shooterDistance =
+        Meters.of(
+            Math.sqrt(
+                Math.pow(shooterFieldLocation.getX() - kHubLocation.getX(), 2)
+                    + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
+
+    return ShooterLUT.getSpeedAndRotation(shooterDistance);
+  }
+
+  public Distance getDistance() {
+    var shooterFieldLocation =
+        kShooterLocation.transformBy(
+            new Transform3d(new Pose3d(), new Pose3d(drivetrainPose.get())));
+    return Meters.of(
+        Math.sqrt(
+            Math.pow(shooterFieldLocation.getX() - kHubLocation.getX(), 2)
+                + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
+  }
+
+  public AngularVelocity convertLinearVelocityToAngula(LinearVelocity velocity) {
+    return RotationsPerSecond.of(
+        velocity.in(MetersPerSecond) / (kFlywheelRadius.in(Meters) * 2 * Math.PI));
+  }
+
+  public Command runShooterControl() {
+    return run(() -> {
+          setFlywheelVelocityInternal(
+              convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed()));
+        })
+        .withName("Shooter control");
+  }
+
   public Command setFlywheelVelocity(AngularVelocity velocity) {
-    return runOnce(() -> flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity)));
+    return runOnce(() -> setFlywheelVelocityInternal(velocity)).withName("Flywheel velocity");
+  }
+
+  public AngularVelocity targetVelocity() {
+    return convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed());
+  }
+
+  public LinearVelocity targetLinearVelocity() {
+    return getCurrentSetpoint().flywheelSurfaceSpeed();
+  }
+
+  private void setFlywheelVelocityInternal(AngularVelocity velocity) {
+    flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity));
   }
 
   @Logged
@@ -135,18 +192,19 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             new SysIdRoutine.Config(Volts.of(1).per(Second), Volts.of(6.5), null, null),
             new SysIdRoutine.Mechanism(this::flywheelVoltageDrive, null, this));
     return sequence(
-        routine
-            .quasistatic(Direction.kForward)
-            .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
-        routine
-            .quasistatic(Direction.kReverse)
-            .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())),
-        routine
-            .dynamic(Direction.kForward)
-            .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
-        routine
-            .dynamic(Direction.kReverse)
-            .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero()))).withName("Flywheel sysid");
+            routine
+                .quasistatic(Direction.kForward)
+                .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
+            routine
+                .quasistatic(Direction.kReverse)
+                .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())),
+            routine
+                .dynamic(Direction.kForward)
+                .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
+            routine
+                .dynamic(Direction.kReverse)
+                .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())))
+        .withName("Flywheel sysid");
   }
 
   private void flywheelVoltageDrive(Voltage voltage) {
