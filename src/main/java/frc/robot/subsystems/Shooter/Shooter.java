@@ -235,12 +235,20 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return runOnce(() -> hoodMotor.setControl(request.withPosition(position)));
   }
 
+  private int timeLastBall = 0;
+
   @Override
   public void periodic() {
     if (hoodLimitSwitch.get()
         && RobotBase.isReal()
         && isWithinTolerance(getHoodPosition(), Degrees.of(90), Degrees.of(0.01))) {
       hoodMotor.setPosition(Degrees.of(90));
+    }
+    if (timeLastBall == 10) {
+      this.shootSimulatedProjectile();
+      timeLastBall = 0;
+    } else {
+      timeLastBall += 1;
     }
   }
 
