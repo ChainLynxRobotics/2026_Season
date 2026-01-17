@@ -20,31 +20,21 @@ public class ShooterLUT {
   private static InterpolatingDoubleTreeMap generateSpeedMap() {
     var map = new InterpolatingDoubleTreeMap();
 
-    map.put(0.55, 23.64333);
-    map.put(0.66176, 23.65667);
-    map.put(0.77352, 23.69667);
-    map.put(0.88527, 23.92333);
-    map.put(0.99703, 24.14);
-    map.put(1.10879, 24.46667);
-    map.put(1.22055, 24.75);
-    map.put(1.3323, 24.76667);
-    map.put(1.444406, 25.0);
-    map.put(1.55582, 25.3);
-    map.put(1.66758, 25.5);
-    map.put(1.77933, 23.64333);
-    map.put(1.89109, 25.88333);
-    map.put(2.00285, 26.01333);
-    map.put(2.11461, 26.11667);
-    map.put(2.22636, 26.22667);
-    map.put(2.33812, 26.36667);
-    map.put(2.89691, 27.03333);
-    map.put(3.00867, 27.16);
-    map.put(3.56736, 27.77333);
-    map.put(4.12624, 28.38333);
-    map.put(4.238, 28.49);
-    map.put(5.13206, 29.46);
-    map.put(5.69085, 30.11);
-    map.put(6.13788, 30.63333);
+    map.put(1.0, 26.25);
+    map.put(1.1, 26.75);
+    map.put(1.3, 27.0);
+    map.put(1.5, 27.1);
+    map.put(1.7, 27.2);
+    map.put(2.0, 27.6);
+    map.put(2.25, 27.85);
+    map.put(2.5, 28.15);
+    map.put(3.0, 28.75);
+    map.put(3.5, 29.25);
+    map.put(4.0, 30.0);
+    map.put(4.5, 30.5);
+    map.put(5.0, 30.85);
+    map.put(5.5, 31.6);
+    map.put(6.13788, 32.5);
 
     return map;
   }
