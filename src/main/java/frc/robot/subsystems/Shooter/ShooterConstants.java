@@ -60,12 +60,12 @@ public class ShooterConstants {
   public static final int kHoodCANId = 26;
   public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(1);
   public static final int kHoodLimitSwitchId = 0;
-  private static final double kHoodS = 1;
-  private static final double kHoodA = 1;
-  private static final double kHoodV = 1;
-  private static final double kHoodP = 1;
-  private static final double kHoodI = 1;
-  private static final double kHoodD = 1;
+  private static final double kHoodS = 0;
+  private static final double kHoodA = 0;
+  private static final double kHoodV = 0;
+  private static final double kHoodP = 10;
+  private static final double kHoodI = 0;
+  private static final double kHoodD = 0;
   public static final double kHoodGearRatio = 1;
   private static final Slot0Configs kHoodSlot0Configs =
       new Slot0Configs()
