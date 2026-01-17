@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 @Logged
 public class RobotContainer {
@@ -160,5 +162,9 @@ public class RobotContainer {
             .withTimeout(5.0),
         // Finally idle for the rest of auton
         drivetrain.applyRequest(() -> idle));
+  }
+
+  public Voltage getSimulatedBatteryVoltage() {
+    return SimulatedBattery.getBatteryVoltage();
   }
 }
