@@ -16,6 +16,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
@@ -28,11 +29,15 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
 import java.util.function.Supplier;
+import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 
 @Logged
 public class Shooter extends SubsystemBase implements AutoCloseable {
   private final Supplier<Pose2d> drivetrainPose;
+  private final Supplier<Pose2d> simPose;
+  private final Supplier<ChassisSpeeds> chassisSpeeds;
 
   private final TalonFX flywheelMotor;
   private final MotionMagicVelocityVoltage flywheelMotionMagic;
@@ -44,8 +49,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public DCMotorSim hoodSim = null;
   public TalonFXSimState hoodMotorSim;
 
-  public Shooter(Supplier<Pose2d> drivetrainPose) {
+  public Shooter(
+      Supplier<Pose2d> drivetrainPose,
+      Supplier<Pose2d> simPose,
+      Supplier<ChassisSpeeds> chassisSpeeds) {
     this.drivetrainPose = drivetrainPose;
+    this.simPose = simPose;
+    this.chassisSpeeds = chassisSpeeds;
 
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);
 
@@ -147,6 +157,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         velocity.in(MetersPerSecond) / (kFlywheelRadius.in(Meters) * 2 * Math.PI));
   }
 
+  public LinearVelocity convertAngularVelocityToLinear(AngularVelocity velocity) {
+    return MetersPerSecond.of(
+        velocity.in(RotationsPerSecond) * (kFlywheelRadius.in(Meters) * 2 * Math.PI));
+  }
+
   public Command runShooterControl() {
     return run(() -> {
           setFlywheelVelocityInternal(
@@ -240,5 +255,19 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotorSim.setRawRotorPosition(hoodSim.getAngularPosition());
     hoodMotorSim.setRotorVelocity(hoodSim.getAngularVelocity());
     hoodMotorSim.setRotorAcceleration(hoodSim.getAngularAcceleration());
+  }
+
+  public void shootSimulatedProjectile() {
+    SimulatedArena.getInstance()
+        .addGamePieceProjectile(
+            new RebuiltFuelOnFly(
+                simPose.get().getTranslation(),
+                kShooterLocation.getTranslation().toTranslation2d(),
+                chassisSpeeds.get(),
+                kShooterLocation.getRotation().toRotation2d(),
+                kShooterLocation.getMeasureZ(),
+                convertAngularVelocityToLinear(
+                    getFlywheelVelocity().times(kEstimatedFlywheelSpeedToFuelSpeed)),
+                getHoodPosition()));
   }
 }
