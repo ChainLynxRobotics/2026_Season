@@ -46,6 +46,7 @@ public class RobotContainer {
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+  @Logged(name = "Shooter")
   public final Shooter shooter = new Shooter();
 
   public RobotContainer() {

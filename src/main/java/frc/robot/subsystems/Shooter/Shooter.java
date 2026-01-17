@@ -29,11 +29,13 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class Shooter extends SubsystemBase implements AutoCloseable {
   private final TalonFX flywheelMotor;
   private final MotionMagicVelocityVoltage flywheelMotionMagic;
-  private DCMotorSim flywheelSim = null;
-  private TalonFXSimState flywheelMotorSim;
+  public DCMotorSim flywheelSim = null;
+  public TalonFXSimState flywheelMotorSim;
 
   private final TalonFX hoodMotor;
   private final DigitalInput hoodLimitSwitch;
+  public DCMotorSim hoodSim = null;
+  public TalonFXSimState hoodMotorSim;
 
   public Shooter() {
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);
@@ -56,6 +58,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 kFlywheelMOI.in(KilogramSquareMeters),
                 kFlywheelGearRatio),
             DCMotor.getKrakenX60Foc(1));
+
+    this.flywheelMotorSim = flywheelMotor.getSimState();
+    this.hoodSim =
+        new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(
+                DCMotor.getKrakenX60Foc(1), kHoodMOI.in(KilogramSquareMeters), kHoodGearRatio),
+            DCMotor.getKrakenX60Foc(1));
   }
 
   public void stop() {
@@ -69,26 +78,32 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotor.close();
   }
 
+  @Logged
   public Angle getFlywheelPosition() {
     return flywheelMotor.getPosition().getValue();
   }
 
+  @Logged
   public double getFlywheelPositionRotations() {
     return getFlywheelPosition().in(Rotations);
   }
 
+  @Logged
   public AngularVelocity getFlywheelVelocity() {
     return flywheelMotor.getVelocity().getValue();
   }
 
+  @Logged
   public double getFlywheelVelocityRpS() {
     return getFlywheelVelocity().in(RotationsPerSecond);
   }
 
+  @Logged
   public Voltage getFlywheelVoltage() {
     return flywheelMotor.getMotorVoltage().getValue();
   }
 
+  @Logged
   public ControlModeValue getControlMode() {
     return flywheelMotor.getControlMode().getValue();
   }
@@ -97,6 +112,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return runOnce(() -> flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity)));
   }
 
+  @Logged
   public Angle getHoodPosition() {
     return hoodMotor.getPosition().getValue();
   }
