@@ -5,7 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -139,14 +139,8 @@ public class RobotContainer {
 
     operatorJoystick.a().whileTrue(shooter.flywheelSysid());
     operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
-  }
-
-  public Rotation2d getAngleToHub() {
-    return new Transform2d(
-            new Pose2d(drivetrain.getState().Pose.getTranslation(), new Rotation2d()),
-            kHubLocation.toPose2d())
-        .getTranslation()
-        .getAngle();
+    operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
+    operatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
   }
 
   public Command getAutonomousCommand() {
