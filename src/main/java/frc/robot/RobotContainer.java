@@ -46,7 +46,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandXboxController driveJoystick = new CommandXboxController(0);
-  private final CommandXboxController opperatorJoystick = new CommandXboxController(1);
+  private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -125,10 +125,10 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    opperatorJoystick.a().whileTrue(shooter.flywheelSysid());
-    opperatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
-    opperatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
-    opperatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
+    operatorJoystick.a().whileTrue(shooter.flywheelSysid());
+    operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
+    operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
+    operatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
   }
 
   public Command getAutonomousCommand() {
