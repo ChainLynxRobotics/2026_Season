@@ -244,7 +244,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             .toPose2d()
             .transformBy(
                 new Transform2d(
-                    (Meters.of(((Math.sin(Timer.getFPGATimestamp()) + 1) * 5.13788 / -2) - 1)),
+                    (Meters.of(
+                        ((Math.sin(Timer.getFPGATimestamp() * 0.33333) + 1) * 5.13788 / -2) - 1)),
                     Meters.zero(),
                     new Rotation2d()));
 
