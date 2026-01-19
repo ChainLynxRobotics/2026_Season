@@ -46,9 +46,9 @@ public class ShooterConstants {
   private static TalonFXConfiguration generateHoodConfig() {
     var config = new TalonFXConfiguration().withSlot0(kHoodSlot0Configs);
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.MotionMagic.MotionMagicAcceleration = 500;
-    config.MotionMagic.MotionMagicCruiseVelocity = 250;
-    config.MotionMagic.MotionMagicJerk = 75;
+    config.MotionMagic.MotionMagicAcceleration = 1;
+    config.MotionMagic.MotionMagicCruiseVelocity = 1;
+    config.MotionMagic.MotionMagicJerk = 1;
     config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
     return config;
   }
@@ -58,15 +58,15 @@ public class ShooterConstants {
   public static final TalonFXConfiguration kFlyWheelConfig = generateFlywheelConfig();
 
   public static final int kHoodCANId = 26;
-  public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(1);
+  public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(0.025);
   public static final int kHoodLimitSwitchId = 0;
   private static final double kHoodS = 0;
-  private static final double kHoodA = 0;
-  private static final double kHoodV = 0;
-  private static final double kHoodP = 10;
+  private static final double kHoodA = 0.37;
+  private static final double kHoodV = 8.04;
+  private static final double kHoodP = 8;
   private static final double kHoodI = 0;
   private static final double kHoodD = 0;
-  public static final double kHoodGearRatio = 1;
+  public static final double kHoodGearRatio = 8;
   private static final Slot0Configs kHoodSlot0Configs =
       new Slot0Configs()
           .withKS(kHoodS)

@@ -125,7 +125,7 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    operatorJoystick.a().whileTrue(shooter.flywheelSysid());
+    operatorJoystick.a().whileTrue(shooter.hoodSysid());
     operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
     operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
     operatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
