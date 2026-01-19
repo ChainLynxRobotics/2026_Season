@@ -286,7 +286,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         && isWithinTolerance(getHoodPosition(), Degrees.of(90), Degrees.of(0.01))) {
       hoodMotor.setPosition(Degrees.of(90));
     }
-    if (timeLastBall == 10) {
+    if (timeLastBall == 25) {
       this.shootSimulatedProjectile();
       timeLastBall = 0;
     } else {
