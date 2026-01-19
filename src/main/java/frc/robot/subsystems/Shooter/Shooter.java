@@ -204,6 +204,43 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return command;
   }
 
+  public double getHoodClosedLoopReference() {
+    return hoodMotor.getClosedLoopReference().getValue();
+  }
+
+  public void hoodVoltageDrive(Voltage voltage) {
+    hoodMotor.setControl(new VoltageOut(voltage));
+  }
+
+  public AngularVelocity getHoodVelocity() {
+    return hoodMotor.getVelocity().getValue();
+  }
+
+  public double getHoodPositionRotations() {
+    return getHoodPosition().in(Rotations);
+  }
+
+  public double getHoodVelocityRotationsPerSecond() {
+    return getHoodVelocity().in(RotationsPerSecond) + Math.random() * 0.0001;
+  }
+
+  public Command hoodSysid() {
+    var routine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(Volts.of(0.25).per(Second), Volts.of(2), null, null),
+            new SysIdRoutine.Mechanism(this::hoodVoltageDrive, null, this));
+    return sequence(
+            routine
+                .quasistatic(Direction.kForward)
+                .until(() -> getHoodPosition().gt(Degrees.of(70))),
+            routine
+                .quasistatic(Direction.kReverse)
+                .until(() -> getHoodPosition().lt(Degrees.of(10))),
+            routine.dynamic(Direction.kForward).until(() -> getHoodPosition().gt(Degrees.of(70))),
+            routine.dynamic(Direction.kReverse).until(() -> getHoodPosition().lt(Degrees.of(10))))
+        .withName("Hood sysid");
+  }
+
   public Command flywheelSysid() {
     var routine =
         new SysIdRoutine(
