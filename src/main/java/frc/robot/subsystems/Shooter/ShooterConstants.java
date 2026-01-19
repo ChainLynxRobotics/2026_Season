@@ -46,9 +46,9 @@ public class ShooterConstants {
   private static TalonFXConfiguration generateHoodConfig() {
     var config = new TalonFXConfiguration().withSlot0(kHoodSlot0Configs);
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.MotionMagic.MotionMagicAcceleration = 1;
-    config.MotionMagic.MotionMagicCruiseVelocity = 1;
-    config.MotionMagic.MotionMagicJerk = 1;
+    config.MotionMagic.MotionMagicAcceleration = 50;
+    config.MotionMagic.MotionMagicCruiseVelocity = 25;
+    config.MotionMagic.MotionMagicJerk = 75;
     config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
     return config;
   }
