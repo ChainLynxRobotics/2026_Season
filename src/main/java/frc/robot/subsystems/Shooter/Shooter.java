@@ -174,6 +174,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return run(() -> {
           setFlywheelVelocityInternal(
               convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed()));
+          setHoodAngleInternal(getSetpointRotation());
         })
         .withName("Shooter control");
   }
@@ -269,7 +270,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   final MotionMagicVoltage request = new MotionMagicVoltage(0).withEnableFOC(true);
 
   public Command setHoodAngle(Angle position) {
-    return runOnce(() -> hoodMotor.setControl(request.withPosition(position)));
+    return runOnce(() -> setHoodAngleInternal(position));
+  }
+
+  private void setHoodAngleInternal(Angle position) {
+    hoodMotor.setControl(request.withPosition(position));
   }
 
   private int timeLastBall = 0;
@@ -325,6 +330,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 kShooterLocation.getMeasureZ(),
                 convertAngularVelocityToLinear(
                     getFlywheelVelocity().times(kEstimatedFlywheelSpeedToFuelSpeed)),
-                getCurrentSetpoint().rotation()));
+                getHoodPosition()));
   }
 }
