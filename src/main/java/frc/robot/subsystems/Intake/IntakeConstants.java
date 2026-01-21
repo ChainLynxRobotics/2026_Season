@@ -9,11 +9,22 @@ import edu.wpi.first.units.measure.AngularVelocity;
 public class IntakeConstants {
   public static Angle kIntakeLowAngle;
   public static Angle kIntakeHighAngle;
-
-  public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(0.0);
-
-  public static Slot0Configs intakeHeightSlot0Config =
-      new Slot0Configs().withKP(0).withKI(0).withKD(0).withKV(0).withKA(0).withKG(0).withKS(0);
+  private static double kP;
+  private static double kI;
+  private static double kD;
+  private static double kV;
+  private static double kA;
+  private static double kG;
+  private static double kS;
+  public static Slot0Configs kIntakeHeightSlot0Config =
+      new Slot0Configs()
+          .withKP(kP)
+          .withKI(kI)
+          .withKD(kD)
+          .withKV(kV)
+          .withKA(kA)
+          .withKG(kG)
+          .withKS(kS);
 
   public enum IntakeState {
     HIGH(kIntakeHighAngle),
