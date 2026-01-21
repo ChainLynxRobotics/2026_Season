@@ -16,7 +16,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private VelocityVoltage intakeSpinControl = new VelocityVoltage(0);
 
   public IntakeSubsystem() {
-    this.intakeHeightConfiguration.Slot0 = intakeHeightSlot0Config;
+    this.intakeHeightMotorConfiguration.Slot0 = kIntakeHeightSlot0Config;
+    intakeHeightMotor.getConfigurator().apply(intakeHeightMotorConfiguration);
   }
 
   @Logged
