@@ -86,59 +86,103 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             DCMotor.getKrakenX60Foc(1));
   }
 
-  public void stop() {
+  /**
+    * Stops the motors
+    */
+  public void stop() {  
     flywheelMotor.stopMotor();
     hoodMotor.stopMotor();
   }
 
   @Override
+
+  /**
+    * Turns the Motors off
+    */
   public void close() {
+    
     flywheelMotor.close();
     hoodMotor.close();
   }
-
+  /**
+  * Gets the voltage of the hood motor
+  * @return Voltage
+  **/
   public Voltage getHoodVoltage() {
     return hoodMotor.getMotorVoltage().getValue();
   }
-
+    
+  /**
+   * Gets the current running command name
+   * @return currentCommand as String
+   */
   public String currentCommand() {
     if (this.getCurrentCommand() != null) return this.getCurrentCommand().getName();
 
     return "";
   }
 
+  /**
+   * gets the position of the flywheel
+   * @return Position of flywheel
+   */
   public Angle getFlywheelPosition() {
     return flywheelMotor.getPosition().getValue();
   }
-
+  /**
+   * Get the setpoint of the flywheel
+   * @return the setpoint of the flywheel
+   */
   public double getFlywheelSetpoint() {
     return flywheelMotor.getClosedLoopReference().getValueAsDouble();
   }
-
+  /**
+   * gets position of the flywheel in rotations
+   * @return position of the flywheel in rotations
+   */
   public double getFlywheelPositionRotations() {
     return getFlywheelPosition().in(Rotations);
   }
-
+  /**
+   * Gets flywheel Velocity
+   * @return Flywheel veclotiy
+   */
   public AngularVelocity getFlywheelVelocity() {
     return flywheelMotor.getVelocity().getValue();
   }
-
+  /**
+   * Gets flywheel veloctiy in  rps
+   * @return flywheel Velocity in RotationsPerSecond
+   */
   public double getFlywheelVelocityRpS() {
     return getFlywheelVelocity().in(RotationsPerSecond);
   }
-
+  /**
+   * Gets flywheel Voltage
+   * @return Returns the Voltage in the flywheel
+   */
   public Voltage getFlywheelVoltage() {
     return flywheelMotor.getMotorVoltage().getValue();
   }
-
+  /**
+   * Gets the control Mode of the Flywheel
+   * @return Control Mode of the Flywheel
+   */
   public ControlModeValue getFlywheelControlMode() {
     return flywheelMotor.getControlMode().getValue();
   }
-
+  /**
+   * Converts Robot Pose to Shooter Pose
+   * @param robotPose Input robot pose
+   * @return Shooter pose
+   */
   public Pose3d convertRobotPoseToShooterPose(Pose3d robotPose) {
     return kShooterLocation.transformBy(new Transform3d(new Pose3d(), robotPose));
   }
-
+  /**
+   * Gets the setpoint of the shooter
+   * @return the speed and position of the shooter to shoot into the hub.   
+   */
   public ShooterSetpoint getCurrentSetpoint() {
     var shooterFieldLocation = convertRobotPoseToShooterPose(new Pose3d(drivetrainPose.get()));
     var shooterDistance =
@@ -149,7 +193,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     return ShooterLUT.getSpeedAndRotation(shooterDistance);
   }
-
+  /**
+   * Gets the distance of the robot
+   * @return Distance of the robot in Meters per seconds
+   */
   public Distance getDistance() {
     var shooterFieldLocation =
         kShooterLocation.transformBy(
@@ -208,19 +255,31 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public double getHoodClosedLoopReference() {
     return hoodMotor.getClosedLoopReference().getValue();
   }
-
+  /**
+  * Gets voltage of the hood motor
+  * @param voltag
+  **/
   public void hoodVoltageDrive(Voltage voltage) {
     hoodMotor.setControl(new VoltageOut(voltage));
   }
-
+  /**
+  * Gets angular velocity of the hood
+  * @return the position of the hood in rotations
+  **/
   public AngularVelocity getHoodVelocity() {
     return hoodMotor.getVelocity().getValue();
   }
-
+  /**
+  * Gets position of the hood motor in rotations
+  * @return the position of the hood in rotations
+  **/
   public double getHoodPositionRotations() {
     return getHoodPosition().in(Rotations);
   }
-
+  /**
+  * Gets the velocity of the hood motor as a double
+  * @return velocity of the hood in rotations/sec
+  **/
   public double getHoodVelocityRotationsPerSecond() {
     return getHoodVelocity().in(RotationsPerSecond) + Math.random() * 0.0001;
   }
@@ -318,7 +377,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Angle getSetpointRotation() {
     return getCurrentSetpoint().rotation();
   }
-
+  
   public void shootSimulatedProjectile() {
     SimulatedArena.getInstance()
         .addGamePieceProjectile(
