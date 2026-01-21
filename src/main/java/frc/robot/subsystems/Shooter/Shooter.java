@@ -6,8 +6,9 @@ import static frc.robot.Constants.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import static frc.robot.utils.RobotMath.*;
 
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
@@ -17,7 +18,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -40,7 +40,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   private final Supplier<ChassisSpeeds> chassisSpeeds;
 
   private final TalonFX flywheelMotor;
-  private final MotionMagicVelocityVoltage flywheelMotionMagic;
+  private final VelocityVoltage flywheelMotionMagic;
   public DCMotorSim flywheelSim = null;
   public TalonFXSimState flywheelMotorSim;
 
@@ -61,8 +61,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     this.flywheelMotor = new TalonFX(kFlywheelCANId);
     flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
-    flywheelMotionMagic =
-        new MotionMagicVelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
+    flywheelMotionMagic = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
 
     this.hoodMotor = new TalonFX(kHoodCANId);
     hoodMotor.getConfigurator().apply(kHoodConfig);
@@ -73,17 +72,15 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.flywheelSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                DCMotor.getKrakenX60Foc(1),
-                kFlywheelMOI.in(KilogramSquareMeters),
-                kFlywheelGearRatio),
-            DCMotor.getKrakenX60Foc(1));
+                kFlywheelMotor, kFlywheelMOI.in(KilogramSquareMeters), kFlywheelGearRatio),
+            kFlywheelMotor);
 
     this.hoodMotorSim = hoodMotor.getSimState();
     this.hoodSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                DCMotor.getKrakenX60Foc(1), kHoodMOI.in(KilogramSquareMeters), kHoodGearRatio),
-            DCMotor.getKrakenX60Foc(1));
+                kHoodMotor, kHoodMOI.in(KilogramSquareMeters), kHoodGearRatio),
+            kHoodMotor);
   }
 
   /** Stops the motors */
@@ -303,7 +300,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Command hoodSysid() {
     var routine =
         new SysIdRoutine(
-            new SysIdRoutine.Config(Volts.of(0.25).per(Second), Volts.of(2), null, null),
+            new SysIdRoutine.Config(
+                Volts.of(0.25).per(Second),
+                Volts.of(6),
+                null,
+                state -> SignalLogger.writeString("Flywheel sysid", state.toString())),
             new SysIdRoutine.Mechanism(this::hoodVoltageDrive, null, this));
     return sequence(
             routine
