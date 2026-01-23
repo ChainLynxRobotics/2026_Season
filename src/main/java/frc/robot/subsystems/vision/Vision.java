@@ -165,7 +165,8 @@ public class Vision extends SubsystemBase {
                 .times(1 / Math.pow(poseResult.targetsUsed.size(), 2))
                 .times(Math.pow(getAverageAmbiguity(poseResult) * 10, 4));
 
-        VisionPose swervePose = new VisionPose(poseResult.estimatedPose, result.getTimestampSeconds(), deviation);
+        VisionPose swervePose =
+            new VisionPose(poseResult.estimatedPose, result.getTimestampSeconds(), deviation);
 
         updateDrivetrain.accept(swervePose);
       }
