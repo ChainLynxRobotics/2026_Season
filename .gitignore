@@ -186,3 +186,5 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
+
+vendordeps/maple-sim-0.3.14.json
