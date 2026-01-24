@@ -249,8 +249,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     Meters.zero(),
                     new Rotation2d()));
 
-    addVisionMeasurement(fudgeLocation, Utils.getSystemTimeSeconds(), VecBuilder.fill(0, 0, 0));
-    mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(fudgeLocation);
+    //addVisionMeasurement(fudgeLocation, Utils.getSystemTimeSeconds(), VecBuilder.fill(0, 0, 0));
+    //mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(fudgeLocation);
   }
 
   private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain = null;
