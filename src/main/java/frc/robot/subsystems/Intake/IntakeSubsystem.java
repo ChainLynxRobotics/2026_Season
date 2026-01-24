@@ -3,14 +3,17 @@ package frc.robot.subsystems.Intake;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Intake.IntakeConstants.IntakeState;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private TalonFX intakeSpinMotor = new TalonFX(0);
   private TalonFX intakeHeightMotor = new TalonFX(0);
   private TalonFXConfiguration intakeHeightConfiguration = new TalonFXConfiguration();
+  private VelocityVoltage intakeSpinControl = new VelocityVoltage(0);
 
   public IntakeSubsystem() {
     this.intakeHeightConfiguration.Slot0 = intakeHeightSlot0Config;
@@ -41,6 +44,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void spin() {
-    intakeSpinMotor.setVoltage(0);
+    intakeSpinMotor.setControl(intakeSpinControl.withVelocity(kGoalIntakeSpinVelocity));
+  }
+
+  @Override
+  public void close() {
+    intakeSpinMotor.close();
+    intakeHeightMotor.close();
   }
 }
