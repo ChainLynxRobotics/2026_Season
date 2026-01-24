@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class IntakeTest {
   IntakeSubsystem intake;
@@ -39,7 +41,6 @@ public class IntakeTest {
   @AfterEach // this method will run after each test
   void shutdown() throws Exception {
     motor.close();
-    simMotor.close();
     intake.close();
   }
 }
