@@ -72,6 +72,15 @@ public class RobotContainer {
     RobotModeTriggers.disabled()
         .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
+    joystick
+        .y()
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    new SwerveRequest.FieldCentricFacingAngle()
+                        .withTargetDirection(new Rotation2d(Math.PI))
+                        .withHeadingPID(7, 0, 0)));
+
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick
         .b()
