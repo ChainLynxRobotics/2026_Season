@@ -50,8 +50,7 @@ public class RobotContainer {
 
   public final Climber climber = new Climber(new TalonFX(0, new CANBus("blinky")));
 
-  public final Vision vision =
-      new Vision(drivetrain::passVisionPose, drivetrain::getSimulatedDrivetrainPose);
+  public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
   public RobotContainer() {
     configureBindings();

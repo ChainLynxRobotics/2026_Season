@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.*;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -136,10 +137,10 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isOnField(EstimatedRobotPose pose) {
-    return (pose.estimatedPose.getX() > kFieldWidth)
-        && (pose.estimatedPose.getX() < 0)
-        && (pose.estimatedPose.getY() > kFieldHeight)
-        && (pose.estimatedPose.getY() < 0);
+    return (pose.estimatedPose.getX() >= kFieldWidth.in(Units.Meters))
+        && (pose.estimatedPose.getX() <= 0)
+        && (pose.estimatedPose.getY() >= kFieldHeight.in(Units.Meters))
+        && (pose.estimatedPose.getY() <= 0);
   }
 
   public void update() {
