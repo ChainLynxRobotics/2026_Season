@@ -1,5 +1,7 @@
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -7,6 +9,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.*;
+import edu.wpi.first.units.measure.Distance;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +20,8 @@ public class VisionConstants {
   public static final double kAmbiguityTolerance = 0.25;
   public static final double kDistanceTolerance = 2.5;
   public static final double kMaxAngleTolerance = 70;
-  public static final double kFieldHeight = 8.05; // y
-  public static final double kFieldWidth = 17.55; // x
+  public static final Distance kFieldHeight = Meters.of(8.07); // y
+  public static final Distance kFieldWidth = Meters.of(16.54); // x
 
   public static List<Transform3d> kCameraOffsets =
       new ArrayList<>(

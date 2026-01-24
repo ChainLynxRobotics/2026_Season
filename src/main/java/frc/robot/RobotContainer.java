@@ -43,8 +43,7 @@ public class RobotContainer {
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  public final Vision vision =
-      new Vision(drivetrain::passVisionPose, drivetrain::getSimulatedDrivetrainPose);
+  public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
   public RobotContainer() {
     configureBindings();
