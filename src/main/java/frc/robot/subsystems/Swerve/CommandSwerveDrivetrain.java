@@ -247,7 +247,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             Inches.of(30),
             Inches.of(30),
             DCMotor.getKrakenX60Foc(1),
-            DCMotor.getKrakenX60Foc(1),
+            DCMotor.getFalcon500(1),
             1.2,
             getModuleLocations(),
             getPigeon2(),
