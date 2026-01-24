@@ -29,5 +29,5 @@ public class VisionConstants {
               new Transform3d(0, 0.4347972, 0.54864, new Rotation3d(0, 0, 0)),
               new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))));
 
-  public static Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(0.3, 0.3, 2);
+  public static Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(0.3, 0.3, 3);
 }
