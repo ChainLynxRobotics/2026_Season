@@ -9,32 +9,42 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.utils.RobotMath;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
+@Logged
 public class Climber extends SubsystemBase implements AutoCloseable {
   // setpoint for checking against encoder
   private Angle setpoint;
   private TalonFX motor;
-  private DCMotorSim motorSim;
+  private ElevatorSim motorSim;
   private final MotionMagicVoltage request = new MotionMagicVoltage(0);
   private TalonFXSimState simMotor;
   private DigitalInput limitSwitch;
   private boolean doMotionProfiling;
+  private Angle zeroOffset;
 
   public Climber(TalonFX motor) {
     this.motor = motor;
-    TalonFXSimState simMotor = new TalonFXSimState(motor); // create our sim Talon
+    this.simMotor = new TalonFXSimState(motor); // create our sim Talon
     DCMotor gearbox = DCMotor.getKrakenX60Foc(1);
     motorSim =
-        new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, 0.001, kGearRatio), gearbox);
+        new ElevatorSim(
+            gearbox,
+            kGearRatio,
+            (55),
+            Inches.of(0.5).in(Meters),
+            0,
+            kMaxHeight.in(Meters),
+            true,
+            0);
 
     limitSwitch = new DigitalInput(1);
 
@@ -44,6 +54,8 @@ public class Climber extends SubsystemBase implements AutoCloseable {
             .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
     motor.getConfigurator().apply(talonFXConfigs);
     doMotionProfiling = true;
+    zeroOffset = Rotations.of(0);
+    setpoint = climberMap.get(ClimberState.BOTTOM);
   }
 
   @Override
@@ -81,6 +93,10 @@ public class Climber extends SubsystemBase implements AutoCloseable {
 
   // raw rotations before gear ratio
   public Angle getPosition() {
+    return (motor.getPosition().getValue()).minus(zeroOffset);
+  }
+
+  public Angle getRawPosition() {
     return (motor.getPosition().getValue());
   }
   // checks internal encoder to setpoint + and - a certain tolerance
@@ -93,6 +109,10 @@ public class Climber extends SubsystemBase implements AutoCloseable {
     return limitSwitch.get();
   }
 
+  public void setZero() {
+    zeroOffset = getRawPosition();
+  }
+
   @Override
   public void simulationPeriodic() {
     simMotor.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
@@ -100,8 +120,7 @@ public class Climber extends SubsystemBase implements AutoCloseable {
 
     motorSim.update(kDT.in(Seconds));
 
-    simMotor.setRawRotorPosition(motorSim.getAngularPosition());
-    simMotor.setRotorVelocity(motorSim.getAngularVelocity());
-    simMotor.setRotorAcceleration(motorSim.getAngularAcceleration());
+    simMotor.setRawRotorPosition(motorSim.getPositionMeters());
+    simMotor.setRotorVelocity(motorSim.getVelocityMetersPerSecond());
   }
 }

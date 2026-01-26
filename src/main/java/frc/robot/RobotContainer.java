@@ -14,6 +14,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -94,6 +95,10 @@ public class RobotContainer {
     // Reset the field-centric heading on left bumper press.
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+    joystick
+        .rightBumper()
+        .onTrue(climbTo(ClimberState.TOP).alongWith(new PrintCommand("hit the button")));
+
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 
@@ -110,6 +115,14 @@ public class RobotContainer {
             .withTimeout(5.0),
         // Finally idle for the rest of auton
         drivetrain.applyRequest(() -> idle));
+  }
+
+  public Command zeroClimber() {
+    return Commands.sequence(
+        climber
+            .run(() -> climber.setStateSetpoint(ClimberState.BOTTOM))
+            .until(() -> climber.getLimitSwitch())
+            .andThen(() -> climber.setZero()));
   }
 
   public Command climbTo(ClimberState state) {
