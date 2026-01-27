@@ -96,6 +96,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotor.close();
     hoodLimitSwitch.close();
   }
+
   /**
    * @return applied voltage of the hood motor
    */
@@ -118,51 +119,45 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Angle getFlywheelPosition() {
     return flywheelMotor.getPosition().getValue();
   }
+
   /**
    * @return the setpoint of the flywheel in rotations per second
    */
   public double getFlywheelSetpoint() {
     return flywheelMotor.getClosedLoopReference().getValueAsDouble();
   }
-  /**
-   * @return position of the flywheel in rotations
-   */
-  public double getFlywheelPositionRotations() {
-    return getFlywheelPosition().in(Rotations);
-  }
+
   /**
    * @return Flywheel veclotiy
    */
   public AngularVelocity getFlywheelVelocity() {
     return flywheelMotor.getVelocity().getValue();
   }
-  /**
-   * @return flywheel Velocity in RotationsPerSecond
-   */
-  public double getFlywheelVelocityRpS() {
-    return getFlywheelVelocity().in(RotationsPerSecond);
-  }
+
   /**
    * @return applied voltage of the flywheel motor
    */
   public Voltage getFlywheelVoltage() {
     return flywheelMotor.getMotorVoltage().getValue();
   }
+
   /**
    * @return Control Mode of the Flywheel
    */
   public ControlModeValue getFlywheelControlMode() {
     return flywheelMotor.getControlMode().getValue();
   }
+
   /**
-   * @param robotPose Input robot pose
+   * @param robotPose Robot pose
    * @return Shooter pose
    */
   public Pose3d convertRobotPoseToShooterPose(Pose3d robotPose) {
     return kShooterLocation.transformBy(new Transform3d(new Pose3d(), robotPose));
   }
+
   /**
-   * @return the speed and position of the shooter to shoot into the hub.
+   * @return The speed and position of the shooter to shoot into the hub.
    */
   public ShooterSetpoint getCurrentSetpoint() {
     var shooterFieldLocation = convertRobotPoseToShooterPose(new Pose3d(drivetrainPose.get()));
@@ -174,6 +169,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     return ShooterLUT.getSpeedAndRotation(shooterDistance);
   }
+
   /**
    * @return Distance from the shooter to the hub
    */
@@ -186,6 +182,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             Math.pow(shooterFieldLocation.getX() - kHubLocation.getX(), 2)
                 + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
   }
+
   /**
    * @param velocity Flywheel surface velocity
    * @return Flywheel angular velocity
@@ -194,6 +191,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return RotationsPerSecond.of(
         velocity.in(MetersPerSecond) / (kFlywheelRadius.in(Meters) * 2 * Math.PI));
   }
+
   /**
    * @param velocity Flywheel angular velocity
    * @return Flywheel surface velocity
@@ -202,17 +200,19 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return MetersPerSecond.of(
         velocity.in(RotationsPerSecond) * (kFlywheelRadius.in(Meters) * 2 * Math.PI));
   }
+
   /**
-   * @return Command that automatically controls for shooting into the hub
+   * @return Command that automatically controls shooting into the hub
    */
   public Command runShooterControl() {
     return run(() -> {
           setFlywheelVelocityInternal(
               convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed()));
-          setHoodAngleInternal(getSetpointRotation());
+          setHoodAngleInternal(getCurrentSetpoint().rotation());
         })
         .withName("Shooter control");
   }
+
   /**
    * @param velocity The velocity to set the flywheel to
    * @return The command
@@ -220,30 +220,35 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Command setFlywheelVelocity(AngularVelocity velocity) {
     return runOnce(() -> setFlywheelVelocityInternal(velocity)).withName("Flywheel velocity");
   }
+
   /**
    * @return The target angular velocity for the flywheel
    */
   public AngularVelocity targetVelocity() {
     return convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed());
   }
+
   /**
    * @return The target linear velocity for the flywheel
    */
   public LinearVelocity targetLinearVelocity() {
     return getCurrentSetpoint().flywheelSurfaceSpeed();
   }
+
   /**
-   * @param velocity The target velocity
+   * @param velocity The target velocity of the flywheel
    */
   private void setFlywheelVelocityInternal(AngularVelocity velocity) {
     flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity));
   }
+
   /**
    * @return The position of the hood
    */
   public Angle getHoodPosition() {
     return hoodMotor.getPosition().getValue();
   }
+
   /**
    * @return Command to slowly push the hood against the limit switch
    */
@@ -252,36 +257,28 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     command.addRequirements(this);
     return command;
   }
+
   /**
    * @return The hoods position setpoint
    */
   public double getHoodClosedLoopReference() {
     return hoodMotor.getClosedLoopReference().getValue();
   }
+
   /**
    * @param voltage Voltage to apply to the hood motor
    */
   public void hoodVoltageDrive(Voltage voltage) {
     hoodMotor.setControl(new VoltageOut(voltage));
   }
+
   /**
    * @return Velocity of the hood
    */
   public AngularVelocity getHoodVelocity() {
     return hoodMotor.getVelocity().getValue();
   }
-  /**
-   * @return The position of the hood in rotations
-   */
-  public double getHoodPositionRotations() {
-    return getHoodPosition().in(Rotations);
-  }
-  /**
-   * @return velocity of the hood in rotations/sec
-   */
-  public double getHoodVelocityRotationsPerSecond() {
-    return getHoodVelocity().in(RotationsPerSecond) + Math.random() * 0.0001;
-  }
+
   /**
    * @return A command to run a full sysid routine on the hood
    */
@@ -305,6 +302,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             routine.dynamic(Direction.kReverse).until(() -> getHoodPosition().lt(Degrees.of(10))))
         .withName("Hood sysid");
   }
+
   /**
    * @return A command to run a full sysid routine on the flywheel
    */
@@ -328,6 +326,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())))
         .withName("Flywheel sysid");
   }
+
   /**
    * @param voltage Voltage to apply to the flywheel.
    */
@@ -387,16 +386,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotorSim.setRotorVelocity(hoodSim.getAngularVelocity());
     hoodMotorSim.setRotorAcceleration(hoodSim.getAngularAcceleration());
   }
-  /**
-   * @return Get the current hood setpoint
-   */
-  public Angle getSetpointRotation() {
-    return getCurrentSetpoint().rotation();
-  }
 
-  /**
-   * Shoots a fuel in maple sim
-   */
+  /** Shoots a fuel in maple sim */
   public void shootSimulatedProjectile() {
     SimulatedArena.getInstance()
         .addGamePieceProjectile(
