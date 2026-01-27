@@ -287,9 +287,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(0.25).per(Second),
-                Volts.of(6),
+                Volts.of(10),
                 null,
-                state -> SignalLogger.writeString("Flywheel sysid", state.toString())),
+                state -> SignalLogger.writeString("Hood sysid", state.toString())),
             new SysIdRoutine.Mechanism(this::hoodVoltageDrive, null, this));
     return sequence(
             routine
@@ -309,7 +309,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Command flywheelSysid() {
     var routine =
         new SysIdRoutine(
-            new SysIdRoutine.Config(Volts.of(1).per(Second), Volts.of(6.5), null, null),
+            new SysIdRoutine.Config(
+                Volts.of(1).per(Second),
+                Volts.of(6.5),
+                null,
+                state -> SignalLogger.writeString("SysIdFlywheel_State", state.toString())),
             new SysIdRoutine.Mechanism(this::flywheelVoltageDrive, null, this));
     return sequence(
             routine
