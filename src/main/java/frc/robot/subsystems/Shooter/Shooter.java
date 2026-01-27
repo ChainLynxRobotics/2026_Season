@@ -90,25 +90,21 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   @Override
-  /** Closes all objects in the class Should be called at the end of unit tests */
+  /** Closes all objects in the class. This should be called at the end of unit tests */
   public void close() {
     flywheelMotor.close();
     hoodMotor.close();
     hoodLimitSwitch.close();
   }
   /**
-   * Gets the voltage of the hood motor
-   *
-   * @return Voltage
+   * @return applied voltage of the hood motor
    */
   public Voltage getHoodVoltage() {
     return hoodMotor.getMotorVoltage().getValue();
   }
 
   /**
-   * Gets the current running command name
-   *
-   * @return currentCommand as String
+   * @return name of the current command
    */
   public String currentCommand() {
     if (this.getCurrentCommand() != null) return this.getCurrentCommand().getName();
@@ -117,64 +113,48 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   /**
-   * gets the position of the flywheel
-   *
    * @return Position of flywheel
    */
   public Angle getFlywheelPosition() {
     return flywheelMotor.getPosition().getValue();
   }
   /**
-   * Get the setpoint of the flywheel
-   *
-   * @return the setpoint of the flywheel
+   * @return the setpoint of the flywheel in rotations per second
    */
   public double getFlywheelSetpoint() {
     return flywheelMotor.getClosedLoopReference().getValueAsDouble();
   }
   /**
-   * gets position of the flywheel in rotations
-   *
    * @return position of the flywheel in rotations
    */
   public double getFlywheelPositionRotations() {
     return getFlywheelPosition().in(Rotations);
   }
   /**
-   * Gets flywheel Velocity
-   *
    * @return Flywheel veclotiy
    */
   public AngularVelocity getFlywheelVelocity() {
     return flywheelMotor.getVelocity().getValue();
   }
   /**
-   * Gets flywheel veloctiy in rps
-   *
    * @return flywheel Velocity in RotationsPerSecond
    */
   public double getFlywheelVelocityRpS() {
     return getFlywheelVelocity().in(RotationsPerSecond);
   }
   /**
-   * Gets flywheel Voltage
-   *
-   * @return Returns the Voltage in the flywheel
+   * @return applied voltage of the flywheel motor
    */
   public Voltage getFlywheelVoltage() {
     return flywheelMotor.getMotorVoltage().getValue();
   }
   /**
-   * Gets the control Mode of the Flywheel
-   *
    * @return Control Mode of the Flywheel
    */
   public ControlModeValue getFlywheelControlMode() {
     return flywheelMotor.getControlMode().getValue();
   }
   /**
-   * Converts Robot Pose to Shooter Pose
-   *
    * @param robotPose Input robot pose
    * @return Shooter pose
    */
@@ -182,8 +162,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return kShooterLocation.transformBy(new Transform3d(new Pose3d(), robotPose));
   }
   /**
-   * Gets the setpoint of the shooter
-   *
    * @return the speed and position of the shooter to shoot into the hub.
    */
   public ShooterSetpoint getCurrentSetpoint() {
@@ -197,9 +175,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return ShooterLUT.getSpeedAndRotation(shooterDistance);
   }
   /**
-   * Gets the distance of the robot
-   *
-   * @return Distance of the robot in Meters per seconds
+   * @return Distance from the shooter to the hub
    */
   public Distance getDistance() {
     var shooterFieldLocation =
@@ -211,29 +187,23 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
   }
   /**
-   * Converts linear velocity to angular velocity
-   *
-   * @param velocity the velocity in meters/sec
-   * @return the velocity in rotations/sec
+   * @param velocity Flywheel surface velocity
+   * @return Flywheel angular velocity
    */
   public AngularVelocity convertLinearVelocityToAngula(LinearVelocity velocity) {
     return RotationsPerSecond.of(
         velocity.in(MetersPerSecond) / (kFlywheelRadius.in(Meters) * 2 * Math.PI));
   }
   /**
-   * Converts angular velocity to linear velocity
-   *
-   * @param velocity the velocity in rotations/sec
-   * @return the velocity in meters/sec
+   * @param velocity Flywheel angular velocity
+   * @return Flywheel surface velocity
    */
   public LinearVelocity convertAngularVelocityToLinear(AngularVelocity velocity) {
     return MetersPerSecond.of(
         velocity.in(RotationsPerSecond) * (kFlywheelRadius.in(Meters) * 2 * Math.PI));
   }
   /**
-   * Sets flywheel and shooter to the postion and velocity it need from current position.
-   *
-   * @return the run command.
+   * @return Command that automatically controls for shooting into the hub
    */
   public Command runShooterControl() {
     return run(() -> {
@@ -244,50 +214,38 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         .withName("Shooter control");
   }
   /**
-   * Sets the velocity of the flywheel
-   *
    * @param velocity The velocity to set the flywheel to
-   * @return The command to run
+   * @return The command
    */
   public Command setFlywheelVelocity(AngularVelocity velocity) {
     return runOnce(() -> setFlywheelVelocityInternal(velocity)).withName("Flywheel velocity");
   }
   /**
-   * Gets the target velocity of the flywheel
-   *
-   * @return The surface speed of the flywheel setpoint
+   * @return The target angular velocity for the flywheel
    */
   public AngularVelocity targetVelocity() {
     return convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed());
   }
   /**
-   * Gets the target linear velocity of the flywheel
-   *
-   * @return The surface speed of the flywheel
+   * @return The target linear velocity for the flywheel
    */
   public LinearVelocity targetLinearVelocity() {
     return getCurrentSetpoint().flywheelSurfaceSpeed();
   }
   /**
-   * Sets the target linear velocity of the flywheel
-   *
    * @param velocity The target velocity
    */
   private void setFlywheelVelocityInternal(AngularVelocity velocity) {
     flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity));
   }
   /**
-   * Gets the position of the hood
-   *
    * @return The position of the hood
    */
   public Angle getHoodPosition() {
     return hoodMotor.getPosition().getValue();
   }
   /**
-   * Calibrate the position of the hood
-   *
-   * @return The command to run
+   * @return Command to slowly push the hood against the limit switch
    */
   public Command homeHood() {
     Command command = run(() -> hoodMotor.set(0.01)).until(hoodLimitSwitch::get);
@@ -295,49 +253,37 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return command;
   }
   /**
-   * Gets the value of the hood's closed loop reference
-   *
-   * @return status signal
+   * @return The hoods position setpoint
    */
   public double getHoodClosedLoopReference() {
     return hoodMotor.getClosedLoopReference().getValue();
   }
   /**
-   * Sets hood Voltage
-   *
-   * @param voltage The voltage.
+   * @param voltage Voltage to apply to the hood motor
    */
   public void hoodVoltageDrive(Voltage voltage) {
     hoodMotor.setControl(new VoltageOut(voltage));
   }
   /**
-   * Gets angular velocity of the hood
-   *
-   * @return The angular velocity of the hood in rotations
+   * @return Velocity of the hood
    */
   public AngularVelocity getHoodVelocity() {
     return hoodMotor.getVelocity().getValue();
   }
   /**
-   * Gets position of the hood motor in rotations
-   *
-   * @return the position of the hood in rotations
+   * @return The position of the hood in rotations
    */
   public double getHoodPositionRotations() {
     return getHoodPosition().in(Rotations);
   }
   /**
-   * Gets the velocity of the hood motor as a double
-   *
    * @return velocity of the hood in rotations/sec
    */
   public double getHoodVelocityRotationsPerSecond() {
     return getHoodVelocity().in(RotationsPerSecond) + Math.random() * 0.0001;
   }
   /**
-   * The sysid of the hood
-   *
-   * @return sequence of routines
+   * @return A command to run a full sysid routine on the hood
    */
   public Command hoodSysid() {
     var routine =
@@ -360,9 +306,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         .withName("Hood sysid");
   }
   /**
-   * run Sysid on the flywheel
-   *
-   * @return a sequence of routines
+   * @return A command to run a full sysid routine on the flywheel
    */
   public Command flywheelSysid() {
     var routine =
@@ -385,9 +329,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         .withName("Flywheel sysid");
   }
   /**
-   * Sets target voltage of the flywheel motor
-   *
-   * @param voltage The voltage.
+   * @param voltage Voltage to apply to the flywheel.
    */
   private void flywheelVoltageDrive(Voltage voltage) {
     flywheelMotor.setControl(new VoltageOut(voltage));
@@ -395,18 +337,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   final MotionMagicVoltage request = new MotionMagicVoltage(0).withEnableFOC(true);
   /**
-   * Sets the hood angle
-   *
-   * @param position position of the hood you want to set it to
-   * @return run hood to position
+   * @param position Position to set the hood to
+   * @return Command to run
    */
   public Command setHoodAngle(Angle position) {
     return runOnce(() -> setHoodAngleInternal(position));
   }
   /**
-   * Sets the internal hood angle
-   *
-   * @param position postion of the hood angle
+   * @param position Position to set the hood to
    */
   private void setHoodAngleInternal(Angle position) {
     hoodMotor.setControl(request.withPosition(position));
@@ -450,14 +388,15 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotorSim.setRotorAcceleration(hoodSim.getAngularAcceleration());
   }
   /**
-   * Gets the rotation of the current setpoint.
-   *
-   * @return the rotation
+   * @return Get the current hood setpoint
    */
   public Angle getSetpointRotation() {
     return getCurrentSetpoint().rotation();
   }
 
+  /**
+   * Shoots a fuel in maple sim
+   */
   public void shootSimulatedProjectile() {
     SimulatedArena.getInstance()
         .addGamePieceProjectile(
