@@ -35,19 +35,19 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 
 @Logged
 public class Shooter extends SubsystemBase implements AutoCloseable {
-  private final Supplier<Pose2d> drivetrainPose;
-  private final Supplier<Pose2d> simPose;
-  private final Supplier<ChassisSpeeds> chassisSpeeds;
+  protected final Supplier<Pose2d> drivetrainPose;
+  protected final Supplier<Pose2d> simPose;
+  protected final Supplier<ChassisSpeeds> chassisSpeeds;
 
-  private final TalonFX flywheelMotor;
-  private final VelocityVoltage flywheelMotionMagic;
-  public DCMotorSim flywheelSim = null;
-  public TalonFXSimState flywheelMotorSim;
+  protected final TalonFX flywheelMotor;
+  protected final VelocityVoltage flywheelMotionMagic;
+  protected DCMotorSim flywheelSim = null;
+  protected TalonFXSimState flywheelMotorSim;
 
-  private final TalonFX hoodMotor;
-  private final DigitalInput hoodLimitSwitch;
-  public DCMotorSim hoodSim = null;
-  public TalonFXSimState hoodMotorSim;
+  protected final TalonFX hoodMotor;
+  protected final DigitalInput hoodLimitSwitch;
+  protected DCMotorSim hoodSim = null;
+  protected TalonFXSimState hoodMotorSim;
 
   public Shooter(
       Supplier<Pose2d> drivetrainPose,
