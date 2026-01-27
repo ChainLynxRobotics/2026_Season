@@ -90,12 +90,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   @Override
-
-  /** Turns the Motors off */
+  /** Closes all objects in the class Should be called at the end of unit tests */
   public void close() {
-
     flywheelMotor.close();
     hoodMotor.close();
+    hoodLimitSwitch.close();
   }
   /**
    * Gets the voltage of the hood motor
@@ -213,6 +212,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Converts linear velocity to angular velocity
+   *
    * @param velocity the velocity in meters/sec
    * @return the velocity in rotations/sec
    */
@@ -222,6 +222,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Converts angular velocity to linear velocity
+   *
    * @param velocity the velocity in rotations/sec
    * @return the velocity in meters/sec
    */
@@ -231,6 +232,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Sets flywheel and shooter to the postion and velocity it need from current position.
+   *
    * @return the run command.
    */
   public Command runShooterControl() {
@@ -243,6 +245,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Sets the velocity of the flywheel
+   *
    * @param velocity The velocity to set the flywheel to
    * @return The command to run
    */
@@ -251,6 +254,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Gets the target velocity of the flywheel
+   *
    * @return The surface speed of the flywheel setpoint
    */
   public AngularVelocity targetVelocity() {
@@ -258,6 +262,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Gets the target linear velocity of the flywheel
+   *
    * @return The surface speed of the flywheel
    */
   public LinearVelocity targetLinearVelocity() {
@@ -265,6 +270,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Sets the target linear velocity of the flywheel
+   *
    * @param velocity The target velocity
    */
   private void setFlywheelVelocityInternal(AngularVelocity velocity) {
@@ -272,6 +278,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Gets the position of the hood
+   *
    * @return The position of the hood
    */
   public Angle getHoodPosition() {
@@ -279,6 +286,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Calibrate the position of the hood
+   *
    * @return The command to run
    */
   public Command homeHood() {
@@ -288,6 +296,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Gets the value of the hood's closed loop reference
+   *
    * @return status signal
    */
   public double getHoodClosedLoopReference() {
@@ -295,6 +304,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Sets hood Voltage
+   *
    * @param voltage The voltage.
    */
   public void hoodVoltageDrive(Voltage voltage) {
@@ -326,6 +336,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * The sysid of the hood
+   *
    * @return sequence of routines
    */
   public Command hoodSysid() {
@@ -350,6 +361,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * run Sysid on the flywheel
+   *
    * @return a sequence of routines
    */
   public Command flywheelSysid() {
@@ -374,6 +386,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Sets target voltage of the flywheel motor
+   *
    * @param voltage The voltage.
    */
   private void flywheelVoltageDrive(Voltage voltage) {
@@ -383,6 +396,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   final MotionMagicVoltage request = new MotionMagicVoltage(0).withEnableFOC(true);
   /**
    * Sets the hood angle
+   *
    * @param position position of the hood you want to set it to
    * @return run hood to position
    */
@@ -391,6 +405,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Sets the internal hood angle
+   *
    * @param position postion of the hood angle
    */
   private void setHoodAngleInternal(Angle position) {
@@ -436,6 +451,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
   /**
    * Gets the rotation of the current setpoint.
+   *
    * @return the rotation
    */
   public Angle getSetpointRotation() {
