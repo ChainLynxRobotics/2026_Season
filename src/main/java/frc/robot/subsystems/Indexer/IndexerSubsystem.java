@@ -1,4 +1,5 @@
 package frc.robot.subsystems.Indexer;
+
 import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -13,11 +14,13 @@ public class IndexerSubsystem extends SubsystemBase {
   private TalonFX indexerMotor = new TalonFX(0);
   private TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
 
-  private SysIdRoutine indexerSysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(Voltage.of(0).per(Seconds), Volts.of(2), Seconds.of(6)), null);
+  private SysIdRoutine indexerSysIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(Voltage.of(0).per(Seconds), Volts.of(2), Seconds.of(6)), null);
 
   public IndexerSubsystem() {
-    talonFXConfiguration.Slot0=kIndexerSlot0Config;
-    talonFXConfiguration.MotionMagic=kIndexerMotionMagicConfig;
+    talonFXConfiguration.Slot0 = kIndexerSlot0Config;
+    talonFXConfiguration.MotionMagic = kIndexerMotionMagicConfig;
     indexerMotor.getConfigurator().apply(talonFXConfiguration);
   }
 
@@ -32,6 +35,6 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public Command spin() {
-    return run(()->indexerMotor.set(0));
+    return run(() -> indexerMotor.set(0));
   }
 }

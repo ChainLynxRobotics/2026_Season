@@ -1,10 +1,7 @@
 package frc.robot.subsystems.Intake;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 
 public class IntakeConstants {
   public static Angle kIntakeLowAngle;

@@ -15,29 +15,29 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Drivetrain.DrivetrainConstants;
+import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.vision.Vision;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
-import frc.robot.subsystems.Drivetrain.DrivetrainConstants;
-import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 
 @Logged
 public class RobotContainer {
+
   private double MaxSpeed =
       1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
@@ -68,6 +68,8 @@ public class RobotContainer {
   private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(0), new TalonFX(1));
 
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
@@ -171,6 +173,8 @@ public class RobotContainer {
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    new Trigger(() -> intakeSimJoystick.getRawButton(1)).onTrue(intake.spin());
 
     operatorJoystick.a().whileTrue(shooter.hoodSysid());
     operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
