@@ -1,7 +1,10 @@
 package frc.robot.subsystems.Indexer;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class IndexerConstants {
   private static double kP;
@@ -12,6 +15,7 @@ public class IndexerConstants {
   private static double kG;
   private static double kS;
   private static double kMaxVelocity;
+  public static AngularVelocity kGoalIndexerVelocity = RotationsPerSecond.of(0);
   public static Slot0Configs kIndexerSlot0Config =
       new Slot0Configs()
           .withKP(kP)
