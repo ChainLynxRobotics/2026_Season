@@ -5,11 +5,14 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -78,8 +81,14 @@ public class RobotContainer {
             drivetrain.applyRequest(
                 () ->
                     new SwerveRequest.FieldCentricFacingAngle()
-                        .withTargetDirection(new Rotation2d(Math.PI))
-                        .withHeadingPID(7, 0, 0)));
+                        .withTargetDirection(getAngleToHub())
+                        .withHeadingPID(7, 0, 0)
+                        .withVelocityX(
+                            -joystick.getLeftY()
+                                * MaxSpeed) // Drive forward with negative Y (forward)
+                        .withVelocityY(
+                            -joystick.getLeftX()
+                                * MaxSpeed))); // Drive left with negative X (left)));
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick
@@ -101,6 +110,14 @@ public class RobotContainer {
     joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public Rotation2d getAngleToHub() {
+    return new Transform2d(
+            new Pose2d(drivetrain.getState().Pose.getTranslation(), new Rotation2d()),
+            kHubLocation.toPose2d())
+        .getTranslation()
+        .getAngle();
   }
 
   public Command getAutonomousCommand() {
