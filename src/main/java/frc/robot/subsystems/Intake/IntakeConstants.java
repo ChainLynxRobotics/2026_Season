@@ -9,30 +9,54 @@ import edu.wpi.first.units.measure.AngularVelocity;
 public class IntakeConstants {
   public static Angle kIntakeLowAngle;
   public static Angle kIntakeHighAngle;
-  private static double kP;
-  private static double kI;
-  private static double kD;
-  private static double kV;
-  private static double kA;
-  private static double kG;
-  private static double kS;
+  public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(0);
+  public static double kSpinGearRatio = 1 / 3;
+  public static double kHeightGearRatio = 1 / 50;
+  public static double kT = 0.02;
+
+  private static double kHeightP;
+  private static double kHeightI;
+  private static double kHeightD;
+  private static double kHeightV;
+  private static double kHeightA;
+  private static double kHeightG;
+  private static double kHeightS;
+
   public static Slot0Configs kIntakeHeightSlot0Config =
       new Slot0Configs()
-          .withKP(kP)
-          .withKI(kI)
-          .withKD(kD)
-          .withKV(kV)
-          .withKA(kA)
-          .withKG(kG)
-          .withKS(kS);
+          .withKP(kHeightP)
+          .withKI(kHeightI)
+          .withKD(kHeightD)
+          .withKV(kHeightV)
+          .withKA(kHeightA)
+          .withKG(kHeightG)
+          .withKS(kHeightS);
 
-  public enum IntakeState {
+  private static double kSpinP;
+  private static double kSpinI;
+  private static double kSpinD;
+  private static double kSpinV;
+  private static double kSpinA;
+  private static double kSpinG;
+  private static double kSpinS;
+
+  public static Slot0Configs kIntakeSpinSlot0Config =
+      new Slot0Configs()
+          .withKP(kSpinP)
+          .withKI(kSpinI)
+          .withKD(kSpinD)
+          .withKV(kSpinV)
+          .withKA(kSpinA)
+          .withKG(kSpinG)
+          .withKS(kSpinS);
+
+  public enum IntakeHeightState {
     HIGH(kIntakeHighAngle),
     LOW(kIntakeLowAngle);
 
     public final Angle angle;
 
-    IntakeState(Angle angle) {
+    IntakeHeightState(Angle angle) {
       this.angle = angle;
     }
 
