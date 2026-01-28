@@ -10,7 +10,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -249,8 +248,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     Meters.zero(),
                     new Rotation2d()));
 
-    addVisionMeasurement(fudgeLocation, Utils.getSystemTimeSeconds(), VecBuilder.fill(0, 0, 0));
-    mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(fudgeLocation);
+    // addVisionMeasurement(fudgeLocation, Utils.getSystemTimeSeconds(), VecBuilder.fill(0, 0, 0));
+    // mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(fudgeLocation);
   }
 
   private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain = null;

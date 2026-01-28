@@ -19,10 +19,10 @@ public class ShooterConstants {
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
-  private static final double kFlywheelS = 0;
-  private static final double kFlywheelA = 0.0054066;
-  private static final double kFlywheelV = .029248;
-  private static final double kFlywheelP = 0.034222;
+  private static final double kFlywheelS = 0.024318;
+  private static final double kFlywheelA = 0.010775;
+  private static final double kFlywheelV = 0.060084;
+  private static final double kFlywheelP = 0.074307;
   private static final double kFlywheelI = 0;
   private static final double kFlywheelD = 0;
   public static final double kFlywheelGearRatio = 0.5;

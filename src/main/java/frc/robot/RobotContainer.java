@@ -59,7 +59,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
-    shooter.setDefaultCommand(shooter.runShooterControl());
+    // shooter.setDefaultCommand(shooter.runShooterControl());
     if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
   }
 
