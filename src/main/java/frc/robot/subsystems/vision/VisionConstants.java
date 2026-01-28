@@ -6,6 +6,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.*;
@@ -30,4 +31,7 @@ public class VisionConstants {
               new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))));
 
   public static Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(0.3, 0.3, 3);
+
+  public static final Pose3d kHubLocation =
+      new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
 }
