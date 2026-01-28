@@ -81,8 +81,17 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   @Logged
-  public double getIndexerPosition() {
+  public double getPosition() {
     return indexerMotor.getPosition().getValueAsDouble();
+  }
+
+  public Angle getAngularPosition() {
+    return indexerMotor.getPosition().getValue();
+  }
+
+  @Logged
+  public AngularVelocity getAngularVelocity() {
+    return indexerMotor.getVelocity().getValue();
   }
 
   @Logged
