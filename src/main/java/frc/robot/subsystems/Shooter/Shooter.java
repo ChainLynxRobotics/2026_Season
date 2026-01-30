@@ -52,15 +52,16 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Shooter(
       Supplier<Pose2d> drivetrainPose,
       Supplier<Pose2d> simPose,
-      Supplier<ChassisSpeeds> chassisSpeeds) {
+      Supplier<ChassisSpeeds> chassisSpeeds,
+      TalonFX flywheelMotor) {
     this.drivetrainPose = drivetrainPose;
     this.simPose = simPose;
     this.chassisSpeeds = chassisSpeeds;
 
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);
 
-    this.flywheelMotor = new TalonFX(kFlywheelCANId);
-    flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
+    this.flywheelMotor = flywheelMotor;
+    this.flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
     flywheelMotionMagic = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
 
     this.hoodMotor = new TalonFX(kHoodCANId);
@@ -68,7 +69,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     if (RobotBase.isReal()) return;
 
-    this.flywheelMotorSim = flywheelMotor.getSimState();
+    this.flywheelMotorSim = this.flywheelMotor.getSimState();
     this.flywheelSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
@@ -238,7 +239,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   /**
    * @param velocity The target velocity of the flywheel
    */
-  private void setFlywheelVelocityInternal(AngularVelocity velocity) {
+  protected void setFlywheelVelocityInternal(AngularVelocity velocity) {
     flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity));
   }
 
@@ -334,7 +335,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   /**
    * @param voltage Voltage to apply to the flywheel.
    */
-  private void flywheelVoltageDrive(Voltage voltage) {
+  protected void flywheelVoltageDrive(Voltage voltage) {
     flywheelMotor.setControl(new VoltageOut(voltage));
   }
 
