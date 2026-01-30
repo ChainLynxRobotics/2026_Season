@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterConstants;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
@@ -55,7 +57,8 @@ public class RobotContainer {
       new Shooter(
           () -> drivetrain.getState().Pose,
           drivetrain::getSimPose,
-          () -> drivetrain.getState().Speeds);
+          () -> drivetrain.getState().Speeds,
+          TalonFX(ShooterConstants.kFlywheelCANId));
 
   public RobotContainer() {
     configureBindings();
