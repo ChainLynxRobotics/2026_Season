@@ -39,6 +39,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     heightMotoreightConfiguration.Slot0 = kIntakeHeightSlot0Config;
     heightMotor.getConfigurator().apply(heightMotoreightConfiguration);
     spinConfiguration.Slot0 = kIntakeSpinSlot0Config;
+    spinConfiguration.MotionMagic = kIntakeSpinMotionMagicConfig;
     spinMotor.getConfigurator().apply(spinConfiguration);
 
     spinSimState = new TalonFXSimState(spinMotor);
@@ -69,6 +70,16 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   @Logged
   public double getSpinVelocity() {
     return spinMotor.getVelocity().getValueAsDouble();
+  }
+
+  @Logged
+  public double getSimSpinPosition() {
+    return spinSim.getAngularPositionRotations();
+  }
+
+  @Logged
+  public double getSimSpinVelocity() {
+    return spinSim.getAngularVelocityRPM() / 60.0;
   }
 
   @Logged
@@ -106,7 +117,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command spin() {
-    return runOnce(() -> spinMotor.setControl(SpinControl.withVelocity(kGoalIntakeSpinVelocity)));
+    return runOnce(() -> spinMotor.setControl(SpinControl));
   }
 
   @Logged
