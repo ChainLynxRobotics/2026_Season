@@ -1,23 +1,29 @@
 package frc.robot.subsystems.Intake;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.units.measure.Angle;
 
 public class IntakeConstants {
   public static Angle kIntakeLowAngle;
   public static Angle kIntakeHighAngle;
-  public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(0);
-  public static double kSpinGearRatio = 1 / 3;
-  public static double kHeightGearRatio = 1 / 50;
+  public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(10);
+  public static double kSpinGearRatio = 1.0 / 3;
+  public static double kHeightGearRatio = 1.0 / 50;
   public static double kT = 0.02;
 
-  private static double kHeightP;
-  private static double kHeightI;
-  private static double kHeightD;
-  private static double kHeightV;
-  private static double kHeightA;
-  private static double kHeightG;
-  private static double kHeightS;
+  public static MotionMagicConfigs kIntakeSpinMotionMagicConfig =
+      new MotionMagicConfigs().withMotionMagicCruiseVelocity(kGoalIntakeSpinVelocity);
+
+  private static double kHeightP = 0;
+  private static double kHeightI = 0;
+  private static double kHeightD = 0;
+  private static double kHeightV = 0;
+  private static double kHeightA = 0;
+  private static double kHeightG = 0;
+  private static double kHeightS = 0;
 
   public static Slot0Configs kIntakeHeightSlot0Config =
       new Slot0Configs()
@@ -29,23 +35,20 @@ public class IntakeConstants {
           .withKG(kHeightG)
           .withKS(kHeightS);
 
-  private static double kSpinP;
-  private static double kSpinI;
-  private static double kSpinD;
-  private static double kSpinV;
-  private static double kSpinA;
-  private static double kSpinG;
-  private static double kSpinS;
+  private static double kSpinP = 0.1;
+  private static double kSpinI = 0;
+  private static double kSpinD = 0;
+  private static double kSpinV = 0.5;
+  private static double kSpinA = 0;
+  private static double kSpinG = 0;
+  private static double kSpinS = 0;
 
   public static Slot0Configs kIntakeSpinSlot0Config =
-      new Slot0Configs()
-          .withKP(kSpinP)
-          .withKI(kSpinI)
-          .withKD(kSpinD)
-          .withKV(kSpinV)
-          .withKA(kSpinA)
-          .withKG(kSpinG)
-          .withKS(kSpinS);
+      new Slot0Configs().withKP(kSpinP).withKI(kSpinI).withKD(kSpinD)
+      /* .withKV(kSpinV)
+      .withKA(kSpinA)
+      .withKG(kSpinG)
+      .withKS(kSpinS)*/ ;
 
   public enum IntakeHeightState {
     HIGH(kIntakeHighAngle),
