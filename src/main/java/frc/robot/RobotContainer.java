@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
@@ -26,7 +27,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
@@ -70,7 +70,7 @@ public class RobotContainer {
           () -> drivetrain.getState().Pose,
           drivetrain::getSimPose,
           () -> drivetrain.getState().Speeds,
-          TalonFX(ShooterConstants.kFlywheelCANId));
+          new TalonFX(ShooterConstants.kFlywheelCANId));
 
   public RobotContainer() {
     configureBindings();

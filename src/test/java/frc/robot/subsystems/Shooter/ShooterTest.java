@@ -27,8 +27,7 @@ import org.junit.jupiter.api.Test;
 
 public class ShooterTest {
   Shooter shooter;
-  private TalonFX flywheelMotor=
-      new TalonFX(kFlywheelCANId);
+  private TalonFX flywheelMotor = new TalonFX(kFlywheelCANId);
   private DCMotorSim flywheelSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
