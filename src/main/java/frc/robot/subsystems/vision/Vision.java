@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -48,14 +47,12 @@ public class Vision extends SubsystemBase {
 
     cameras.add(
         new CamAndEstimator(
-            new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kCameraOffsets.get(0)),
+            new PhotonPoseEstimator(kTagLayout, kCameraOffsets.get(0)),
             new PhotonCamera("aprilOne")));
 
     cameras.add(
         new CamAndEstimator(
-            new PhotonPoseEstimator(
-                kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kCameraOffsets.get(1)),
+            new PhotonPoseEstimator(kTagLayout, kCameraOffsets.get(1)),
             new PhotonCamera("aprilTwo")));
 
     if (!RobotBase.isReal()) {
@@ -149,7 +146,8 @@ public class Vision extends SubsystemBase {
       List<PhotonPipelineResult> data = cameraRecord.camera.getAllUnreadResults();
 
       for (PhotonPipelineResult result : data) {
-        Optional<EstimatedRobotPose> optionalPoseResult = cameraRecord.estimator.update(result);
+        Optional<EstimatedRobotPose> optionalPoseResult =
+            cameraRecord.estimator.estimateCoprocMultiTagPose(result);
         if (optionalPoseResult.isEmpty()) {
           continue;
         }
