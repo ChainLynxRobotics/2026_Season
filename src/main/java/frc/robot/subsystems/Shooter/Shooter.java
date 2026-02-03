@@ -53,7 +53,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
       Supplier<Pose2d> drivetrainPose,
       Supplier<Pose2d> simPose,
       Supplier<ChassisSpeeds> chassisSpeeds,
-      TalonFX flywheelMotor) {
+      TalonFX flywheelMotor,
+      TalonFX hoodMotor) {
     this.drivetrainPose = drivetrainPose;
     this.simPose = simPose;
     this.chassisSpeeds = chassisSpeeds;
@@ -64,7 +65,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
     flywheelMotionMagic = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
 
-    this.hoodMotor = new TalonFX(kHoodCANId);
+    this.hoodMotor = hoodMotor;
     hoodMotor.getConfigurator().apply(kHoodConfig);
 
     if (RobotBase.isReal()) return;
@@ -76,7 +77,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 kFlywheelMotor, kFlywheelMOI.in(KilogramSquareMeters), kFlywheelGearRatio),
             kFlywheelMotor);
 
-    this.hoodMotorSim = hoodMotor.getSimState();
+    this.hoodMotorSim = this.hoodMotor.getSimState();
     this.hoodSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
@@ -350,7 +351,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   /**
    * @param position Position to set the hood to
    */
-  private void setHoodAngleInternal(Angle position) {
+  protected void setHoodAngleInternal(Angle position) {
     hoodMotor.setControl(request.withPosition(position));
   }
 
@@ -389,9 +390,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     hoodSim.update(kDT.in(Seconds));
 
-    hoodMotorSim.setRawRotorPosition(hoodSim.getAngularPosition());
-    hoodMotorSim.setRotorVelocity(hoodSim.getAngularVelocity());
-    hoodMotorSim.setRotorAcceleration(hoodSim.getAngularAcceleration());
+    hoodMotorSim.setRawRotorPosition(hoodSim.getAngularPosition().times(kHoodGearRatio));
+    hoodMotorSim.setRotorVelocity(hoodSim.getAngularVelocity().times(kHoodGearRatio));
+    hoodMotorSim.setRotorAcceleration(hoodSim.getAngularAcceleration().times(kHoodGearRatio));
   }
 
   /** Shoots a fuel in maple sim */

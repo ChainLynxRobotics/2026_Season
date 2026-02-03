@@ -70,7 +70,8 @@ public class RobotContainer {
           () -> drivetrain.getState().Pose,
           drivetrain::getSimPose,
           () -> drivetrain.getState().Speeds,
-          new TalonFX(ShooterConstants.kFlywheelCANId));
+          new TalonFX(ShooterConstants.kFlywheelCANId),
+          new TalonFX(ShooterConstants.kHoodCANId));
 
   public RobotContainer() {
     configureBindings();
