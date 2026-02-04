@@ -27,11 +27,11 @@ public class VisionConstants {
   public static List<Transform3d> kCameraOffsets =
       new ArrayList<>(
           List.of(
-              new Transform3d(0, 0.4347972, 0.54864, new Rotation3d(0, 0, 0)),
-              new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))));
+              new Transform3d(0.268, 0.19684, 0.5715, new Rotation3d(0, 0, 0))
+              /*new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))*/ ));
 
-  public static Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(0.3, 0.3, 3);
 
   public static final Pose3d kHubLocation =
       new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
+  public static Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(1.5, 1.5, 10);
 }
