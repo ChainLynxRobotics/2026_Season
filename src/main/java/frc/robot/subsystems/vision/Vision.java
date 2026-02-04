@@ -165,7 +165,11 @@ public class Vision extends SubsystemBase {
             kBaseDeviation
                 .times(Math.pow(getAverageDistance(poseResult).in(Meters), 1.5))
                 .times(1 / Math.pow(poseResult.targetsUsed.size(), 2))
-                .times(Math.pow(getAverageAmbiguity(poseResult) * 10, 4));
+                .times(Math.pow(getAverageAmbiguity(poseResult) * 10, 0.75));
+        System.out.println("Distance " + getAverageDistance(poseResult).in(Meters));
+        System.out.println("Ambiguity " + (getAverageAmbiguity(poseResult) * 10));
+        System.out.println("Deviation " + deviation);
+        // System.out.println(deviation);
 
         VisionPose swervePose =
             new VisionPose(poseResult.estimatedPose, result.getTimestampSeconds(), deviation);
