@@ -133,14 +133,14 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean usingTwoTags(EstimatedRobotPose pose) {
-    return (pose.targetsUsed.size() < 2);
+    return (pose.targetsUsed.size() >= 2);
   }
 
   public boolean isOnField(EstimatedRobotPose pose) {
-    return (pose.estimatedPose.getX() >= kFieldWidth.in(Units.Meters))
-        && (pose.estimatedPose.getX() <= 0)
-        && (pose.estimatedPose.getY() >= kFieldHeight.in(Units.Meters))
-        && (pose.estimatedPose.getY() <= 0);
+    return (pose.estimatedPose.getX() < kFieldWidth.in(Units.Meters))
+        && (pose.estimatedPose.getX() > 0)
+        && (pose.estimatedPose.getY() < kFieldHeight.in(Units.Meters))
+        && (pose.estimatedPose.getY() > 0);
   }
 
   public void update() {
@@ -157,7 +157,7 @@ public class Vision extends SubsystemBase {
         EstimatedRobotPose poseResult = optionalPoseResult.get();
 
         // goes through checks to see if to discard the data
-        if (usingTwoTags(poseResult) || isOnField(poseResult) || isToleranceTooSmall(poseResult)) {
+        if (!isOnField(poseResult) || isToleranceTooSmall(poseResult)) {
           continue;
         }
 
