@@ -5,10 +5,12 @@
 package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -24,6 +26,7 @@ public class Robot extends TimedRobot {
       new HootAutoReplay().withTimestampReplay().withJoystickReplay();
 
   public Robot() {
+    DriverStation.silenceJoystickConnectionWarning(true);
     Epilogue.configure(
         config -> {
           if (isSimulation()) {
@@ -38,6 +41,7 @@ public class Robot extends TimedRobot {
     Epilogue.bind(this);
     DataLogManager.start();
     m_robotContainer = new RobotContainer();
+    SignalLogger.start();
   }
 
   @Override
