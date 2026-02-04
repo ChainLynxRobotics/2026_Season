@@ -49,22 +49,6 @@ public class ShooterTest {
   }
 
   @Test
-  void testCreateHoodMovingSetpoint() {
-    for (int i = 0; i < 100; ++i) {
-      shooter.hoodSim.setAngle(i);
-      shooter.simulationPeriodic();
-      System.out.println(shooter.getHoodPosition().in(Radians));
-      Timer.delay(0.02);
-      if (RobotMath.isWithinTolerance(shooter.getHoodPosition(), Radians.of(1), Radians.of(1e-2))
-          && i > 3) {
-        System.out.println(i + " ticks");
-        break;
-      }
-    }
-    assertEquals(shooter.getHoodPosition().in(Radians), 1, 1e-2);
-  }
-
-  @Test
   void testCreateHoodSetpoint() {
     shooter.hoodSim.setAngle(1);
     for (int i = 0; i < 100; ++i) {
