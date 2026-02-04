@@ -108,8 +108,10 @@ public class Vision extends SubsystemBase {
     Distance averageDistance = Meters.of(0);
 
     for (var target : pose.targetsUsed) {
-      averageDistance.plus(
-          Meters.of(target.bestCameraToTarget.getTranslation().getDistance(new Translation3d())));
+      averageDistance =
+          averageDistance.plus(
+              Meters.of(
+                  target.bestCameraToTarget.getTranslation().getDistance(new Translation3d())));
     }
 
     return averageDistance.div(pose.targetsUsed.size());
