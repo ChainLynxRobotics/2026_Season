@@ -84,7 +84,6 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public IntakeSubsystem(TalonFX spinMotor, TalonFX heightMotor) {
     this.spinMotor = spinMotor;
     spinConfiguration.Slot0 = kIntakeSpinSlot0Config;
-    spinConfiguration.MotionMagic = kIntakeSpinMotionMagicConfig;
     spinMotor.getConfigurator().apply(spinConfiguration);
 
     this.heightMotor = heightMotor;
@@ -190,7 +189,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command spin() {
-    return runOnce(() -> spinMotor.setControl(SpinControl));
+    return runOnce(() -> spinMotor.setControl(spinControl));
   }
 
   public Command setHeight(IntakeHeightState state) {

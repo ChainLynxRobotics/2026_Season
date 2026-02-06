@@ -34,14 +34,12 @@ public class IntakeConstants {
   private static double kHeightS = 0;
 
   public static Slot0Configs kIntakeHeightSlot0Config =
-      new Slot0Configs()
-          .withKP(kHeightP)
-          .withKI(kHeightI)
-          .withKD(kHeightD)
-          .withKV(kHeightV)
-          .withKA(kHeightA)
-          .withKG(kHeightG)
-          .withKS(kHeightS);
+      new Slot0Configs().withKP(kHeightP).withKI(kHeightI).withKD(kHeightD)
+      //   .withKV(kHeightV)
+      //   .withKA(kHeightA)
+      //   .withKG(kHeightG)
+      //   .withKS(kHeightS)
+      ;
 
   private static double kSpinP = 1;
   private static double kSpinI = 3;
