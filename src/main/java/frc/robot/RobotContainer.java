@@ -19,7 +19,10 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Indexer.IndexerSubsystem;
+import frc.robot.subsystems.Intake.IntakeConstants.IntakeHeightState;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
+import frc.robot.subsystems.Serializer.SerializerSubsystem;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 
 @Logged
@@ -50,6 +53,10 @@ public class RobotContainer {
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(0), new TalonFX(1));
+
+  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(2));
+
+  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(3));
 
   public RobotContainer() {
     configureBindings();
@@ -100,6 +107,14 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
 
     new Trigger(() -> intakeSimJoystick.getRawButton(1)).onTrue(intake.spin());
+
+    new Trigger(() -> intakeSimJoystick.getRawButton(2))
+        .onTrue(intake.setHeight(IntakeHeightState.LOW));
+
+    new Trigger(() -> intakeSimJoystick.getRawButton(3))
+        .onTrue(intake.setHeight(IntakeHeightState.HIGH));
+
+    new Trigger(() -> intakeSimJoystick.getRawButton(4)).onTrue(indexer.spin());
   }
 
   public Command getAutonomousCommand() {
