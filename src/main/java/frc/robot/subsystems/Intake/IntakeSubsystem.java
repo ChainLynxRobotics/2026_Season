@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -15,14 +16,20 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Intake.IntakeConstants.IntakeHeightState;
+import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private TalonFX spinMotor;
   private TalonFX heightMotor;
 
-  private TalonFXConfiguration heightMotoreightConfiguration = new TalonFXConfiguration();
+  private TalonFXConfiguration heightMotorConfiguration = new TalonFXConfiguration();
   private TalonFXConfiguration spinConfiguration = new TalonFXConfiguration();
-  private VelocityVoltage SpinControl = new VelocityVoltage(kGoalIntakeSpinVelocity);
+
+  private VelocityVoltage spinControl =
+      new VelocityVoltage(
+          (kGoalIntakeSpinVelocity.in(RotationsPerSecond) / kOutputToInputSpinGearRatio));
+  private MotionMagicVoltage heightControl = new MotionMagicVoltage(0.0);
 
   private TalonFXSimState spinSimState;
   private TalonFXSimState heightSimState;
@@ -36,10 +43,10 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public IntakeSubsystem(TalonFX spinMotor, TalonFX heightMotor) {
     this.spinMotor = spinMotor;
     this.heightMotor = heightMotor;
-    heightMotoreightConfiguration.Slot0 = kIntakeHeightSlot0Config;
-    heightMotor.getConfigurator().apply(heightMotoreightConfiguration);
+    heightMotorConfiguration.Slot0 = kIntakeHeightSlot0Config;
+    heightMotorConfiguration.MotionMagic = kIntakeHeightMotionMagic;
+    heightMotor.getConfigurator().apply(heightMotorConfiguration);
     spinConfiguration.Slot0 = kIntakeSpinSlot0Config;
-    spinConfiguration.MotionMagic = kIntakeSpinMotionMagicConfig;
     spinMotor.getConfigurator().apply(spinConfiguration);
 
     spinSimState = new TalonFXSimState(spinMotor);
@@ -47,19 +54,27 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
 
     spinSim =
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, kSpinGearRatio), x44Gearbox);
+            LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, kOutputToInputSpinGearRatio),
+            x44Gearbox);
     heightSim =
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(x60GearBox, 0.001, kHeightGearRatio), x60GearBox);
+            LinearSystemId.createDCMotorSystem(x60GearBox, 0.001, kOutputToInputHeightGearRatio),
+            x60GearBox);
   }
 
   @Override
   public void simulationPeriodic() {
-    spinSimState.setSupplyVoltage(12.0);
-    spinSimState.setRawRotorPosition(this.getAngularSpinPosition());
-    spinSimState.setRotorVelocity(this.getAngularSpinVelocity());
+    spinSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
+    spinSimState.setRawRotorPosition(spinSim.getAngularPositionRotations());
+    spinSimState.setRotorVelocity(spinSim.getAngularVelocityRPM() / 60.0);
     spinSim.update(kT);
     spinSim.setInputVoltage(spinSimState.getMotorVoltage());
+
+    heightSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
+    heightSimState.setRawRotorPosition(heightSim.getAngularPositionRotations());
+    heightSimState.setRotorVelocity(heightSim.getAngularVelocityRPM() / 60.0);
+    heightSim.update(kT);
+    heightSim.setInputVoltage(heightSimState.getMotorVoltage());
   }
 
   @Logged
@@ -103,6 +118,16 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   @Logged
+  public double getSimHeightPosition() {
+    return heightSim.getAngularPositionRotations();
+  }
+
+  @Logged
+  public double getSimHeightVelocity() {
+    return heightSim.getAngularVelocityRPM() / 60.0;
+  }
+
+  @Logged
   public Angle getAngularHeightPosition() {
     return heightMotor.getPosition().getValue();
   }
@@ -112,17 +137,17 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     return heightMotor.getVelocity().getValue();
   }
 
-  public void setHeight(IntakeHeightState state) {
-    heightMotor.setPosition(state.getAngle());
-  }
-
   public Command spin() {
-    return runOnce(() -> spinMotor.setControl(SpinControl));
+    return runOnce(() -> spinMotor.setControl(spinControl));
   }
 
-  @Logged
-  public Angle getSpinReference() {
-    return (Rotations.of(spinMotor.getClosedLoopReference().getValue()));
+  public Command setHeight(IntakeHeightState state) {
+    return runOnce(
+        () -> {
+          heightMotor.setControl(
+              heightControl.withPosition(
+                  state.getAngle().in(Rotations) / kOutputToInputHeightGearRatio));
+        });
   }
 
   @Logged
