@@ -45,7 +45,7 @@ public class ShooterTest {
 
   @Test
   void testCreateHoodSetpoint() {
-    shooter.hoodSim.setAngle(1);
+    shooter.setHoodAngleInternal(Radians.of(1));
     for (int i = 0; i < 100; ++i) {
       shooter.simulationPeriodic();
       System.out.println(shooter.getHoodPosition().in(Radians));
@@ -61,7 +61,7 @@ public class ShooterTest {
 
   @Test
   void testGetHoodPosition() {
-    shooter.setHoodAngleInternal(Radians.of(1));
+    shooter.hoodSim.setAngle(1);
     for (int i = 0; i < 100; ++i) {
       shooter.simulationPeriodic();
       System.out.println(shooter.getHoodPosition().in(Radians));
