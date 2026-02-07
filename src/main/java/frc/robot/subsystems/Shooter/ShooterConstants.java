@@ -5,11 +5,13 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.epilogue.*;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
 
+@Logged
 public class ShooterConstants {
   public static final Pose3d kShooterLocation = new Pose3d();
   public static final Pose3d kHubLocation =
@@ -19,12 +21,12 @@ public class ShooterConstants {
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
-  private static final double kFlywheelS = 0.024318;
-  private static final double kFlywheelA = 0.010775;
-  private static final double kFlywheelV = 0.060084;
-  private static final double kFlywheelP = 0.074307;
-  private static final double kFlywheelI = 0;
-  private static final double kFlywheelD = 0;
+  public static final double kFlywheelS = 0.024318;
+  public static final double kFlywheelA = 0.010775;
+  public static final double kFlywheelV = 0.060084;
+  public static final double kFlywheelP = 0.074307;
+  public static final double kFlywheelI = 0;
+  public static final double kFlywheelD = 0;
   public static final double kFlywheelGearRatio = 0.5;
   private static final Slot0Configs kFlywheelSlot0Configs =
       new Slot0Configs()
