@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -27,6 +28,7 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+@Logged
 public class Vision extends SubsystemBase {
 
   private List<CamAndEstimator> cameras = new ArrayList<>();
@@ -177,6 +179,10 @@ public class Vision extends SubsystemBase {
         updateDrivetrain.accept(swervePose);
       }
     }
+  }
+
+  public Pose3d khubLoc() {
+    return kHubLocation;
   }
 
   @Override
