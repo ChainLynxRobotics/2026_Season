@@ -372,14 +372,15 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotor.setControl(request.withPosition(position));
   }
 
-  public Slot0Configs getTuneableSlot0Configs() {
-    return new Slot0Configs()
-        .withKS(tunableFlywheelS.get())
-        .withKA(tunableFlywheelA.get())
-        .withKV(tunableFlywheelV.get())
-        .withKP(tunableFlywheelP.get())
-        .withKI(tunableFlywheelI.get())
-        .withKD(tunableFlywheelD.get());
+  public double[] getTuneableSVAPID() {
+    return new double[] {
+      tunableFlywheelS.get(),
+      tunableFlywheelV.get(),
+      tunableFlywheelA.get(),
+      tunableFlywheelP.get(),
+      tunableFlywheelI.get(),
+      tunableFlywheelD.get()
+    };
   }
 
   private int timeLastBall = 0;
