@@ -33,6 +33,6 @@ public class VisionConstants {
 
 
   public static final Pose3d kHubLocation =
-      new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
+      new Pose3d(Inches.of(469.11), Inches.of(158.84), Inches.of(72), new Rotation3d()); // );
   public static Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(1.5, 1.5, 10);
 }
