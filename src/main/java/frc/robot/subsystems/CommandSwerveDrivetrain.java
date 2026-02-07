@@ -337,6 +337,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
   }
 
+  //pose passed from vision
   public void passVisionPose(VisionPose pose) {
     addVisionMeasurement(pose.pose().toPose2d(), pose.timestamp(), pose.deviation());
   }
