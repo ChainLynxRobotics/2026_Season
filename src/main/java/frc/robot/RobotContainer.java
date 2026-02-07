@@ -80,17 +80,21 @@ public class RobotContainer {
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
-                //on y button press rotate robot to angle from getAngleToHub()
+                    // on y button press rotate robot to angle from getAngleToHub()
                     new SwerveRequest.FieldCentricFacingAngle()
                         .withTargetDirection(getAngleToHub())
                         .withHeadingPID(7, 0, 0)
-                        //^This pid is vibes for now fyi
+                        // This pid is vibes for now fyi
                         .withVelocityX(
                             -joystick.getLeftY()
                                 * MaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(
-                            -joystick.getLeftX()
-                                * MaxSpeed))); // Drive left with negative X (left)));
+                        .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                        .withDeadband(MaxSpeed * 0.1)
+                        .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(
+                            DriveRequestType
+                                .OpenLoopVoltage) // Use open-loop control for drive motors
+                )); // Drive left with negative X
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick
