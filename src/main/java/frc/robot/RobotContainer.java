@@ -151,24 +151,7 @@ public class RobotContainer {
             drivetrain.applyRequest(
                 () ->
                     point.withModuleDirection(
-                        new Rotation2d(-driveJoystick.getLeftY(), -driveJoystick.getLeftX()))));
-
-    driveJoystick
-        .y()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    // on y button press rotate robot to angle from getAngleToHub()
-                    new SwerveRequest.FieldCentricFacingAngle()
-                        .withTargetDirection(getAngleToHub())
-                        .withHeadingPID(7, 0, 0)
-                        // ^This pid is vibes for now fyi
-                        .withVelocityX(
-                            -driveJoystick.getLeftY()
-                                * MaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(
-                            -driveJoystick.getLeftX()
-                                * MaxSpeed))); // Drive left with negative X (left)));
+                        new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -210,8 +193,26 @@ public class RobotContainer {
         .getAngle();
   }
 
+  public Command goToHub() {
+    return drivetrain.applyRequest(
+        () ->
+            new SwerveRequest.FieldCentricFacingAngle()
+                .withTargetDirection(getAngleToHub())
+                .withHeadingPID(7, 0, 0)
+                .withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                .withVelocityY(-joystick.getLeftX() * MaxSpeed));
+  }
+
+  public Rotation2d getAngleToHub() {
+    return new Transform2d(
+            new Pose2d(drivetrain.getState().Pose.getTranslation(), new Rotation2d()),
+            DrivetrainConstants.kHubLocation.toPose2d())
+        .getTranslation()
+        .getAngle();
+  }
+
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("0");
+    return new PathPlannerAuto("GoUP");
 
     // Simple drive forward auton
     /*
