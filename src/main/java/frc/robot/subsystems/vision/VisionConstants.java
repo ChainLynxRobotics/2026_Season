@@ -29,8 +29,6 @@ public class VisionConstants {
           List.of(
               new Transform3d(0.268, 0.19684, 0.5715, new Rotation3d(0, 0, 0))
               /*new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))*/ ));
-        //camera positions
-
 
   public static final Pose3d kHubLocation =
       new Pose3d(Inches.of(469.11), Inches.of(158.84), Inches.of(72), new Rotation3d()); // );
