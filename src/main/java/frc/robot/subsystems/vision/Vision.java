@@ -82,14 +82,15 @@ public class Vision extends SubsystemBase {
     double poseAmbiguity = 1;
     double distanceAmbiguity = 1;
 
-    for (PhotonTrackedTarget t : pose.targetsUsed) {
-      if (t.poseAmbiguity != -1 && t.poseAmbiguity < poseAmbiguity) {
-        poseAmbiguity = t.poseAmbiguity;
+    for (PhotonTrackedTarget target : pose.targetsUsed) {
+      if (target.poseAmbiguity != -1 && target.poseAmbiguity < poseAmbiguity) {
+        poseAmbiguity = target.poseAmbiguity;
       }
 
       double dist =
           Math.sqrt(
-              Math.pow(t.bestCameraToTarget.getX(), 2) + Math.pow(t.bestCameraToTarget.getY(), 2));
+              Math.pow(target.bestCameraToTarget.getX(), 2)
+                  + Math.pow(target.bestCameraToTarget.getY(), 2));
 
       if (dist < distanceAmbiguity) {
         distanceAmbiguity = dist;
