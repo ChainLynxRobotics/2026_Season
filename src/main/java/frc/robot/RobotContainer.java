@@ -87,9 +87,11 @@ public class RobotContainer {
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
+                //on y button press rotate robot to angle from getAngleToHub()
                     new SwerveRequest.FieldCentricFacingAngle()
                         .withTargetDirection(getAngleToHub())
                         .withHeadingPID(7, 0, 0)
+                        //^This pid is vibes for now fyi
                         .withVelocityX(
                             -joystick.getLeftY()
                                 * MaxSpeed) // Drive forward with negative Y (forward)
