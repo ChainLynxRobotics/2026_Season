@@ -69,7 +69,7 @@ public class ShooterConstants {
   private static final double kHoodP = 29.02;
   private static final double kHoodI = 0;
   private static final double kHoodD = 2.4127;
-  public static final double kHoodGearRatio = 17;
+  public static final double kHoodGearRatio = 34;
   private static final Slot0Configs kHoodSlot0Configs =
       new Slot0Configs()
           .withKS(kHoodS)
