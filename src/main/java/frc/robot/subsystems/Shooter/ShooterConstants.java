@@ -42,6 +42,13 @@ public class ShooterConstants {
     config.MotionMagic.MotionMagicCruiseVelocity = 250;
     config.MotionMagic.MotionMagicJerk = 75;
     config.Feedback.SensorToMechanismRatio = kFlywheelGearRatio;
+
+    // Current Limits
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 40;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = 80;
+
     return config;
   }
 
@@ -52,6 +59,13 @@ public class ShooterConstants {
     config.MotionMagic.MotionMagicCruiseVelocity = 25;
     config.MotionMagic.MotionMagicJerk = 75;
     config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
+
+    // Current Limits
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = 50;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 40;
+
     return config;
   }
 
