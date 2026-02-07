@@ -6,4 +6,5 @@ import edu.wpi.first.units.measure.*;
 
 public class Constants {
   public static final Time kDT = Seconds.of(0.02);
+  public static final boolean tuningMode = true;
 }

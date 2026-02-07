@@ -7,11 +7,14 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
+import frc.robot.utils.TunableNumber;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
@@ -49,6 +53,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected DCMotorSim hoodSim = null;
   protected TalonFXSimState hoodMotorSim;
 
+  protected TunableNumber tunableFlywheelS;
+  protected TunableNumber tunableFlywheelA;
+  protected TunableNumber tunableFlywheelV;
+  protected TunableNumber tunableFlywheelP;
+  protected TunableNumber tunableFlywheelI;
+  protected TunableNumber tunableFlywheelD;
+
   public Shooter(
       Supplier<Pose2d> drivetrainPose,
       Supplier<Pose2d> simPose,
@@ -58,6 +69,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.drivetrainPose = drivetrainPose;
     this.simPose = simPose;
     this.chassisSpeeds = chassisSpeeds;
+    this.tunableFlywheelS = new TunableNumber("tunablekS", kFlywheelS);
+    this.tunableFlywheelA = new TunableNumber("tunablekA", kFlywheelA);
+    this.tunableFlywheelV = new TunableNumber("tunablekV", kFlywheelV);
+    this.tunableFlywheelP = new TunableNumber("tunablekP", kFlywheelP);
+    this.tunableFlywheelI = new TunableNumber("tunablekI", kFlywheelI);
+    this.tunableFlywheelD = new TunableNumber("tunablekD", kFlywheelD);
 
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);
 
@@ -355,7 +372,47 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotor.setControl(request.withPosition(position));
   }
 
+  public Slot0Configs getTuneableSlot0Configs() {
+    return new Slot0Configs()
+        .withKS(tunableFlywheelS.get())
+        .withKA(tunableFlywheelA.get())
+        .withKV(tunableFlywheelV.get())
+        .withKP(tunableFlywheelP.get())
+        .withKI(tunableFlywheelI.get())
+        .withKD(tunableFlywheelD.get());
+  }
+
   private int timeLastBall = 0;
+
+  private TalonFXConfiguration generateTunableFlywheelConfig() {
+    var config =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKS(tunableFlywheelS.get())
+                    .withKA(tunableFlywheelA.get())
+                    .withKV(tunableFlywheelV.get())
+                    .withKP(tunableFlywheelP.get())
+                    .withKI(tunableFlywheelI.get())
+                    .withKD(tunableFlywheelD.get()));
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotionMagic.MotionMagicAcceleration = 500;
+    config.MotionMagic.MotionMagicCruiseVelocity = 250;
+    config.MotionMagic.MotionMagicJerk = 75;
+    config.Feedback.SensorToMechanismRatio = kFlywheelGearRatio;
+    return config;
+  }
+
+  public void detectTunableFlywheelChanges() {
+    if (tunableFlywheelS.hasChanged()
+        || tunableFlywheelA.hasChanged()
+        || tunableFlywheelV.hasChanged()
+        || tunableFlywheelP.hasChanged()
+        || tunableFlywheelI.hasChanged()
+        || tunableFlywheelD.hasChanged()) {
+      this.flywheelMotor.getConfigurator().apply(generateTunableFlywheelConfig());
+    }
+  }
 
   @Override
   public void periodic() {
@@ -370,6 +427,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     } else {
       timeLastBall += 1;
     }
+    detectTunableFlywheelChanges();
   }
 
   @Override
