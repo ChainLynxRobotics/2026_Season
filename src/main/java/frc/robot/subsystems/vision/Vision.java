@@ -76,31 +76,35 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  public boolean isToleranceTooSmall(EstimatedRobotPose pose) {
-    // outputs false if tolerance is allowed and true if tolerance is too small
-
+  public boolean isMinAmbiguityTooHigh(EstimatedRobotPose pose) {
     double poseAmbiguity = 1;
-    double distanceAmbiguity = 1;
-
     for (PhotonTrackedTarget target : pose.targetsUsed) {
       if (target.poseAmbiguity != -1 && target.poseAmbiguity < poseAmbiguity) {
         poseAmbiguity = target.poseAmbiguity;
       }
+    }
+    if (poseAmbiguity >= kAmbiguityTolerance) {
+      return true;
+    }
 
+    return false;
+  }
+
+  public boolean isMinimumDistanceTooSmall(EstimatedRobotPose pose) {
+    double minDistance = 1;
+
+    for (PhotonTrackedTarget target : pose.targetsUsed) {
       double dist =
           Math.sqrt(
               Math.pow(target.bestCameraToTarget.getX(), 2)
                   + Math.pow(target.bestCameraToTarget.getY(), 2));
 
-      if (dist < distanceAmbiguity) {
-        distanceAmbiguity = dist;
+      if (dist < minDistance) {
+        minDistance = dist;
       }
     }
 
-    if (poseAmbiguity >= kAmbiguityTolerance) {
-      return true;
-    }
-    if (distanceAmbiguity >= kDistanceTolerance) {
+    if (minDistance >= kDistanceTolerance) {
       return true;
     }
 
@@ -145,7 +149,9 @@ public class Vision extends SubsystemBase {
         EstimatedRobotPose poseResult = optionalPoseResult.get();
 
         // goes through checks to see if to discard the data
-        if (!isOnField(poseResult) || isToleranceTooSmall(poseResult)) {
+        if (!isOnField(poseResult)
+            || isMinimumDistanceTooSmall(poseResult)
+            || isMinAmbiguityTooHigh(poseResult)) {
           continue;
         }
 
