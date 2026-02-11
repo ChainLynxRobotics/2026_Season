@@ -33,11 +33,11 @@ public class Vision extends SubsystemBase {
 
   private List<CamAndEstimator> cameras = new ArrayList<>();
 
-  public Consumer<VisionPose> updateDrivetrain;
-  public Supplier<Pose2d> getSimPose;
+  private Consumer<VisionPose> updateDrivetrain;
+  private Supplier<Pose2d> getSimPose;
 
-  public VisionSystemSim visionSim;
-  public SimCameraProperties cameraProp;
+  private VisionSystemSim visionSim;
+  private SimCameraProperties cameraProp;
 
   public record CamAndEstimator(PhotonPoseEstimator estimator, PhotonCamera camera) {}
 
