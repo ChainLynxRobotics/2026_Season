@@ -179,11 +179,11 @@ public class Vision extends SubsystemBase {
         && (pose.estimatedPose.getY() < kFieldHeight.in(Units.Meters))
         && (pose.estimatedPose.getY() > 0);
   }
-
-  public Pose3d khubLoc() {
-    return kHubLocation;
-  }
-
+  /*
+    public Pose3d gethubLocation() {
+      return kHubLocation;
+    }
+  */
   @Override
   public void simulationPeriodic() {
     visionSim.update(getSimPose.get());
