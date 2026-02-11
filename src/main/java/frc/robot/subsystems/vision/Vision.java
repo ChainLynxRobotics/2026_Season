@@ -90,7 +90,7 @@ public class Vision extends SubsystemBase {
     return false;
   }
 
-  public boolean isClosestTagTooFar(EstimatedRobotPose pose) {
+  private boolean isClosestTagTooFar(EstimatedRobotPose pose) {
     double closestTagDistance = Double.MAX_VALUE;
 
     for (PhotonTrackedTarget target : pose.targetsUsed) {
@@ -111,7 +111,7 @@ public class Vision extends SubsystemBase {
     return false;
   }
 
-  public Distance getAverageDistance(EstimatedRobotPose pose) {
+  private Distance getAverageDistance(EstimatedRobotPose pose) {
     Distance averageDistance = Meters.of(0);
 
     for (var target : pose.targetsUsed) {
@@ -124,7 +124,7 @@ public class Vision extends SubsystemBase {
     return averageDistance.div(pose.targetsUsed.size());
   }
 
-  public double getAverageAmbiguity(EstimatedRobotPose pose) {
+  private double getAverageAmbiguity(EstimatedRobotPose pose) {
     double averageAmbiguity = 0;
 
     for (var target : pose.targetsUsed) {
@@ -169,12 +169,12 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  // TODO: figure out if only using estimates with one tag makes pose beter or worse 
-  public boolean usingTwoTags(EstimatedRobotPose pose) {
+  // TODO: figure out if only using estimates with one tag makes pose beter or worse
+  private boolean usingTwoTags(EstimatedRobotPose pose) {
     return (pose.targetsUsed.size() >= 2);
   }
 
-  public boolean isOnField(EstimatedRobotPose pose) {
+  private boolean isOnField(EstimatedRobotPose pose) {
     return (pose.estimatedPose.getX() < kFieldWidth.in(Units.Meters))
         && (pose.estimatedPose.getX() > 0)
         && (pose.estimatedPose.getY() < kFieldHeight.in(Units.Meters))
