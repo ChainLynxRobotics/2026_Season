@@ -36,9 +36,17 @@ public class RobotContainer {
           .withDeadband(MaxSpeed * 0.1)
           .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
           .withDriveRequestType(
+              // Use open-loop control for drive motors
               DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+  private final SwerveRequest.FieldCentricFacingAngle pointAtHub =
+      new SwerveRequest.FieldCentricFacingAngle()
+          // This pid is vibes for now fyi
+          .withHeadingPID(7, 0, 0)
+          .withDeadband(MaxSpeed * 0.1)
+          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -81,20 +89,13 @@ public class RobotContainer {
             drivetrain.applyRequest(
                 () ->
                     // on y button press rotate robot to angle from getAngleToHub()
-                    new SwerveRequest.FieldCentricFacingAngle()
+                    pointAtHub
                         .withTargetDirection(getAngleToHub())
-                        .withHeadingPID(7, 0, 0)
-                        // This pid is vibes for now fyi
                         .withVelocityX(
                             -joystick.getLeftY()
                                 * MaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(-joystick.getLeftX() * MaxSpeed)
-                        .withDeadband(MaxSpeed * 0.1)
-                        .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-                        .withDriveRequestType(
-                            DriveRequestType
-                                .OpenLoopVoltage) // Use open-loop control for drive motors
-                )); // Drive left with negative X
+                        .withVelocityY(
+                            -joystick.getLeftX() * MaxSpeed)));
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick
