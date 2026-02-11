@@ -21,7 +21,7 @@ public class VisionConstants {
   public static final double kAmbiguityTolerance = 0.25;
   public static final double kDistanceTolerance = 2.5;
   public static final double kMaxAngleTolerance = 70;
-  //TODO: kMaxAngleTolerance is not used
+  // TODO: kMaxAngleTolerance is not used
   public static final Distance kFieldHeight = Meters.of(8.07); // y
   public static final Distance kFieldWidth = Meters.of(16.54); // x
 
@@ -33,5 +33,5 @@ public class VisionConstants {
 
   public static final Pose3d kHubLocation =
       new Pose3d(Inches.of(469.11), Inches.of(158.84), Inches.of(72), new Rotation3d()); // );
-  public static Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(1.5, 1.5, 10);
+  public static final Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(1.5, 1.5, 10);
 }
