@@ -241,8 +241,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
               });
     }
-
-    // mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(fudgeLocation);
   }
 
   private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain = null;
