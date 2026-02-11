@@ -169,6 +169,7 @@ public class Vision extends SubsystemBase {
     }
   }
 
+  // TODO: figure out if only using estimates with one tag makes pose beter or worse 
   public boolean usingTwoTags(EstimatedRobotPose pose) {
     return (pose.targetsUsed.size() >= 2);
   }
