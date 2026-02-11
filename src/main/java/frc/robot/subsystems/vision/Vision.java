@@ -168,11 +168,11 @@ public class Vision extends SubsystemBase {
       }
     }
   }
-  
-    public boolean usingTwoTags(EstimatedRobotPose pose) {
-      return (pose.targetsUsed.size() >= 2);
-    }
-  
+
+  public boolean usingTwoTags(EstimatedRobotPose pose) {
+    return (pose.targetsUsed.size() >= 2);
+  }
+
   public boolean isOnField(EstimatedRobotPose pose) {
     return (pose.estimatedPose.getX() < kFieldWidth.in(Units.Meters))
         && (pose.estimatedPose.getX() > 0)
