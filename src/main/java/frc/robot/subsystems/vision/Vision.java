@@ -91,7 +91,7 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isClosestTagTooFar(EstimatedRobotPose pose) {
-    double closestTagDistance = 67;
+    double closestTagDistance = Double.MAX_VALUE;
 
     for (PhotonTrackedTarget target : pose.targetsUsed) {
       double dist =
