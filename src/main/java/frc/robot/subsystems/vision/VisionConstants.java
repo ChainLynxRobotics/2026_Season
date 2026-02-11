@@ -21,6 +21,7 @@ public class VisionConstants {
   public static final double kAmbiguityTolerance = 0.25;
   public static final double kDistanceTolerance = 2.5;
   public static final double kMaxAngleTolerance = 70;
+  //TODO: kMaxAngleTolerance is not used
   public static final Distance kFieldHeight = Meters.of(8.07); // y
   public static final Distance kFieldWidth = Meters.of(16.54); // x
 
