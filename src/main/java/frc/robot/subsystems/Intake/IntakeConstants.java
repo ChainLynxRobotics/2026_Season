@@ -34,12 +34,14 @@ public class IntakeConstants {
   private static double kHeightS = 0;
 
   public static Slot0Configs kIntakeHeightSlot0Config =
-      new Slot0Configs().withKP(kHeightP).withKI(kHeightI).withKD(kHeightD)
-      //   .withKV(kHeightV)
-      //   .withKA(kHeightA)
-      //   .withKG(kHeightG)
-      //   .withKS(kHeightS)
-      ;
+      new Slot0Configs()
+          .withKP(kHeightP)
+          .withKI(kHeightI)
+          .withKD(kHeightD)
+          .withKV(kHeightV)
+          .withKA(kHeightA)
+          .withKG(kHeightG)
+          .withKS(kHeightS);
 
   private static double kSpinP = 1;
   private static double kSpinI = 3;
@@ -49,8 +51,8 @@ public class IntakeConstants {
       new Slot0Configs().withKP(kSpinP).withKI(kSpinI).withKD(kSpinD);
 
   public enum IntakeHeightState {
-    HIGH(kIntakeHighAngle),
-    LOW(kIntakeLowAngle);
+    HIGH(kIntakeHighAngle.times(kInputToOutputHeightGearRatio)),
+    LOW(kIntakeLowAngle.times(kInputToOutputHeightGearRatio));
 
     public final Angle angle;
 
