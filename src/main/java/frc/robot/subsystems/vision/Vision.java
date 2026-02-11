@@ -90,21 +90,21 @@ public class Vision extends SubsystemBase {
     return false;
   }
 
-  public boolean isMinimumDistanceTooSmall(EstimatedRobotPose pose) {
-    double minDistance = 1;
+  public boolean isClosestTagTooFar(EstimatedRobotPose pose) {
+    double closestTagDistance = 67;
 
     for (PhotonTrackedTarget target : pose.targetsUsed) {
       double dist =
           Math.sqrt(
               Math.pow(target.bestCameraToTarget.getX(), 2)
                   + Math.pow(target.bestCameraToTarget.getY(), 2));
-
-      if (dist < minDistance) {
-        minDistance = dist;
+      //TODO: Check if this should be in 2D
+      if (dist < closestTagDistance) {
+        closestTagDistance = dist;
       }
     }
 
-    if (minDistance >= kDistanceTolerance) {
+    if (closestTagDistance >= kDistanceTolerance) {
       return true;
     }
 
