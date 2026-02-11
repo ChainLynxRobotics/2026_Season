@@ -97,8 +97,8 @@ public class Vision extends SubsystemBase {
       double dist =
           Math.sqrt(
               Math.pow(target.bestCameraToTarget.getX(), 2)
-                  + Math.pow(target.bestCameraToTarget.getY(), 2));
-      // TODO: Check if this should be in 2D
+                  + Math.pow(target.bestCameraToTarget.getY(), 2)
+                  + Math.pow(target.bestCameraToTarget.getZ(), 2));
       if (dist < closestTagDistance) {
         closestTagDistance = dist;
       }
