@@ -64,7 +64,7 @@ public class Vision extends SubsystemBase {
       cameraProp = new SimCameraProperties();
       cameraProp.setCalibration(1280, 800, Rotation2d.fromDegrees(70));
       cameraProp.setCalibError(0.25, 0.08);
-      cameraProp.setFPS(20);
+      cameraProp.setFPS(60);
       cameraProp.setAvgLatencyMs(35);
       cameraProp.setLatencyStdDevMs(5);
 
