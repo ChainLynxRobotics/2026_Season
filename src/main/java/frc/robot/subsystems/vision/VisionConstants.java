@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VisionConstants {
@@ -26,11 +25,10 @@ public class VisionConstants {
   public static final Distance kFieldHeight = Meters.of(8.07); // y
   public static final Distance kFieldWidth = Meters.of(16.54); // x
 
-  public static List<Transform3d> kCameraOffsets =
-      new ArrayList<>(
-          List.of(
-              new Transform3d(0.268, 0.19684, 0.5715, new Rotation3d(0, 0, 0))
-              /*new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))*/ ));
+  public static final List<Transform3d> kCameraOffsets =
+      List.of(
+          new Transform3d(0.268, 0.19684, 0.5715, new Rotation3d(0, 0, 0))
+          /*new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))*/ );
 
   public static Pose3d getHubLocation() {
     if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
