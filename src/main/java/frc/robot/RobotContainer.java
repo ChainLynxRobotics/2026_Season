@@ -120,7 +120,7 @@ public class RobotContainer {
     joystick.rightBumper().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     joystick.rightTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-    // Reset the field-centric heading on left bumper press.
+    // Reset the field-centric heading on left bumper press. Commented for sysId uncoment later
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     joystick
