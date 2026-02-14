@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle Shoot"
+            "pathName": "Funnel"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climb Top"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb"
           }
         }
       ]
