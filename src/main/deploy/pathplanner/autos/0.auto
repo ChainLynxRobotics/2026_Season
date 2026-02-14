@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Go up"
+            "pathName": "Climb Bottom"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb"
           }
         }
       ]

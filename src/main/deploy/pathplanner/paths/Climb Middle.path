@@ -8,20 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.5194504310344827,
-        "y": 0.7314870689655171
+        "x": 2.503512931034483,
+        "y": 0.6532974137931038
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.9690409482758628,
-        "y": 2.735096982758621
+        "x": 2.513286637931035,
+        "y": 2.5884913793103452
       },
       "prevControl": {
-        "x": 0.988588362068966,
-        "y": 1.8065948275862072
+        "x": 2.5507712924049737,
+        "y": 1.660746181080364
+      },
+      "nextControl": {
+        "x": 2.4741918103448284,
+        "y": 3.556088362068966
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.5554633620689664,
+        "y": 3.7222413793103444
+      },
+      "prevControl": {
+        "x": 1.956185344827587,
+        "y": 3.7026939655172413
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,10 +58,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Climbing",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
