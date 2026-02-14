@@ -5,11 +5,14 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.vision.Vision;
 
 @Logged
 public class RobotContainer {
@@ -32,15 +36,25 @@ public class RobotContainer {
           .withDeadband(MaxSpeed * 0.1)
           .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
           .withDriveRequestType(
+              // Use open-loop control for drive motors
               DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+  private final SwerveRequest.FieldCentricFacingAngle pointAtHub =
+      new SwerveRequest.FieldCentricFacingAngle()
+          // This pid is vibes for now fyi
+          .withHeadingPID(7, 0, 0)
+          .withDeadband(MaxSpeed * 0.1)
+          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+  public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
   public RobotContainer() {
     configureBindings();
@@ -69,6 +83,20 @@ public class RobotContainer {
     RobotModeTriggers.disabled()
         .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
+    joystick
+        .y()
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    // on y button press rotate robot to angle from getAngleToHub()
+                    pointAtHub
+                        .withTargetDirection(getAngleToHub())
+                        .withVelocityX(
+                            -joystick.getLeftY()
+                                * MaxSpeed) // Drive forward with negative Y (forward)
+                        .withVelocityY(
+                            -joystick.getLeftX() * MaxSpeed)));
+
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick
         .b()
@@ -80,15 +108,23 @@ public class RobotContainer {
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    joystick.leftBumper().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    joystick.leftTrigger().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    joystick.rightBumper().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    joystick.rightTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-    // Reset the field-centric heading on left bumper press.
-    joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    // Reset the field-centric heading on left bumper press. Commented for sysId uncoment later
+    // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public Rotation2d getAngleToHub() {
+    return new Transform2d(
+            new Pose2d(drivetrain.getState().Pose.getTranslation(), new Rotation2d()),
+            kHubLocation.toPose2d())
+        .getTranslation()
+        .getAngle();
   }
 
   public Command getAutonomousCommand() {
