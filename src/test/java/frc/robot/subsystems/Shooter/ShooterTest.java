@@ -120,4 +120,3 @@ public class ShooterTest {
             RadiansPerSecond.of(2)));
   }
 }
-}
