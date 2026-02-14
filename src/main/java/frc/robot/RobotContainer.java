@@ -212,7 +212,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("GoUP");
+    return new PathPlannerAuto("0");
 
     // Simple drive forward auton
     /*
