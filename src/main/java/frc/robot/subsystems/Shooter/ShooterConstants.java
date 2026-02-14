@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.epilogue.*;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -21,12 +22,12 @@ public class ShooterConstants {
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
-  public static final double kFlywheelS = 0.024318;
-  public static final double kFlywheelA = 0.010775;
-  public static final double kFlywheelV = 0.060084;
-  public static final double kFlywheelP = 0.074307;
-  public static final double kFlywheelI = 0;
-  public static final double kFlywheelD = 0;
+  public static final double kFlywheelS = 0.52539;
+  public static final double kFlywheelA = 0.015138;
+  public static final double kFlywheelV = 0.0675;
+  public static final double kFlywheelP = 0.1;
+  public static final double kFlywheelI = 0.1;
+  public static final double kFlywheelD = 0.01;
   public static final double kFlywheelGearRatio = 0.5;
   private static final Slot0Configs kFlywheelSlot0Configs =
       new Slot0Configs()
@@ -79,20 +80,23 @@ public class ShooterConstants {
   public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(0.023948);
   public static final DCMotor kHoodMotor = DCMotor.getKrakenX44Foc(1);
   public static final int kHoodLimitSwitchId = 0;
-  private static final double kHoodS = 0;
-  private static final double kHoodA = 0.44593;
-  private static final double kHoodV = 28.168;
-  private static final double kHoodP = 29.02;
-  private static final double kHoodI = 0;
-  private static final double kHoodD = 2.4127;
+  public static final double kHoodG = 0.06;
+  public static final double kHoodS = 0.35;
+  public static final double kHoodA = 0;
+  public static final double kHoodV = 2.2;
+  public static final double kHoodP = 0;
+  public static final double kHoodI = 0;
+  public static final double kHoodD = 0;
   public static final double kHoodGearRatio = 34;
   private static final Slot0Configs kHoodSlot0Configs =
       new Slot0Configs()
+          .withKG(kHoodG)
           .withKS(kHoodS)
           .withKA(kHoodA)
           .withKV(kHoodV)
           .withKP(kHoodP)
           .withKI(kHoodI)
-          .withKD(kHoodD);
+          .withKD(kHoodD)
+          .withGravityType(GravityTypeValue.Arm_Cosine);
   public static final TalonFXConfiguration kHoodConfig = generateHoodConfig();
 }

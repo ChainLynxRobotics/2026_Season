@@ -5,7 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -129,10 +128,18 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    operatorJoystick.a().whileTrue(shooter.hoodSysid());
-    operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
-    operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
-    operatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
+    operatorJoystick.a().whileTrue(shooter.flywheelSysid());
+    operatorJoystick.b().onTrue(shooter.setHoodAngle(Rotations.of(0.05)));
+    operatorJoystick.x().onTrue(shooter.setHoodAngle(Rotations.of(0.12)));
+    operatorJoystick.y().onTrue(shooter.setHoodAngle(Rotations.of(0.0075)).ignoringDisable(true));
+    operatorJoystick
+        .povUp()
+        .onTrue(
+            shooter
+                .runOnce(() -> shooter.zeroHoodAtAngle(Rotations.of(0.0075)))
+                .ignoringDisable(true));
+    // operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
+    // operatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
   }
 
   public Command getAutonomousCommand() {

@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
@@ -60,6 +61,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected TunableNumber tunableFlywheelI;
   protected TunableNumber tunableFlywheelD;
 
+  protected TunableNumber tunableHoodG;
+  protected TunableNumber tunableHoodS;
+  protected TunableNumber tunableHoodA;
+  protected TunableNumber tunableHoodV;
+  protected TunableNumber tunableHoodP;
+  protected TunableNumber tunableHoodI;
+  protected TunableNumber tunableHoodD;
+
   public Shooter(
       Supplier<Pose2d> drivetrainPose,
       Supplier<Pose2d> simPose,
@@ -76,11 +85,21 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.tunableFlywheelI = new TunableNumber("tunablekI", kFlywheelI);
     this.tunableFlywheelD = new TunableNumber("tunablekD", kFlywheelD);
 
+    this.tunableHoodG = new TunableNumber("tunableHoodG", kHoodG);
+    this.tunableHoodS = new TunableNumber("tunablekHoodS", kHoodS);
+    this.tunableHoodA = new TunableNumber("tunablekHoodA", kHoodA);
+    this.tunableHoodV = new TunableNumber("tunablekHoodV", kHoodV);
+    this.tunableHoodP = new TunableNumber("tunablekHoodP", kHoodP);
+    this.tunableHoodI = new TunableNumber("tunablekHoodI", kHoodI);
+    this.tunableHoodD = new TunableNumber("tunablekHoodD", kHoodD);
+
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);
 
     this.flywheelMotor = flywheelMotor;
     this.flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
     flywheelMotionMagic = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
+
+    hoodMotor.getClosedLoopReference().setUpdateFrequency(50);
 
     this.hoodMotor = hoodMotor;
     hoodMotor.getConfigurator().apply(kHoodConfig);
@@ -383,6 +402,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     };
   }
 
+  public double getClosedLoopDOutput() {
+    return flywheelMotor.getClosedLoopDerivativeOutput().getValueAsDouble();
+  }
+
   private int timeLastBall = 0;
 
   private TalonFXConfiguration generateTunableFlywheelConfig() {
@@ -404,6 +427,27 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return config;
   }
 
+  private TalonFXConfiguration generateTunableHoodConfig() {
+    var config =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKG(tunableHoodG.get())
+                    .withKS(tunableHoodS.get())
+                    .withKA(tunableHoodA.get())
+                    .withKV(tunableHoodV.get())
+                    .withKP(tunableHoodP.get())
+                    .withKI(tunableHoodI.get())
+                    .withKD(tunableHoodD.get())
+                    .withGravityType(GravityTypeValue.Arm_Cosine));
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotionMagic.MotionMagicAcceleration = 0.025;
+    config.MotionMagic.MotionMagicCruiseVelocity = 0.025;
+    config.MotionMagic.MotionMagicJerk = 75;
+    config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
+    return config;
+  }
+
   public void detectTunableFlywheelChanges() {
     if (tunableFlywheelS.hasChanged()
         || tunableFlywheelA.hasChanged()
@@ -412,6 +456,17 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         || tunableFlywheelI.hasChanged()
         || tunableFlywheelD.hasChanged()) {
       this.flywheelMotor.getConfigurator().apply(generateTunableFlywheelConfig());
+    }
+  }
+
+  public void detectTunableHoodChanges() {
+    if (tunableHoodS.hasChanged()
+        || tunableHoodA.hasChanged()
+        || tunableHoodV.hasChanged()
+        || tunableHoodP.hasChanged()
+        || tunableHoodI.hasChanged()
+        || tunableHoodD.hasChanged()) {
+      this.hoodMotor.getConfigurator().apply(generateTunableHoodConfig());
     }
   }
 
@@ -429,6 +484,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
       timeLastBall += 1;
     }
     detectTunableFlywheelChanges();
+    detectTunableHoodChanges();
   }
 
   @Override
@@ -467,5 +523,25 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 convertAngularVelocityToLinear(
                     getFlywheelVelocity().times(kEstimatedFlywheelSpeedToFuelSpeed)),
                 getHoodPosition()));
+  }
+
+  public double getFlywheelVelocityRps() {
+    return getFlywheelVelocity().in(RotationsPerSecond);
+  }
+
+  public Current getFlywheelSupplyCurrent() {
+    return flywheelMotor.getSupplyCurrent().getValue();
+  }
+
+  public Current getFlywheelStatorCurrent() {
+    return flywheelMotor.getStatorCurrent().getValue();
+  }
+
+  public void zeroHoodAtAngle(Angle angle) {
+    hoodMotor.setPosition(angle);
+  }
+
+  public double getHootPostionRotations() {
+    return getHoodPosition().in(Rotations);
   }
 }
