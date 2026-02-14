@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -48,6 +49,11 @@ public class RobotContainer {
 
   public RobotContainer() {
     NamedCommands.registerCommand("goToHub", goToHub());
+    NamedCommands.registerCommand("Climb", new PrintCommand("Implement it plz"));
+    NamedCommands.registerCommand("Shoot Balls", new PrintCommand("Implement it plz"));
+    NamedCommands.registerCommand("Stop Shoot", new PrintCommand("Implement it plz"));
+    NamedCommands.registerCommand("Scoop", new PrintCommand("Implement it plz"));
+    NamedCommands.registerCommand("Stop Scoop", new PrintCommand("Implement it plz"));
 
     configureBindings();
   }
@@ -133,7 +139,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("GoUP");
+    return new PathPlannerAuto("0");
 
     // Simple drive forward auton
     /*
