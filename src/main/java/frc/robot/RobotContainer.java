@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -114,9 +115,9 @@ public class RobotContainer {
             drivetrain.applyRequest(
                 () ->
                     point.withModuleDirection(
-                        new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+                        new Rotation2d(-driveJoystick.getLeftY(), -driveJoystick.getLeftX()))));
 
-    joystick
+    driveJoystick
         .y()
         .whileTrue(
             drivetrain.applyRequest(
@@ -127,10 +128,10 @@ public class RobotContainer {
                         .withHeadingPID(7, 0, 0)
                         // ^This pid is vibes for now fyi
                         .withVelocityX(
-                            -joystick.getLeftY()
+                            -driveJoystick.getLeftY()
                                 * MaxSpeed) // Drive forward with negative Y (forward)
                         .withVelocityY(
-                            -joystick.getLeftX()
+                            -driveJoystick.getLeftX()
                                 * MaxSpeed))); // Drive left with negative X (left)));
 
     // Run SysId routines when holding back/start and X/Y.
@@ -164,8 +165,8 @@ public class RobotContainer {
             new SwerveRequest.FieldCentricFacingAngle()
                 .withTargetDirection(getAngleToHub())
                 .withHeadingPID(7, 0, 0)
-                .withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                .withVelocityY(-joystick.getLeftX() * MaxSpeed));
+                .withVelocityX(-driveJoystick.getLeftY() * MaxSpeed)
+                .withVelocityY(-driveJoystick.getLeftX() * MaxSpeed));
   }
 
   public Rotation2d getAngleToHub() {
