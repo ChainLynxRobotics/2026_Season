@@ -72,10 +72,10 @@ public class RobotContainer {
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(0), new TalonFX(1));
+  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(11), new TalonFX(12));
 
   private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(2));
-  
+
   private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(3));
 
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
@@ -214,6 +214,7 @@ public class RobotContainer {
         .getTranslation()
         .getAngle();
   }
+
 
   public Command getAutonomousCommand() {
     return new PathPlannerAuto("0");
