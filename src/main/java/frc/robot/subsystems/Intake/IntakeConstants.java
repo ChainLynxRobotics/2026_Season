@@ -51,8 +51,8 @@ public class IntakeConstants {
       new Slot0Configs().withKP(kSpinP).withKI(kSpinI).withKD(kSpinD);
 
   public enum IntakeHeightState {
-    HIGH(kIntakeHighAngle.times(kInputToOutputHeightGearRatio)),
-    LOW(kIntakeLowAngle.times(kInputToOutputHeightGearRatio));
+    HIGH(kIntakeHighAngle),
+    LOW(kIntakeLowAngle);
 
     public final Angle angle;
 
