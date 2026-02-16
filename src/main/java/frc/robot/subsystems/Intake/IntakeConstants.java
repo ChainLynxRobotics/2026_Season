@@ -9,24 +9,24 @@ import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class IntakeConstants {
-  public static Angle kIntakeLowAngle = Degree.of(0);
-  public static Angle kIntakeHighAngle = Degree.of(124);
+  public static Angle kIntakeHighAngle = Degree.of(0);
+  public static Angle kIntakeLowAngle = Degree.of(124);
   public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(10);
   public static double kInputToOutputSpinGearRatio = 3;
   public static double kInputToOutputHeightGearRatio = 60;
   public static double kT = 0.02;
   public static double kIntakeLengthFromPivot = 0.3347841158;
 
-  public static AngularVelocity kIntakeHeightMaxVelocity = RotationsPerSecond.of(100);
+  public static AngularVelocity kIntakeHeightMaxVelocity = RotationsPerSecond.of(0.5);
   public static AngularAcceleration kIntakeHeightMaxAcceleration =
-      RotationsPerSecondPerSecond.of(100);
+      RotationsPerSecondPerSecond.of(0.5);
 
   public static MotionMagicConfigs kIntakeHeightMotionMagic =
       new MotionMagicConfigs()
           .withMotionMagicCruiseVelocity(kIntakeHeightMaxVelocity)
           .withMotionMagicAcceleration(kIntakeHeightMaxAcceleration);
 
-  private static double kHeightP = 0;
+  private static double kHeightP = 0.5;
   private static double kHeightI = 0;
   private static double kHeightD = 0;
   public static double kHeightV = 7.47;
@@ -44,25 +44,16 @@ public class IntakeConstants {
           .withKG(kHeightG)
           .withKS(kHeightS);
 
-  private static double kSpinP = 2;
-  private static double kSpinI = 0.25;
-  private static double kSpinD = 0;
-  private static double kSpinV = 0;
-  private static double kSpinA = 0;
-  private static double kSpinG = 0;
-  private static double kSpinS = 0;
+  private static double kSpinP = 1;
+  private static double kSpinI = 3;
+  private static double kSpinD = 1.5;
 
   public static Slot0Configs kIntakeSpinSlot0Config =
-      new Slot0Configs().withKP(kSpinP).withKI(kSpinI).withKD(kSpinD)
-      // .withKV(kSpinV)
-      // .withKA(kSpinA)
-      // .withKG(kSpinG)
-      // .withKS(kSpinS)
-      ;
+      new Slot0Configs().withKP(kSpinP).withKI(kSpinI).withKD(kSpinD);
 
   public enum IntakeHeightState {
-    HIGH(kIntakeHighAngle.times(kInputToOutputHeightGearRatio)),
-    LOW(kIntakeLowAngle.times(kInputToOutputHeightGearRatio));
+    HIGH(kIntakeHighAngle),
+    LOW(kIntakeLowAngle);
 
     public final Angle angle;
 
