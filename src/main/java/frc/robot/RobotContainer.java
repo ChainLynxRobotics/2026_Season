@@ -52,11 +52,11 @@ public class RobotContainer {
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(0), new TalonFX(1));
+  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(11), new TalonFX(12));
 
-  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(2));
+  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(13));
 
-  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(3));
+  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(14));
 
   public RobotContainer() {
     configureBindings();
@@ -114,7 +114,7 @@ public class RobotContainer {
     new Trigger(() -> intakeSimJoystick.getRawButton(3))
         .onTrue(intake.setHeight(IntakeHeightState.HIGH));
 
-    new Trigger(() -> intakeSimJoystick.getRawButton(4)).onTrue(indexer.spin());
+    new Trigger(() -> intakeSimJoystick.getRawButton(4)).onTrue(serializer.spin());
   }
 
   public Command getAutonomousCommand() {
