@@ -80,12 +80,12 @@ public class ShooterConstants {
   public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(0.023948);
   public static final DCMotor kHoodMotor = DCMotor.getKrakenX44Foc(1);
   public static final int kHoodLimitSwitchId = 0;
-  public static final double kHoodG = 0.06;
-  public static final double kHoodS = 0.35;
-  public static final double kHoodA = 0;
-  public static final double kHoodV = 2.2;
-  public static final double kHoodP = 0;
-  public static final double kHoodI = 0;
+  public static final double kHoodG = 0.3;
+  public static final double kHoodS = 0.8;
+  public static final double kHoodA = 0.01;
+  public static final double kHoodV = 1.25;
+  public static final double kHoodP = 50;
+  public static final double kHoodI = 0.5;
   public static final double kHoodD = 0;
   public static final double kHoodGearRatio = 34;
   private static final Slot0Configs kHoodSlot0Configs =
@@ -97,6 +97,7 @@ public class ShooterConstants {
           .withKP(kHoodP)
           .withKI(kHoodI)
           .withKD(kHoodD)
-          .withGravityType(GravityTypeValue.Arm_Cosine);
+          .withGravityType(GravityTypeValue.Arm_Cosine)
+          .withGravityArmPositionOffset(Degrees.of(-20));
   public static final TalonFXConfiguration kHoodConfig = generateHoodConfig();
 }

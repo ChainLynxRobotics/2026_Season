@@ -9,7 +9,7 @@ import static frc.robot.utils.RobotMath.*;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -26,6 +26,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -251,6 +252,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         .withName("Shooter control");
   }
 
+  public Command sinHoodTest() {
+    return run(() -> setHoodAngleInternal(sinHoodMath()));
+  }
+
+  public Angle sinHoodMath() {
+    return Degrees.of(Math.sin(Timer.getTimestamp()) * 18 + 27);
+  }
+
   /**
    * @param velocity The velocity to set the flywheel to
    * @return The command
@@ -376,7 +385,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     flywheelMotor.setControl(new VoltageOut(voltage));
   }
 
-  final MotionMagicVoltage request = new MotionMagicVoltage(0).withEnableFOC(true);
+  final MotionMagicExpoVoltage request = new MotionMagicExpoVoltage(0).withEnableFOC(true);
   /**
    * @param position Position to set the hood to
    * @return Command to run
@@ -441,9 +450,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                     .withKD(tunableHoodD.get())
                     .withGravityType(GravityTypeValue.Arm_Cosine));
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotionMagic.MotionMagicAcceleration = 0.025;
-    config.MotionMagic.MotionMagicCruiseVelocity = 0.025;
-    config.MotionMagic.MotionMagicJerk = 75;
+    config.MotionMagic.MotionMagicAcceleration = 1000;
+    // config.MotionMagic.MotionMagicCruiseVelocity = 1;
+    config.MotionMagic.MotionMagicExpo_kV = tunableFlywheelV.get() * kHoodGearRatio * 1.5;
+    config.MotionMagic.MotionMagicExpo_kA = tunableFlywheelA.get() * kHoodGearRatio * 1.5;
     config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
     return config;
   }
@@ -460,7 +470,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public void detectTunableHoodChanges() {
-    if (tunableHoodS.hasChanged()
+    if (tunableHoodG.hasChanged()
+        || tunableHoodS.hasChanged()
         || tunableHoodA.hasChanged()
         || tunableHoodV.hasChanged()
         || tunableHoodP.hasChanged()

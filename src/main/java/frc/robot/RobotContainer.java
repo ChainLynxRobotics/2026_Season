@@ -129,15 +129,14 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
 
     operatorJoystick.a().whileTrue(shooter.flywheelSysid());
-    operatorJoystick.b().onTrue(shooter.setHoodAngle(Rotations.of(0.05)));
-    operatorJoystick.x().onTrue(shooter.setHoodAngle(Rotations.of(0.12)));
-    operatorJoystick.y().onTrue(shooter.setHoodAngle(Rotations.of(0.0075)).ignoringDisable(true));
+    operatorJoystick.b().onTrue(shooter.setHoodAngle(Degrees.of(40)));
+    // operatorJoystick.b().whileTrue(shooter.sinHoodTest());
+    operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(10)));
+    operatorJoystick.y().onTrue(shooter.setHoodAngle(Degrees.of(5)).ignoringDisable(true));
     operatorJoystick
         .povUp()
         .onTrue(
-            shooter
-                .runOnce(() -> shooter.zeroHoodAtAngle(Rotations.of(0.0075)))
-                .ignoringDisable(true));
+            shooter.runOnce(() -> shooter.zeroHoodAtAngle(Degrees.of(5))).ignoringDisable(true));
     // operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
     // operatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
   }
