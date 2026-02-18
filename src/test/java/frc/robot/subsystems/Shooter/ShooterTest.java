@@ -8,10 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.RobotController;
-import frc.robot.subsystems.Shooter.Shooter;
-import org.junit.jupiter.api.BeforeEach;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;

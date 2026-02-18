@@ -69,7 +69,7 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   @Logged
-  private Voltage getIndexerVoltage() {
+  public Voltage getIndexerVoltage() {
     return indexerMotor.getMotorVoltage().getValue();
   }
 
