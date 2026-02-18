@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class SerializerSubsystem extends SubsystemBase {
@@ -30,9 +29,9 @@ public class SerializerSubsystem extends SubsystemBase {
   private DCMotorSim serializerSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
 
-      private VoltageOut voltageOut = new VoltageOut(0.0);
+  private VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true);
 
-private SysIdRoutine serializerSysIdRoutine =
+  private SysIdRoutine serializerSysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(Volts.of(0.5).per(Seconds), Volts.of(2), Seconds.of(6)),
           new SysIdRoutine.Mechanism(
@@ -53,7 +52,7 @@ private SysIdRoutine serializerSysIdRoutine =
     serializerSimState = serializerMotor.getSimState();
   }
 
-     public void runSysId() {
+  public void runSysId() {
     run(() -> serializerSysIdRoutine.dynamic(Direction.kForward))
         .andThen(serializerSysIdRoutine.dynamic(Direction.kReverse))
         .andThen(serializerSysIdRoutine.quasistatic(Direction.kForward))
@@ -96,6 +95,6 @@ private SysIdRoutine serializerSysIdRoutine =
 
   @Logged
   public Command spin() {
-    return runOnce(() -> serializerMotor.setControl(serializerControl));
+    return runOnce(() -> serializerMotor.setControl(voltageOut.withOutput(Volts.of(6))));
   }
 }

@@ -68,15 +68,17 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandXboxController driveJoystick = new CommandXboxController(0);
+
+  private final CommandXboxController operatorController = new CommandXboxController(1);
   private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(11), new TalonFX(12));
+  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(15), new TalonFX(16));
 
-  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(2));
+  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17));
 
-  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(3));
+  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(18));
 
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
@@ -195,6 +197,10 @@ public class RobotContainer {
     operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
     operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
     operatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
+
+    operatorController.a().onTrue(intake.spin());
+    operatorController.b().onTrue(serializer.spin());
+    operatorController.x().onTrue(indexer.spin());
   }
 
   public Command goToHub() {
