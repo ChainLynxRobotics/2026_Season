@@ -55,9 +55,9 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
           false,
           IntakeHeightState.HIGH.getAngle().in(Radians));
 
-              private VoltageOut voltageOut = new VoltageOut(0.0);
+  private VoltageOut voltageOut = new VoltageOut(0.0);
 
-private SysIdRoutine spinSysIdRoutine =
+  private SysIdRoutine spinSysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(Volts.of(0.5).per(Seconds), Volts.of(2), Seconds.of(6)),
           new SysIdRoutine.Mechanism(
@@ -69,7 +69,7 @@ private SysIdRoutine spinSysIdRoutine =
                       .voltage(this.getSpinVoltage()),
               this));
 
-              private SysIdRoutine heightSysIdRoutine =
+  private SysIdRoutine heightSysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(Volts.of(0.5).per(Seconds), Volts.of(2), Seconds.of(6)),
           new SysIdRoutine.Mechanism(
@@ -97,14 +97,14 @@ private SysIdRoutine spinSysIdRoutine =
     heightSimState = heightMotor.getSimState();
   }
 
-       public void runHeightSysId() {
+  public void runHeightSysId() {
     run(() -> heightSysIdRoutine.dynamic(Direction.kForward))
         .andThen(heightSysIdRoutine.dynamic(Direction.kReverse))
         .andThen(heightSysIdRoutine.quasistatic(Direction.kForward))
         .andThen(heightSysIdRoutine.quasistatic(Direction.kReverse));
   }
 
-       public void runSpinSysId() {
+  public void runSpinSysId() {
     run(() -> spinSysIdRoutine.dynamic(Direction.kForward))
         .andThen(spinSysIdRoutine.dynamic(Direction.kReverse))
         .andThen(spinSysIdRoutine.quasistatic(Direction.kForward))
@@ -115,7 +115,7 @@ private SysIdRoutine spinSysIdRoutine =
     return spinMotor.getMotorVoltage().getValue();
   }
 
-    private Voltage getHeightVoltage() {
+  private Voltage getHeightVoltage() {
     return heightMotor.getMotorVoltage().getValue();
   }
 

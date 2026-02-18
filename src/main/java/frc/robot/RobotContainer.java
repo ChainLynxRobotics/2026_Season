@@ -48,15 +48,17 @@ public class RobotContainer {
 
   private final CommandXboxController joystick = new CommandXboxController(0);
 
+  private final CommandXboxController operatorController = new CommandXboxController(1);
+
   private final Joystick intakeSimJoystick = new Joystick(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(11), new TalonFX(12));
+  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(15), new TalonFX(16));
 
-  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(13));
+  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17));
 
-  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(14));
+  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(18));
 
   public RobotContainer() {
     configureBindings();
@@ -115,6 +117,10 @@ public class RobotContainer {
         .onTrue(intake.setHeight(IntakeHeightState.HIGH));
 
     new Trigger(() -> intakeSimJoystick.getRawButton(4)).onTrue(serializer.spin());
+
+    operatorController.a().onTrue(intake.spin());
+    operatorController.b().onTrue(serializer.spin());
+    operatorController.x().onTrue(indexer.spin());
   }
 
   public Command getAutonomousCommand() {
