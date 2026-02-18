@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class IndexerSubsystem extends SubsystemBase {
@@ -30,9 +29,9 @@ public class IndexerSubsystem extends SubsystemBase {
   private DCMotorSim indexerSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
 
-      private VoltageOut voltageOut = new VoltageOut(0.0);
+  private VoltageOut voltageOut = new VoltageOut(0.0);
 
-      private SysIdRoutine indexerSysIdRoutine =
+  private SysIdRoutine indexerSysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(Volts.of(0.5).per(Seconds), Volts.of(2), Seconds.of(6)),
           new SysIdRoutine.Mechanism(
@@ -53,7 +52,7 @@ public class IndexerSubsystem extends SubsystemBase {
     indexerSimState = indexerMotor.getSimState();
   }
 
-   public void runSysId() {
+  public void runSysId() {
     run(() -> indexerSysIdRoutine.dynamic(Direction.kForward))
         .andThen(indexerSysIdRoutine.dynamic(Direction.kReverse))
         .andThen(indexerSysIdRoutine.quasistatic(Direction.kForward))
