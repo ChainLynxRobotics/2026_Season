@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.kCanBus;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -57,8 +58,8 @@ public class RobotContainer {
           () -> drivetrain.getState().Pose,
           drivetrain::getSimPose,
           () -> drivetrain.getState().Speeds,
-          new TalonFX(ShooterConstants.kFlywheelCANId),
-          new TalonFX(ShooterConstants.kHoodCANId));
+          new TalonFX(ShooterConstants.kFlywheelCANId, kCanBus),
+          new TalonFX(ShooterConstants.kHoodCANId, kCanBus));
 
   public RobotContainer() {
     configureBindings();
@@ -74,20 +75,21 @@ public class RobotContainer {
   private void configureBindings() {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
-    drivetrain.setDefaultCommand(
-        // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        -driveJoystick.getLeftY()
-                            * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        -driveJoystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -driveJoystick.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
+    // drivetrain.setDefaultCommand(
+    //     // Drivetrain will execute this command periodically
+    //     drivetrain.applyRequest(
+    //         () ->
+    //             drive
+    //                 .withVelocityX(
+    //                     -driveJoystick.getLeftY()
+    //                         * MaxSpeed) // Drive forward with negative Y (forward)
+    //                 .withVelocityY(
+    //                     -driveJoystick.getLeftX() * MaxSpeed) // Drive left with negative X
+    // (left)
+    //                 .withRotationalRate(
+    //                     -driveJoystick.getRightX()
+    //                         * MaxAngularRate) // Drive counterclockwise with negative X (left)
+    //         ));
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
@@ -128,11 +130,19 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    operatorJoystick.a().whileTrue(shooter.flywheelSysid());
-    operatorJoystick.b().onTrue(shooter.setHoodAngle(Degrees.of(40)));
-    // operatorJoystick.b().whileTrue(shooter.sinHoodTest());
+    operatorJoystick.a().whileTrue(shooter.sinFlywheelTest());
+
+    operatorJoystick.b().whileTrue(shooter.sinHoodTest());
+
     operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(10)));
     operatorJoystick.y().onTrue(shooter.setHoodAngle(Degrees.of(5)).ignoringDisable(true));
+    operatorJoystick.rightBumper().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(40)));
+    operatorJoystick
+        .leftBumper()
+        .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(0)).ignoringDisable(true));
+    operatorJoystick.povDown().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(60)));
+    operatorJoystick.povLeft().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(80)));
+    operatorJoystick.povRight().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(100)));
     operatorJoystick
         .povUp()
         .onTrue(

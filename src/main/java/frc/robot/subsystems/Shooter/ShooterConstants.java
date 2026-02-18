@@ -11,10 +11,12 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
+import org.dyn4j.geometry.Vector2;
 
 @Logged
 public class ShooterConstants {
   public static final Pose3d kShooterLocation = new Pose3d();
+  public static final Vector2 kShooterLocationVector = new Vector2();
   public static final Pose3d kHubLocation =
       new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
 
@@ -22,12 +24,12 @@ public class ShooterConstants {
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
-  public static final double kFlywheelS = 0.52539;
-  public static final double kFlywheelA = 0.015138;
-  public static final double kFlywheelV = 0.0675;
-  public static final double kFlywheelP = 0.1;
-  public static final double kFlywheelI = 0.1;
-  public static final double kFlywheelD = 0.01;
+  public static final double kFlywheelS = 0.18;
+  public static final double kFlywheelA = 0.01;
+  public static final double kFlywheelV = 0.06325;
+  public static final double kFlywheelP = 0.2;
+  public static final double kFlywheelI = 0.555;
+  public static final double kFlywheelD = 0.0;
   public static final double kFlywheelGearRatio = 0.5;
   private static final Slot0Configs kFlywheelSlot0Configs =
       new Slot0Configs()
@@ -80,12 +82,12 @@ public class ShooterConstants {
   public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(0.023948);
   public static final DCMotor kHoodMotor = DCMotor.getKrakenX44Foc(1);
   public static final int kHoodLimitSwitchId = 0;
-  public static final double kHoodG = 0.3;
-  public static final double kHoodS = 0.8;
+  public static final double kHoodG = 0.25;
+  public static final double kHoodS = 0.4;
   public static final double kHoodA = 0.01;
   public static final double kHoodV = 1.25;
-  public static final double kHoodP = 50;
-  public static final double kHoodI = 0.5;
+  public static final double kHoodP = 25;
+  public static final double kHoodI = 10;
   public static final double kHoodD = 0;
   public static final double kHoodGearRatio = 34;
   private static final Slot0Configs kHoodSlot0Configs =

@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
 import frc.robot.utils.TunableNumber;
 import java.util.function.Supplier;
+import org.dyn4j.geometry.Vector2;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
@@ -46,7 +47,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected final Supplier<ChassisSpeeds> chassisSpeeds;
 
   protected final TalonFX flywheelMotor;
-  protected final VelocityVoltage flywheelMotionMagic;
+  protected final VelocityVoltage flywheelVelocityRequest;
   protected DCMotorSim flywheelSim = null;
   protected TalonFXSimState flywheelMotorSim;
 
@@ -98,7 +99,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     this.flywheelMotor = flywheelMotor;
     this.flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
-    flywheelMotionMagic = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
+    flywheelVelocityRequest = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
 
     hoodMotor.getClosedLoopReference().setUpdateFrequency(50);
 
@@ -199,14 +200,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return The speed and position of the shooter to shoot into the hub.
    */
   public ShooterSetpoint getCurrentSetpoint() {
-    var shooterFieldLocation = convertRobotPoseToShooterPose(new Pose3d(drivetrainPose.get()));
-    var shooterDistance =
-        Meters.of(
-            Math.sqrt(
-                Math.pow(shooterFieldLocation.getX() - kHubLocation.getX(), 2)
-                    + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
-
-    return ShooterLUT.getSpeedAndRotation(shooterDistance);
+    return ShooterLUT.getSpeedAndRotation(getDistance());
   }
 
   /**
@@ -222,11 +216,16 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
   }
 
+  public Pose3d getRelativeHubLocation() {
+    Pose3d pose = convertRobotPoseToShooterPose(new Pose3d(drivetrainPose.get()));
+    return kHubLocation.relativeTo(pose);
+  }
+
   /**
    * @param velocity Flywheel surface velocity
    * @return Flywheel angular velocity
    */
-  public AngularVelocity convertLinearVelocityToAngula(LinearVelocity velocity) {
+  public AngularVelocity convertLinearVelocityToAngular(LinearVelocity velocity) {
     return RotationsPerSecond.of(
         velocity.in(MetersPerSecond) / (kFlywheelRadius.in(Meters) * 2 * Math.PI));
   }
@@ -246,18 +245,35 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Command runShooterControl() {
     return run(() -> {
           setFlywheelVelocityInternal(
-              convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed()));
+              convertLinearVelocityToAngular(getCurrentSetpoint().flywheelSurfaceSpeed()));
           setHoodAngleInternal(getCurrentSetpoint().rotation());
         })
         .withName("Shooter control");
   }
 
+  // public Command runMovingShooterControl() {
+  //   return run(() -> {
+  //     setFlywheelVelocityInternal(
+  //
+  // convertLinearVelocityToAngular(getCurrentSetpoint().flywheelSurfaceSpeed().minus(MetersPerSecond.of(calculateRobotShooterVelocity().y))));
+  //         setHoodAngleInternal(getCurrentSetpoint().rotation());
+  //   });
+  // }
+
   public Command sinHoodTest() {
     return run(() -> setHoodAngleInternal(sinHoodMath()));
   }
 
+  public Command sinFlywheelTest() {
+    return run(() -> setFlywheelVelocityInternal(sinFlywheelMath()));
+  }
+
   public Angle sinHoodMath() {
     return Degrees.of(Math.sin(Timer.getTimestamp()) * 18 + 27);
+  }
+
+  public AngularVelocity sinFlywheelMath() {
+    return RotationsPerSecond.of(Math.sin(Timer.getTimestamp()) * 20 + 40);
   }
 
   /**
@@ -272,7 +288,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return The target angular velocity for the flywheel
    */
   public AngularVelocity targetVelocity() {
-    return convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed());
+    return convertLinearVelocityToAngular(getCurrentSetpoint().flywheelSurfaceSpeed());
   }
 
   /**
@@ -286,7 +302,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @param velocity The target velocity of the flywheel
    */
   protected void setFlywheelVelocityInternal(AngularVelocity velocity) {
-    flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity));
+    flywheelMotor.setControl(flywheelVelocityRequest.withVelocity(velocity));
   }
 
   /**
@@ -304,6 +320,21 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     command.addRequirements(this);
     return command;
   }
+
+  // public Vector2 calculateShooterVelocityAngular() {
+  //   Vector2 angularVelocity = new Vector2(chassisSpeeds.get().omegaRadiansPerSecond, 0);
+  //   return angularVelocity.cross(kShooterLocationVector);
+  // }
+
+  public Vector2 calculateShooterVelocityTranslational() {
+    return new Vector2(
+        chassisSpeeds.get().vxMetersPerSecond, chassisSpeeds.get().vyMetersPerSecond);
+  }
+
+  // public Vector2 calculateRobotShooterVelocity() {
+  //   return new
+  // Vector2(calculateShooterVelocityAngular().add(calculateShooterVelocityTranslational()));
+  // }
 
   /**
    * @return The hoods position setpoint
@@ -552,7 +583,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotor.setPosition(angle);
   }
 
-  public double getHootPostionRotations() {
+  public double getHoodPostionRotations() {
     return getHoodPosition().in(Rotations);
   }
 }
