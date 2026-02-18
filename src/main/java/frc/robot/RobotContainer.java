@@ -67,8 +67,6 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private final CommandXboxController driveJoystick = new CommandXboxController(0);
-
   private final CommandXboxController operatorController = new CommandXboxController(1);
   private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
