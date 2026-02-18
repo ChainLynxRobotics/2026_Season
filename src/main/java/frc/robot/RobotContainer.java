@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -26,13 +27,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.Indexer.IndexerSubsystem;
-import frc.robot.subsystems.Intake.IntakeConstants.IntakeHeightState;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Serializer.SerializerSubsystem;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.Swerve.DrivetrainConstants;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
@@ -181,20 +182,10 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    new Trigger(() -> intakeSimJoystick.getRawButton(1)).onTrue(intake.spin());
-
-    new Trigger(() -> intakeSimJoystick.getRawButton(2))
-        .onTrue(intake.setHeight(IntakeHeightState.LOW));
-
-    new Trigger(() -> intakeSimJoystick.getRawButton(3))
-        .onTrue(intake.setHeight(IntakeHeightState.HIGH));
-
-    new Trigger(() -> intakeSimJoystick.getRawButton(4)).onTrue(indexer.spin());
-
     operatorJoystick.a().whileTrue(shooter.hoodSysid());
     operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
     operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
-    operatorJoystick.y().onTrue(runOnce(shooter::shootSimulatedProjectile));
+    operatorJoystick.y().onTrue(Commands.runOnce(shooter::shootSimulatedProjectile));
 
     operatorController.a().onTrue(intake.spin());
     operatorController.b().onTrue(serializer.spin());
@@ -218,7 +209,6 @@ public class RobotContainer {
         .getTranslation()
         .getAngle();
   }
-
 
   public Command getAutonomousCommand() {
     return new PathPlannerAuto("0");
