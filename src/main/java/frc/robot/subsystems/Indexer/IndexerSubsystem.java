@@ -25,7 +25,8 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class IndexerSubsystem extends SubsystemBase {
   private TalonFX indexerMotor;
   private TalonFXConfiguration indexerConfiguration = new TalonFXConfiguration();
-  private VelocityVoltage indexerControl = new VelocityVoltage(RotationsPerSecond.of(0)).withEnableFOC(true);
+  private VelocityVoltage indexerControl =
+      new VelocityVoltage(RotationsPerSecond.of(0)).withEnableFOC(true);
 
   private DCMotor x44Gearbox = DCMotor.getKrakenX44Foc(1);
   private TalonFXSimState indexerSimState;
@@ -62,7 +63,8 @@ public class IndexerSubsystem extends SubsystemBase {
     this.tunableIndexerP = new TunableNumber("indexerP", kIndexerP);
     this.tunableIndexerI = new TunableNumber("indexerI", kIndexerI);
     this.tunableIndexerD = new TunableNumber("indexerD", kIndexerD);
-    this.tunableIndexerVelocity = new TunableNumber("indexerVelocity", kGoalIndexerVelocity.in(RotationsPerSecond));
+    this.tunableIndexerVelocity =
+        new TunableNumber("indexerVelocity", kGoalIndexerVelocity.in(RotationsPerSecond));
   }
 
   public void runSysId() {
@@ -134,7 +136,10 @@ public class IndexerSubsystem extends SubsystemBase {
 
   @Logged
   public Command spin() {
-    return runOnce(() -> indexerMotor.setControl(indexerControl.withVelocity(RotationsPerSecond.of(tunableIndexerVelocity.get()))));
+    return runOnce(
+        () ->
+            indexerMotor.setControl(
+                indexerControl.withVelocity(RotationsPerSecond.of(tunableIndexerVelocity.get()))));
   }
 
   @Logged
@@ -143,6 +148,7 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public Command stopSpin() {
-    return runOnce(() -> indexerMotor.setControl(indexerControl.withVelocity(RotationsPerSecond.of(0))));
+    return runOnce(
+        () -> indexerMotor.setControl(indexerControl.withVelocity(RotationsPerSecond.of(0))));
   }
 }

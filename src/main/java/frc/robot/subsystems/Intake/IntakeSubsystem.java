@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Intake.IntakeConstants.IntakeHeightState;
 import frc.robot.utils.TunableNumber;
-
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 @Logged
@@ -211,7 +210,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     heightMotor.close();
   }
 
-    private TalonFXConfiguration generateTunableIntakeSpinConfig() {
+  private TalonFXConfiguration generateTunableIntakeSpinConfig() {
     TalonFXConfiguration config =
         new TalonFXConfiguration()
             .withSlot0(
