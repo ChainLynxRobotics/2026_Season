@@ -25,10 +25,10 @@ public class ShooterLUT {
     map.put(1.3, 27.0);
     map.put(1.5, 27.1);
     map.put(1.7, 27.2);
-    map.put(2.0, 27.6);
+    map.put(2.0, 60.0);
     map.put(2.25, 27.85);
     map.put(2.5, 28.15);
-    map.put(3.0, 28.75);
+    map.put(2.88, 70.0);
     map.put(3.5, 29.25);
     map.put(4.0, 30.0);
     map.put(4.5, 30.5);
@@ -55,11 +55,11 @@ public class ShooterLUT {
     map.put(1.66758, 80.26);
     map.put(1.77933, 79.69);
     map.put(1.89109, 79.23);
-    map.put(2.00285, 78.7);
+    map.put(2.00285, 23.0);
     map.put(2.11461, 78.1);
     map.put(2.22636, 77.55);
     map.put(2.33812, 77.05);
-    map.put(2.89691, 74.56);
+    map.put(2.89691, 25.0);
     map.put(3.00867, 74.2);
     map.put(3.56736, 71.65);
     map.put(4.12624, 69.28);

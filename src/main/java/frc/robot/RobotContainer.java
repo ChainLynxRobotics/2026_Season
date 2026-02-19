@@ -5,8 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.kCanBusBlinky;
-import static frc.robot.Constants.kCanBusRio;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -21,9 +19,12 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.Indexer.IndexerSubsystem;
@@ -71,13 +72,11 @@ public class RobotContainer {
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio));
+  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(15), new TalonFX(16));
 
-  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17, kCanBusBlinky));
+  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17));
 
-  private final SerializerSubsystem serializer =
-      new SerializerSubsystem(new TalonFX(18, kCanBusBlinky));
+  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(18));
 
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
@@ -86,8 +85,8 @@ public class RobotContainer {
           () -> drivetrain.getState().Pose,
           drivetrain::getSimPose,
           () -> drivetrain.getState().Speeds,
-          new TalonFX(ShooterConstants.kFlywheelCANId, kCanBusBlinky),
-          new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky));
+          new TalonFX(ShooterConstants.kFlywheelCANId),
+          new TalonFX(ShooterConstants.kHoodCANId));
 
   public RobotContainer() {
     NamedCommands.registerCommand("goToHub", goToHub());
@@ -98,7 +97,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand("Implement it plz"));
 
     configureBindings();
-    shooter.setDefaultCommand(shooter.runShooterControl());
+    // shooter.setDefaultCommand(shooter.runShooterControl());
     if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
   }
 
@@ -182,10 +181,10 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    // operatorJoystick.a().whileTrue(shooter.hoodSysid());
-    // operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
-    // operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
-    // operatorJoystick.y().onTrue(Commands.runOnce(shooter::shootSimulatedProjectile));
+    operatorJoystick.a().whileTrue(shooter.hoodSysid());
+    operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
+    operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
+    operatorJoystick.y().onTrue(Commands.runOnce(shooter::shootSimulatedProjectile));
 
     operatorController.a().onTrue(intake.spin());
     operatorController.b().onTrue(serializer.spin());
