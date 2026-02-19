@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
 import frc.robot.utils.TunableNumber;
 import java.util.function.Supplier;
+import org.dyn4j.geometry.Vector2;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
@@ -302,6 +303,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     Command command = run(() -> hoodMotor.set(0.01)).until(hoodLimitSwitch::get);
     command.addRequirements(this);
     return command;
+  }
+
+  public Vector2 calculateShooterVelocityTranslational() {
+    return new Vector2(
+        chassisSpeeds.get().vxMetersPerSecond, chassisSpeeds.get().vyMetersPerSecond);
   }
 
   /**
