@@ -5,6 +5,8 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.kCanBusBlinky;
+import static frc.robot.Constants.kCanBusRio;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -61,11 +63,13 @@ public class RobotContainer {
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final IntakeSubsystem intake = new IntakeSubsystem(new TalonFX(15), new TalonFX(16));
+  private final IntakeSubsystem intake =
+      new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio));
 
-  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17));
+  private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17, kCanBusBlinky));
 
-  private final SerializerSubsystem serializer = new SerializerSubsystem(new TalonFX(18));
+  private final SerializerSubsystem serializer =
+      new SerializerSubsystem(new TalonFX(18, kCanBusBlinky));
 
   @Logged(name = "Shooter")
   public final Shooter shooter =
@@ -73,8 +77,8 @@ public class RobotContainer {
           () -> drivetrain.getState().Pose,
           drivetrain::getSimPose,
           () -> drivetrain.getState().Speeds,
-          new TalonFX(ShooterConstants.kFlywheelCANId),
-          new TalonFX(ShooterConstants.kHoodCANId));
+          new TalonFX(ShooterConstants.kFlywheelCANId, kCanBusBlinky),
+          new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky));
 
   public RobotContainer() {
     NamedCommands.registerCommand("goToHub", goToHub());
