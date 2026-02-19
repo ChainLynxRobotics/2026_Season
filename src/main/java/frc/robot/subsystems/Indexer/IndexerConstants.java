@@ -6,12 +6,15 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class IndexerConstants {
+  public static final double kIndexerId = 17;
   public static AngularVelocity kGoalIndexerVelocity = RotationsPerSecond.of(10.0);
   public static double kT = 0.02;
 
-  private static double kIndexerP = 1;
-  private static double kIndexerI = 3;
-  private static double kIndexerD = 1.5;
+  public static double kIndexerGearRatio = 15 / 12;
+
+  public static double kIndexerP = 1;
+  public static double kIndexerI = 3;
+  public static double kIndexerD = 1.5;
 
   public static Slot0Configs kIntakeIndexerSlot0Config =
       new Slot0Configs().withKP(kIndexerP).withKI(kIndexerI).withKD(kIndexerD);

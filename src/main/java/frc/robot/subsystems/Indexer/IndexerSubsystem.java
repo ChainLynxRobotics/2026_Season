@@ -3,9 +3,12 @@ package frc.robot.subsystems.Indexer;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -16,12 +19,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.utils.TunableNumber;
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
 public class IndexerSubsystem extends SubsystemBase {
   private TalonFX indexerMotor;
   private TalonFXConfiguration indexerConfiguration = new TalonFXConfiguration();
-  private VoltageOut indexerControl = new VoltageOut(Volts.of(0));
+  private VelocityVoltage indexerControl = new VelocityVoltage(RotationsPerSecond.of(0)).withEnableFOC(true);
 
   private DCMotor x44Gearbox = DCMotor.getKrakenX44Foc(1);
   private TalonFXSimState indexerSimState;
@@ -42,6 +46,11 @@ public class IndexerSubsystem extends SubsystemBase {
                       .voltage(this.getIndexerVoltage()),
               this));
 
+  private TunableNumber tunableIndexerP;
+  private TunableNumber tunableIndexerI;
+  private TunableNumber tunableIndexerD;
+  private TunableNumber tunableIndexerVelocity;
+
   public IndexerSubsystem(TalonFX indexerMotor) {
     this.indexerMotor = indexerMotor;
 
@@ -49,6 +58,11 @@ public class IndexerSubsystem extends SubsystemBase {
     indexerMotor.getConfigurator().apply(indexerConfiguration);
 
     indexerSimState = indexerMotor.getSimState();
+
+    this.tunableIndexerP = new TunableNumber("indexerP", kIndexerP);
+    this.tunableIndexerI = new TunableNumber("indexerI", kIndexerI);
+    this.tunableIndexerD = new TunableNumber("indexerD", kIndexerD);
+    this.tunableIndexerVelocity = new TunableNumber("indexerVelocity", kGoalIndexerVelocity.in(RotationsPerSecond));
   }
 
   public void runSysId() {
@@ -65,6 +79,32 @@ public class IndexerSubsystem extends SubsystemBase {
     indexerSim.update(kT);
     indexerSimState.setRawRotorPosition(indexerSim.getAngularPositionRotations());
     indexerSimState.setRotorVelocity(indexerSim.getAngularVelocityRPM() / 60.0);
+  }
+
+  private TalonFXConfiguration generateTunableIndexerConfig() {
+    TalonFXConfiguration config =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(tunableIndexerP.get())
+                    .withKI(tunableIndexerI.get())
+                    .withKD(tunableIndexerD.get()));
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.Feedback.SensorToMechanismRatio = kIndexerGearRatio;
+    return config;
+  }
+
+  public void detectTunableIndexerChanges() {
+    if (tunableIndexerP.hasChanged()
+        || tunableIndexerI.hasChanged()
+        || tunableIndexerD.hasChanged()) {
+      this.indexerMotor.getConfigurator().apply(generateTunableIndexerConfig());
+    }
+  }
+
+  @Override
+  public void periodic() {
+    detectTunableIndexerChanges();
   }
 
   @Logged
@@ -94,10 +134,15 @@ public class IndexerSubsystem extends SubsystemBase {
 
   @Logged
   public Command spin() {
-    return runOnce(() -> indexerMotor.setControl(indexerControl.withOutput(Volts.of(10))));
+    return runOnce(() -> indexerMotor.setControl(indexerControl.withVelocity(RotationsPerSecond.of(tunableIndexerVelocity.get()))));
+  }
+
+  @Logged
+  public Command spin10V() {
+    return runOnce(() -> indexerMotor.setControl(new VoltageOut(Volts.of(10))));
   }
 
   public Command stopSpin() {
-    return runOnce(() -> indexerMotor.setControl(indexerControl.withOutput(Volts.of(0))));
+    return runOnce(() -> indexerMotor.setControl(indexerControl.withVelocity(RotationsPerSecond.of(0))));
   }
 }

@@ -7,8 +7,11 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public class IntakeConstants {
+  public static final double kIntakeSpinId = 15;
+  public static final double kIntakeHeightId = 16;
   public static Angle kIntakeHighAngle = Degree.of(0);
   public static Angle kIntakeLowAngle = Degree.of(124);
   public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(10);
@@ -26,13 +29,13 @@ public class IntakeConstants {
           .withMotionMagicCruiseVelocity(kIntakeHeightMaxVelocity)
           .withMotionMagicAcceleration(kIntakeHeightMaxAcceleration);
 
-  private static double kHeightP = 0.5;
-  private static double kHeightI = 0;
-  private static double kHeightD = 0;
+  public static double kHeightP = 0.5;
+  public static double kHeightI = 0;
+  public static double kHeightD = 0;
   public static double kHeightV = 7.47;
   public static double kHeightA = 0.02;
-  private static double kHeightG = 0.09;
-  private static double kHeightS = 0;
+  public static double kHeightG = 0.09;
+  public static double kHeightS = 0;
 
   public static Slot0Configs kIntakeHeightSlot0Config =
       new Slot0Configs()
@@ -44,9 +47,11 @@ public class IntakeConstants {
           .withKG(kHeightG)
           .withKS(kHeightS);
 
-  private static double kSpinP = 1;
-  private static double kSpinI = 3;
-  private static double kSpinD = 1.5;
+  public static final Voltage kSpinVoltage = Volts.of(5);
+
+  public static double kSpinP = 1;
+  public static double kSpinI = 3;
+  public static double kSpinD = 1.5;
 
   public static Slot0Configs kIntakeSpinSlot0Config =
       new Slot0Configs().withKP(kSpinP).withKI(kSpinI).withKD(kSpinD);

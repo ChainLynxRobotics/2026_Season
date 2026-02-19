@@ -3,11 +3,14 @@ package frc.robot.subsystems.Intake;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -20,8 +23,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Intake.IntakeConstants.IntakeHeightState;
+import frc.robot.utils.TunableNumber;
+
 import org.ironmaple.simulation.motorsims.SimulatedBattery;
 
+@Logged
 public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private double setpoint = 0;
 
@@ -40,6 +46,10 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private DCMotor x44Gearbox = DCMotor.getKrakenX44Foc(1);
   private DCMotor x60GearBox = DCMotor.getKrakenX60Foc(1);
 
+  private TunableNumber tunableIntakeSpinP;
+  private TunableNumber tunableIntakeSpinI;
+  private TunableNumber tunableIntakeSpinD;
+
   private DCMotorSim spinSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
 
@@ -55,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
           false,
           IntakeHeightState.HIGH.getAngle().in(Radians));
 
-  private VoltageOut voltageOut = new VoltageOut(0.0);
+  private VoltageOut voltageOut = new VoltageOut(0.0).withEnableFOC(true);
 
   private SysIdRoutine spinSysIdRoutine =
       new SysIdRoutine(
@@ -85,6 +95,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.spinMotor = spinMotor;
     spinConfiguration.Slot0 = kIntakeSpinSlot0Config;
     spinConfiguration.Feedback.SensorToMechanismRatio = kInputToOutputSpinGearRatio;
+    spinConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     spinMotor.getConfigurator().apply(spinConfiguration);
 
     this.heightMotor = heightMotor;
@@ -95,6 +106,10 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
 
     spinSimState = spinMotor.getSimState();
     heightSimState = heightMotor.getSimState();
+
+    this.tunableIntakeSpinP = new TunableNumber("IntakeSpinP", kSpinP);
+    this.tunableIntakeSpinI = new TunableNumber("IntakeSpinI", kSpinI);
+    this.tunableIntakeSpinD = new TunableNumber("IntakeSpinD", kSpinD);
   }
 
   public void runHeightSysId() {
@@ -134,57 +149,48 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     heightSimState.setRotorVelocity(heightSim.getVelocityRadPerSec() / 2 / Math.PI);
   }
 
-  @Logged
   public double getSpinPosition() {
     return spinMotor.getPosition().getValueAsDouble();
   }
 
-  @Logged
   public double getSpinVelocity() {
     return spinMotor.getVelocity().getValueAsDouble();
   }
 
-  @Logged
   public double getSimSpinPosition() {
     return spinSim.getAngularPositionRotations();
   }
 
-  @Logged
   public double getSimSpinVelocity() {
     return spinSim.getAngularVelocityRPM() / 60.0;
   }
 
-  @Logged
   public double getHeightPosition() {
     return heightMotor.getPosition().getValueAsDouble();
   }
 
-  @Logged
   public double getHeightVelocity() {
     return heightMotor.getVelocity().getValueAsDouble();
   }
 
-  @Logged
   public double getSimHeightPosition() {
     return heightSim.getAngleRads() / 2 / Math.PI;
   }
 
-  @Logged
   public double getSimHeightVelocity() {
     return heightSim.getVelocityRadPerSec() / 2 / Math.PI;
   }
 
-  @Logged
   public double getSetpoint() {
     return setpoint;
   }
 
   public Command spin() {
-    return runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(-5))));
+    return runOnce(() -> spinMotor.setControl(voltageOut.withOutput(kSpinVoltage)));
   }
 
   public Command stopSpin() {
-    return runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(0))));
+    return runOnce(() -> spinMotor.setControl(voltageOut.withOutput(0)));
   }
 
   public Command setHeight(IntakeHeightState state) {
@@ -195,7 +201,6 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
         });
   }
 
-  @Logged
   public double getHeightReference() {
     return heightMotor.getClosedLoopReference().getValue();
   }
@@ -204,5 +209,32 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public void close() {
     spinMotor.close();
     heightMotor.close();
+  }
+
+    private TalonFXConfiguration generateTunableIntakeSpinConfig() {
+    TalonFXConfiguration config =
+        new TalonFXConfiguration()
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(tunableIntakeSpinP.get())
+                    .withKI(tunableIntakeSpinI.get())
+                    .withKD(tunableIntakeSpinD.get()));
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.Feedback.SensorToMechanismRatio = kInputToOutputSpinGearRatio;
+    return config;
+  }
+
+  public void detectTunableIntakeSpinChanges() {
+    if (tunableIntakeSpinP.hasChanged()
+        || tunableIntakeSpinI.hasChanged()
+        || tunableIntakeSpinD.hasChanged()) {
+      this.spinMotor.getConfigurator().apply(generateTunableIntakeSpinConfig());
+    }
+  }
+
+  @Override
+  public void periodic() {
+    detectTunableIntakeSpinChanges();
   }
 }

@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Serializer.SerializerConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -21,7 +22,7 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class SerializerSubsystem extends SubsystemBase {
   private TalonFX serializerMotor;
   private TalonFXConfiguration serializerConfiguration = new TalonFXConfiguration();
-  private VoltageOut serializerControl = new VoltageOut(Volts.of(0));
+  private VelocityVoltage serializerControl = new VelocityVoltage(RotationsPerSecond.of(0));
 
   private DCMotor x44Gearbox = DCMotor.getKrakenX44Foc(1);
   private TalonFXSimState serializerSimState;
