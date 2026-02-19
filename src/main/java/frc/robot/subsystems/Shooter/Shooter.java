@@ -60,6 +60,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected TunableNumber tunableFlywheelI;
   protected TunableNumber tunableFlywheelD;
 
+  protected TunableNumber tunableHoodAngle;
+  protected TunableNumber tunableShooterSpeed;
+
   public Shooter(
       Supplier<Pose2d> drivetrainPose,
       Supplier<Pose2d> simPose,
@@ -75,6 +78,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.tunableFlywheelP = new TunableNumber("tunablekP", kFlywheelP);
     this.tunableFlywheelI = new TunableNumber("tunablekI", kFlywheelI);
     this.tunableFlywheelD = new TunableNumber("tunablekD", kFlywheelD);
+
+    this.tunableHoodAngle = new TunableNumber("Hood angle", 5);
+    this.tunableShooterSpeed = new TunableNumber("Flywheel speed", 0);
 
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);
 
@@ -224,12 +230,18 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return Command that automatically controls shooting into the hub
    */
   public Command runShooterControl() {
+
     return run(() -> {
-          setFlywheelVelocityInternal(
-              convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed()));
-          setHoodAngleInternal(getCurrentSetpoint().rotation());
+          setFlywheelVelocityInternal(RotationsPerSecond.of(tunableShooterSpeed.get()));
+          setHoodAngleInternal(Degrees.of(tunableHoodAngle.get()));
         })
-        .withName("Shooter control");
+        .withName("Shooter Tuning");
+    // return run(() -> {
+    //       setFlywheelVelocityInternal(
+    //           convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed()));
+    //       setHoodAngleInternal(getCurrentSetpoint().rotation());
+    //     })
+    //     .withName("Shooter control");
   }
 
   /**
