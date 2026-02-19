@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected final Supplier<ChassisSpeeds> chassisSpeeds;
 
   protected final TalonFX flywheelMotor;
-  protected final VelocityVoltage flywheelMotionMagic;
+  protected final VelocityVoltage flywheelVelocityRequest;
   protected DCMotorSim flywheelSim = null;
   protected TalonFXSimState flywheelMotorSim;
 
@@ -103,7 +103,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     this.flywheelMotor = flywheelMotor;
     this.flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
-    flywheelMotionMagic = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
+    flywheelVelocityRequest = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
 
     this.hoodMotor = hoodMotor;
     hoodMotor.getConfigurator().apply(kHoodConfig);
@@ -287,7 +287,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @param velocity The target velocity of the flywheel
    */
   protected void setFlywheelVelocityInternal(AngularVelocity velocity) {
-    flywheelMotor.setControl(flywheelMotionMagic.withVelocity(velocity));
+    flywheelMotor.setControl(flywheelVelocityRequest.withVelocity(velocity));
   }
 
   /**
