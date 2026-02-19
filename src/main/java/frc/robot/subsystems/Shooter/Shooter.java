@@ -218,6 +218,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                 + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
   }
 
+  public Pose3d getRelativeHubLocation() {
+    Pose3d pose = convertRobotPoseToShooterPose(new Pose3d(drivetrainPose.get()));
+    return kHubLocation.relativeTo(pose);
+  }
+
   /**
    * @param velocity Flywheel surface velocity
    * @return Flywheel angular velocity
