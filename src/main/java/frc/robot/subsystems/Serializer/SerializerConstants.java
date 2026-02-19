@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class SerializerConstants {
+  public static final double kSerializerId = 18;
   public static AngularVelocity kGoalSerializerVelocity = RotationsPerSecond.of(10.0);
   public static double kT = 0.02;
 
