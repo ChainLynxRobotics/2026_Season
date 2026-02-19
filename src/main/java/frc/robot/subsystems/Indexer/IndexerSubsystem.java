@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -24,7 +23,7 @@ import org.ironmaple.simulation.motorsims.SimulatedBattery;
 public class IndexerSubsystem extends SubsystemBase {
   private TalonFX indexerMotor;
   private TalonFXConfiguration indexerConfiguration = new TalonFXConfiguration();
-  private VelocityVoltage indexerControl = new VelocityVoltage(kGoalIndexerVelocity);
+  private VoltageOut indexerControl = new VoltageOut(Volts.of(0));
 
   private DCMotor x44Gearbox = DCMotor.getKrakenX44Foc(1);
   private TalonFXSimState indexerSimState;
@@ -102,6 +101,10 @@ public class IndexerSubsystem extends SubsystemBase {
 
   @Logged
   public Command spin() {
-    return runOnce(() -> indexerMotor.setControl(indexerControl));
+    return runOnce(() -> indexerMotor.setControl(indexerControl.withOutput(Volts.of(10))));
+  }
+
+  public Command stopSpin() {
+    return runOnce(() -> indexerMotor.setControl(indexerControl.withOutput(Volts.of(0))));
   }
 }
