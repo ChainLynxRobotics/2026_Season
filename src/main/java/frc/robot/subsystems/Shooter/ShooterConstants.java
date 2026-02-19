@@ -22,12 +22,12 @@ public class ShooterConstants {
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
-  public static final double kFlywheelS = 0.024318;
-  public static final double kFlywheelA = 0.010775;
-  public static final double kFlywheelV = 0.060084;
-  public static final double kFlywheelP = 0.074307;
-  public static final double kFlywheelI = 0;
-  public static final double kFlywheelD = 0;
+  public static final double kFlywheelS = 0.18;
+  public static final double kFlywheelA = 0.01;
+  public static final double kFlywheelV = 0.06325;
+  public static final double kFlywheelP = 0.2;
+  public static final double kFlywheelI = 0.555;
+  public static final double kFlywheelD = 0.0;
   public static final double kFlywheelGearRatio = 0.5;
   private static final Slot0Configs kFlywheelSlot0Configs =
       new Slot0Configs()
@@ -80,13 +80,13 @@ public class ShooterConstants {
   public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(0.023948);
   public static final DCMotor kHoodMotor = DCMotor.getKrakenX44Foc(1);
   public static final int kHoodLimitSwitchId = 0;
-  protected static final double kHoodG = 0;
-  protected static final double kHoodS = 0;
-  protected static final double kHoodA = 0.44593;
-  protected static final double kHoodV = 28.168;
-  protected static final double kHoodP = 29.02;
-  protected static final double kHoodI = 0;
-  protected static final double kHoodD = 2.4127;
+  protected static final double kHoodG = 0.25;
+  protected static final double kHoodS = 0.4;
+  protected static final double kHoodA = 0.01;
+  protected static final double kHoodV = 1.25;
+  protected static final double kHoodP = 25;
+  protected static final double kHoodI = 10;
+  protected static final double kHoodD = 0;
   protected static final double kHoodGearRatio = 34;
   private static final Slot0Configs kHoodSlot0Configs =
       new Slot0Configs()
@@ -97,6 +97,7 @@ public class ShooterConstants {
           .withKP(kHoodP)
           .withKI(kHoodI)
           .withKD(kHoodD)
-          .withGravityType(GravityTypeValue.Arm_Cosine);
+          .withGravityType(GravityTypeValue.Arm_Cosine)
+          .withGravityArmPositionOffset(Degrees.of(-20));
   public static final TalonFXConfiguration kHoodConfig = generateHoodConfig();
 }
