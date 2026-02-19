@@ -377,6 +377,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public Command setHoodAngle(Angle position) {
     return runOnce(() -> setHoodAngleInternal(position));
   }
+
+  public Command zeroHood() {
+    return runOnce(() -> hoodMotor.setPosition(Degrees.of(5)));
+  }
   /**
    * @param position Position to set the hood to
    */

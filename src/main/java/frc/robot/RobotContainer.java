@@ -187,6 +187,7 @@ public class RobotContainer {
     // operatorController.a().onTrue(intake.spin());
     // operatorController.b().onTrue(serializer.spin());
     driveJoystick.x().onTrue(intake.spin()).onFalse(intake.stopSpin());
+    driveJoystick.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
   }
 
   public Command goToHub() {
