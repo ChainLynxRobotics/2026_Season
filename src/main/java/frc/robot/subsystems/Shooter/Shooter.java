@@ -7,15 +7,12 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -425,42 +422,24 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   private int timeLastBall = 0;
 
   private TalonFXConfiguration generateTunableFlywheelConfig() {
-    var config =
-        new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKS(tunableFlywheelS.get())
-                    .withKA(tunableFlywheelA.get())
-                    .withKV(tunableFlywheelV.get())
-                    .withKP(tunableFlywheelP.get())
-                    .withKI(tunableFlywheelI.get())
-                    .withKD(tunableFlywheelD.get()));
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotionMagic.MotionMagicAcceleration = 500;
-    config.MotionMagic.MotionMagicCruiseVelocity = 250;
-    config.MotionMagic.MotionMagicJerk = 75;
-    config.Feedback.SensorToMechanismRatio = kFlywheelGearRatio;
-    return config;
+    return generateFlywheelConfig(
+        tunableFlywheelS.get(),
+        tunableFlywheelA.get(),
+        tunableFlywheelV.get(),
+        tunableFlywheelP.get(),
+        tunableFlywheelI.get(),
+        tunableFlywheelD.get());
   }
 
   private TalonFXConfiguration generateTunableHoodConfig() {
-    var config =
-        new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKG(tunableHoodG.get())
-                    .withKS(tunableHoodS.get())
-                    .withKA(tunableHoodA.get())
-                    .withKV(tunableHoodV.get())
-                    .withKP(tunableHoodP.get())
-                    .withKI(tunableHoodI.get())
-                    .withKD(tunableHoodD.get())
-                    .withGravityType(GravityTypeValue.Arm_Cosine));
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotionMagic.MotionMagicExpo_kV = tunableFlywheelV.get() * kHoodGearRatio * 1.5;
-    config.MotionMagic.MotionMagicExpo_kA = tunableFlywheelA.get() * kHoodGearRatio * 1.5;
-    config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
-    return config;
+    return generateHoodConfig(
+        tunableHoodG.get(),
+        tunableHoodS.get(),
+        tunableHoodA.get(),
+        tunableHoodV.get(),
+        tunableHoodP.get(),
+        tunableHoodI.get(),
+        tunableHoodD.get());
   }
 
   public void detectTunableFlywheelChanges() {
