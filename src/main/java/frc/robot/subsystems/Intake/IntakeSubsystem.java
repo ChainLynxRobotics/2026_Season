@@ -180,7 +180,11 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command spin() {
-    return runOnce(() -> spinMotor.setControl(spinControl));
+    return runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(-5))));
+  }
+
+  public Command stopSpin() {
+    return runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(0))));
   }
 
   public Command setHeight(IntakeHeightState state) {
