@@ -202,14 +202,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return The speed and position of the shooter to shoot into the hub.
    */
   public ShooterSetpoint getCurrentSetpoint() {
-    var shooterFieldLocation = convertRobotPoseToShooterPose(new Pose3d(drivetrainPose.get()));
-    var shooterDistance =
-        Meters.of(
-            Math.sqrt(
-                Math.pow(shooterFieldLocation.getX() - kHubLocation.getX(), 2)
-                    + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
-
-    return ShooterLUT.getSpeedAndRotation(shooterDistance);
+    return ShooterLUT.getSpeedAndRotation(getDistance());
   }
 
   /**
