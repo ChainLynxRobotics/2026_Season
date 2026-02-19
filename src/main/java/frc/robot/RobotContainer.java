@@ -21,11 +21,9 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.Indexer.IndexerSubsystem;
@@ -100,7 +98,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand("Implement it plz"));
 
     configureBindings();
-    // shooter.setDefaultCommand(shooter.runShooterControl());
+    shooter.setDefaultCommand(shooter.runShooterControl());
     if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
   }
 
@@ -184,10 +182,10 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    operatorJoystick.a().whileTrue(shooter.hoodSysid());
-    operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
-    operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
-    operatorJoystick.y().onTrue(Commands.runOnce(shooter::shootSimulatedProjectile));
+    // operatorJoystick.a().whileTrue(shooter.hoodSysid());
+    // operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
+    // operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
+    // operatorJoystick.y().onTrue(Commands.runOnce(shooter::shootSimulatedProjectile));
 
     operatorController.a().onTrue(intake.spin());
     operatorController.b().onTrue(serializer.spin());
