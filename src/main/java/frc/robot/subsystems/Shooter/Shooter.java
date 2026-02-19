@@ -222,7 +222,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @param velocity Flywheel surface velocity
    * @return Flywheel angular velocity
    */
-  public AngularVelocity convertLinearVelocityToAngula(LinearVelocity velocity) {
+  public AngularVelocity convertLinearVelocityToAngular(LinearVelocity velocity) {
     return RotationsPerSecond.of(
         velocity.in(MetersPerSecond) / (kFlywheelRadius.in(Meters) * 2 * Math.PI));
   }
@@ -266,7 +266,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return The target angular velocity for the flywheel
    */
   public AngularVelocity targetVelocity() {
-    return convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed());
+    return convertLinearVelocityToAngular(getCurrentSetpoint().flywheelSurfaceSpeed());
   }
 
   /**
