@@ -9,7 +9,7 @@ import static frc.robot.utils.RobotMath.*;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -386,7 +386,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     flywheelMotor.setControl(new VoltageOut(voltage));
   }
 
-  final MotionMagicVoltage request = new MotionMagicVoltage(0).withEnableFOC(true);
+  final MotionMagicExpoVoltage request = new MotionMagicExpoVoltage(0).withEnableFOC(true);
 
   /**
    * @param position Position to set the hood to
@@ -453,9 +453,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                     .withKD(tunableHoodD.get())
                     .withGravityType(GravityTypeValue.Arm_Cosine));
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotionMagic.MotionMagicAcceleration = 0.025;
-    config.MotionMagic.MotionMagicCruiseVelocity = 0.025;
-    config.MotionMagic.MotionMagicJerk = 75;
+    config.MotionMagic.MotionMagicExpo_kV = tunableFlywheelV.get() * kHoodGearRatio * 1.5;
+    config.MotionMagic.MotionMagicExpo_kA = tunableFlywheelA.get() * kHoodGearRatio * 1.5;
     config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
     return config;
   }
