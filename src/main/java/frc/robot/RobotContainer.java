@@ -20,11 +20,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Indexer.IndexerSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
@@ -89,7 +87,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand("Implement it plz"));
 
     configureBindings();
-    // shooter.setDefaultCommand(shooter.runShooterControl());
+    shooter.setDefaultCommand(shooter.runShooterControl());
     if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
   }
 
@@ -132,54 +130,63 @@ public class RobotContainer {
                         new Rotation2d(-driveJoystick.getLeftY(), -driveJoystick.getLeftX()))));
 
     driveJoystick
+        .rightBumper()
+        .onTrue(indexer.spin().andThen(serializer.spin()))
+        .onFalse(indexer.stopSpin().andThen(serializer.stopSpin()));
+
+    driveJoystick
         .y()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    // on y button press rotate robot to angle from getAngleToHub()
-                    new SwerveRequest.FieldCentricFacingAngle()
-                        .withTargetDirection(getAngleToHub())
-                        .withHeadingPID(7, 0, 0)
-                        // ^This pid is vibes for now fyi
-                        .withVelocityX(
-                            -driveJoystick.getLeftY()
-                                * MaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(
-                            -driveJoystick.getLeftX()
-                                * MaxSpeed))); // Drive left with negative X (left)));
+        .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(60)))
+        .onFalse(shooter.setFlywheelVelocity(RotationsPerSecond.of(0)));
+    // driveJoystick
+    //     .y()
+    //     .whileTrue(
+    //         drivetrain.applyRequest(
+    //             () ->
+    //                 // on y button press rotate robot to angle from getAngleToHub()
+    //                 new SwerveRequest.FieldCentricFacingAngle()
+    //                     .withTargetDirection(getAngleToHub())
+    //                     .withHeadingPID(7, 0, 0)
+    //                     // ^This pid is vibes for now fyi
+    //                     .withVelocityX(
+    //                         -driveJoystick.getLeftY()
+    //                             * MaxSpeed) // Drive forward with negative Y (forward)
+    //                     .withVelocityY(
+    //                         -driveJoystick.getLeftX()
+    //                             * MaxSpeed))); // Drive left with negative X (left)));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    driveJoystick
-        .back()
-        .and(driveJoystick.y())
-        .whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    driveJoystick
-        .back()
-        .and(driveJoystick.x())
-        .whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    driveJoystick
-        .start()
-        .and(driveJoystick.y())
-        .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    driveJoystick
-        .start()
-        .and(driveJoystick.x())
-        .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    // driveJoystick
+    //     .back()
+    //     .and(driveJoystick.y())
+    //     .whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    // driveJoystick
+    //     .back()
+    //     .and(driveJoystick.x())
+    //     .whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    // driveJoystick
+    //     .start()
+    //     .and(driveJoystick.y())
+    //     .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    // driveJoystick
+    //     .start()
+    //     .and(driveJoystick.x())
+    //     .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // Reset the field-centric heading on left bumper press.
     driveJoystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    operatorJoystick.a().whileTrue(shooter.hoodSysid());
-    operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
-    operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
-    operatorJoystick.y().onTrue(Commands.runOnce(shooter::shootSimulatedProjectile));
+    // operatorJoystick.a().whileTrue(shooter.hoodSysid());
+    // operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
+    // operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
+    // operatorJoystick.y().onTrue(Commands.runOnce(shooter::shootSimulatedProjectile));
 
-    operatorController.a().onTrue(intake.spin());
-    operatorController.b().onTrue(serializer.spin());
-    operatorController.x().onTrue(indexer.spin());
+    // operatorController.a().onTrue(intake.spin());
+    // operatorController.b().onTrue(serializer.spin());
+    driveJoystick.x().onTrue(intake.spin()).onFalse(intake.stopSpin());
   }
 
   public Command goToHub() {
