@@ -38,7 +38,8 @@ import org.ironmaple.simulation.SimulatedArena;
 public class RobotContainer {
 
   private double MaxSpeed =
-      1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      0.25
+          * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
       RotationsPerSecond.of(0.75)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -87,7 +88,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand("Implement it plz"));
 
     configureBindings();
-    shooter.setDefaultCommand(shooter.runShooterControl());
+
     if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
   }
 
@@ -129,9 +130,7 @@ public class RobotContainer {
                     point.withModuleDirection(
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-    driveController
-        .povLeft()
-        .whileTrue(drivetrain.applyRequest(() -> drive.withVelocityY(-0.1 * MaxSpeed)));
+    driveController.povLeft().toggleOnTrue(shooter.runShooterControl());
 
     driveController
         .rightBumper()
@@ -140,8 +139,13 @@ public class RobotContainer {
 
     driveController.y().onTrue(indexer.spin10V()).onFalse(indexer.stopSpin());
 
-    driveController.a().onTrue(serializer.spin()).onFalse(serializer.stopSpin());
-
+    driveController.a().toggleOnTrue(goToHub());
+    driveController
+        .povRight()
+        .onTrue(
+            shooter
+                .setFlywheelVelocity(RotationsPerSecond.of(0))
+                .andThen(shooter.setHoodAngle(Degrees.of(5))));
     driveController
         .povDown()
         .onTrue(
@@ -149,7 +153,7 @@ public class RobotContainer {
                 () ->
                     drivetrain.resetPose(
                         new Pose2d(
-                            Meters.of(3.407), Meters.of(2.620), new Rotation2d(Degrees.of(45))))));
+                            Meters.of(3.547), Meters.of(4.051), new Rotation2d(Degrees.of(0))))));
 
     // Reset the field-centric heading on left bumper press.
     driveController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -204,15 +208,15 @@ public class RobotContainer {
     return drivetrain.applyRequest(
         () ->
             new SwerveRequest.FieldCentricFacingAngle()
-                .withTargetDirection(getAngleToHub())
-                .withHeadingPID(7, 0, 0)
+                .withTargetDirection(getAngleToHub().plus(new Rotation2d(Degrees.of(-90))))
+                .withHeadingPID(4, 0, 0)
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
 
   public Rotation2d getAngleToHub() {
     return new Transform2d(
-            new Pose2d(drivetrain.getState().Pose.getTranslation(), new Rotation2d()),
+            shooter.convertRobotPoseToShooterPose(drivetrain.getState().Pose),
             DrivetrainConstants.kHubLocation.toPose2d())
         .getTranslation()
         .getAngle();

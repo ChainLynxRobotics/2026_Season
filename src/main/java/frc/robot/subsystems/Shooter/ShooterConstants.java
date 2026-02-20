@@ -14,7 +14,8 @@ import edu.wpi.first.units.measure.*;
 
 @Logged
 public class ShooterConstants {
-  public static final Pose3d kShooterLocation = new Pose3d();
+  public static final Pose3d kShooterLocation =
+      new Pose3d(Inches.of(-8.5), Inches.of(-8.5), Inches.of(0), new Rotation3d(0, 0, 90));
   public static final Pose3d kHubLocation =
       new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
 

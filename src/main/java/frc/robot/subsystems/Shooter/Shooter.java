@@ -17,6 +17,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -193,7 +194,17 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return Shooter pose
    */
   public Pose3d convertRobotPoseToShooterPose(Pose3d robotPose) {
-    return kShooterLocation.transformBy(new Transform3d(new Pose3d(), robotPose));
+    return kShooterLocation.transformBy(new Transform3d(kShooterLocation, robotPose));
+  }
+
+  /**
+   * @param robotPose Robot pose
+   * @return Shooter pose
+   */
+  public Pose2d convertRobotPoseToShooterPose(Pose2d robotPose) {
+    return kShooterLocation
+        .toPose2d()
+        .transformBy(new Transform2d(kShooterLocation.toPose2d(), robotPose));
   }
 
   /**
@@ -207,13 +218,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return Distance from the shooter to the hub
    */
   public Distance getDistance() {
-    var shooterFieldLocation =
-        kShooterLocation.transformBy(
-            new Transform3d(new Pose3d(), new Pose3d(drivetrainPose.get())));
     return Meters.of(
         Math.sqrt(
-            Math.pow(shooterFieldLocation.getX() - kHubLocation.getX(), 2)
-                + Math.pow(shooterFieldLocation.getY() - kHubLocation.getY(), 2)));
+            Math.pow(getRelativeHubLocation().getX(), 2)
+                + Math.pow(getRelativeHubLocation().getY(), 2)));
   }
 
   public Pose3d getRelativeHubLocation() {
@@ -244,17 +252,18 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    */
   public Command runShooterControl() {
 
-    return run(() -> {
-          setFlywheelVelocityInternal(RotationsPerSecond.of(tunableShooterSpeed.get()));
-          setHoodAngleInternal(Degrees.of(tunableHoodAngle.get()));
-        })
-        .withName("Shooter Tuning");
     // return run(() -> {
-    // setFlywheelVelocityInternal(
-    // convertLinearVelocityToAngula(getCurrentSetpoint().flywheelSurfaceSpeed()));
-    // setHoodAngleInternal(getCurrentSetpoint().rotation());
-    // })
-    // .withName("Shooter control");
+    //       setFlywheelVelocityInternal(RotationsPerSecond.of(tunableShooterSpeed.get()));
+    //       setHoodAngleInternal(Degrees.of(tunableHoodAngle.get()));
+    //     })
+    //     .withName("Shooter Tuning");
+    return run(() -> {
+          setFlywheelVelocityInternal(
+              RotationsPerSecond.of(
+                  getCurrentSetpoint().flywheelSurfaceSpeed().in(MetersPerSecond)));
+          setHoodAngleInternal(getCurrentSetpoint().rotation());
+        })
+        .withName("Shooter control");
   }
 
   /**
