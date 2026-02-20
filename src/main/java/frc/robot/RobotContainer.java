@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -127,13 +128,30 @@ public class RobotContainer {
                 () ->
                     point.withModuleDirection(
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
-    
-    driveController.y().whileTrue(drivetrain.applyRequest(() -> drive.withVelocityY(-0.1 * MaxSpeed)));
 
-    operatorController
-        .rightBumper()
+    driveController.y()
+        .whileTrue(drivetrain.applyRequest(() -> drive.withVelocityY(-0.1 * MaxSpeed)));
+
+    operatorController.rightBumper()
         .onTrue(indexer.spin().andThen(serializer.spin()))
         .onFalse(indexer.stopSpin().andThen(serializer.stopSpin()));
+
+    operatorController.y()
+        .onTrue(indexer.spin())
+        .onFalse(indexer.stopSpin());
+    
+    operatorController.a()
+        .onTrue(serializer.spin())
+        .onFalse(serializer.stopSpin());
+
+    driveController
+        .povDown()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    drivetrain.resetPose(
+                        new Pose2d(
+                            Meters.of(3.407), Meters.of(2.620), new Rotation2d(Degrees.of(45))))));
 
     // driveController
     //     .y()

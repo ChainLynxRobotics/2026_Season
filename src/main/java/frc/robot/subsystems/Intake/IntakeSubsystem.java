@@ -187,14 +187,12 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     return setpoint;
   }
 
-
   public Command spin() {
     return runOnce(
         () ->
             spinMotor.setControl(
                 spinControl.withVelocity(RotationsPerSecond.of(tunableIntakeSpinVelocity.get()))));
   }
-
 
   public Command spin5V() {
     return runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(5))));
