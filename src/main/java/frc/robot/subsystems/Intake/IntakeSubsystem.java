@@ -48,6 +48,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private TunableNumber tunableIntakeSpinP;
   private TunableNumber tunableIntakeSpinI;
   private TunableNumber tunableIntakeSpinD;
+  private TunableNumber tunableIntakeSpinVelocity;
 
   private DCMotorSim spinSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
@@ -109,6 +110,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableIntakeSpinP = new TunableNumber("IntakeSpinP", kSpinP);
     this.tunableIntakeSpinI = new TunableNumber("IntakeSpinI", kSpinI);
     this.tunableIntakeSpinD = new TunableNumber("IntakeSpinD", kSpinD);
+    this.tunableIntakeSpinVelocity =
+        new TunableNumber("IntakeSpinVelocity", kGoalIntakeSpinVelocity.in(RotationsPerSecond));
   }
 
   public void runHeightSysId() {
@@ -184,8 +187,17 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     return setpoint;
   }
 
+
   public Command spin() {
-    return runOnce(() -> spinMotor.setControl(voltageOut.withOutput(kSpinVoltage)));
+    return runOnce(
+        () ->
+            spinMotor.setControl(
+                spinControl.withVelocity(RotationsPerSecond.of(tunableIntakeSpinVelocity.get()))));
+  }
+
+
+  public Command spin5V() {
+    return runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(5))));
   }
 
   public Command stopSpin() {

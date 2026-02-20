@@ -54,10 +54,9 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private final CommandXboxController driveJoystick = new CommandXboxController(0);
+  private final CommandXboxController driveController = new CommandXboxController(0);
 
   private final CommandXboxController operatorController = new CommandXboxController(1);
-  private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -105,12 +104,12 @@ public class RobotContainer {
             () ->
                 drive
                     .withVelocityX(
-                        -driveJoystick.getLeftY()
+                        -driveController.getLeftY()
                             * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(
-                        -driveJoystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                        -driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(
-                        -driveJoystick.getRightX()
+                        -driveController.getRightX()
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
 
@@ -120,24 +119,26 @@ public class RobotContainer {
     RobotModeTriggers.disabled()
         .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-    driveJoystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    driveJoystick
+    driveController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    driveController
         .b()
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
                     point.withModuleDirection(
-                        new Rotation2d(-driveJoystick.getLeftY(), -driveJoystick.getLeftX()))));
+                        new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
+    
+    driveController.y().whileTrue(drivetrain.applyRequest(() -> drive.withVelocityY(-0.1 * MaxSpeed)));
 
-    driveJoystick
+    operatorController
         .rightBumper()
         .onTrue(indexer.spin().andThen(serializer.spin()))
         .onFalse(indexer.stopSpin().andThen(serializer.stopSpin()));
 
-    driveJoystick
-        .y()
-        .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(60)))
-        .onFalse(shooter.setFlywheelVelocity(RotationsPerSecond.of(0)));
+    // driveController
+    //     .y()
+    //     .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(60)))
+    //     .onFalse(shooter.setFlywheelVelocity(RotationsPerSecond.of(0)));
     // driveJoystick
     //     .y()
     //     .whileTrue(
@@ -175,19 +176,12 @@ public class RobotContainer {
     //     .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // Reset the field-centric heading on left bumper press.
-    driveJoystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    driveController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    // operatorJoystick.a().whileTrue(shooter.hoodSysid());
-    // operatorJoystick.b().onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(20)));
-    // operatorJoystick.x().onTrue(shooter.setHoodAngle(Degrees.of(60)));
-    // operatorJoystick.y().onTrue(Commands.runOnce(shooter::shootSimulatedProjectile));
-
-    // operatorController.a().onTrue(intake.spin());
-    // operatorController.b().onTrue(serializer.spin());
-    driveJoystick.x().onTrue(intake.spin()).onFalse(intake.stopSpin());
-    driveJoystick.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
+    operatorController.x().toggleOnTrue(intake.spin()).toggleOnFalse(intake.stopSpin());
+    operatorController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
   }
 
   public Command goToHub() {
@@ -196,8 +190,8 @@ public class RobotContainer {
             new SwerveRequest.FieldCentricFacingAngle()
                 .withTargetDirection(getAngleToHub())
                 .withHeadingPID(7, 0, 0)
-                .withVelocityX(-driveJoystick.getLeftY() * MaxSpeed)
-                .withVelocityY(-driveJoystick.getLeftX() * MaxSpeed));
+                .withVelocityX(-driveController.getLeftY() * MaxSpeed)
+                .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
 
   public Rotation2d getAngleToHub() {

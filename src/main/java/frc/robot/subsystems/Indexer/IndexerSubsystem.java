@@ -5,6 +5,7 @@ import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -134,7 +135,6 @@ public class IndexerSubsystem extends SubsystemBase {
     return indexerSim.getAngularVelocityRPM() / 60.0;
   }
 
-  @Logged
   public Command spin() {
     return runOnce(
         () ->
@@ -142,7 +142,6 @@ public class IndexerSubsystem extends SubsystemBase {
                 indexerControl.withVelocity(RotationsPerSecond.of(tunableIndexerVelocity.get()))));
   }
 
-  @Logged
   public Command spin10V() {
     return runOnce(() -> indexerMotor.setControl(new VoltageOut(Volts.of(10))));
   }

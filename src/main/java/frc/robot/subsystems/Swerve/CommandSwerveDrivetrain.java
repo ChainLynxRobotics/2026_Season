@@ -325,6 +325,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return getState().ModuleStates;
   }
 
+  @Logged
+  public Pose2d getPose() {
+    return getState().Pose;
+  }
+
   @Override
   public void resetPose(Pose2d pose) {
     if (this.mapleSimSwerveDrivetrain != null)
