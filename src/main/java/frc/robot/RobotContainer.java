@@ -120,7 +120,7 @@ public class RobotContainer {
     RobotModeTriggers.disabled()
         .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-    driveController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    // driveController.a().whileTrue(drivetrain.applyRequest(() -> brake));
     driveController
         .b()
         .whileTrue(
@@ -129,20 +129,18 @@ public class RobotContainer {
                     point.withModuleDirection(
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-    driveController.y()
+    driveController
+        .povLeft()
         .whileTrue(drivetrain.applyRequest(() -> drive.withVelocityY(-0.1 * MaxSpeed)));
 
-    operatorController.rightBumper()
-        .onTrue(indexer.spin().andThen(serializer.spin()))
+    driveController
+        .rightBumper()
+        .onTrue(indexer.spin10V().andThen(serializer.spin()))
         .onFalse(indexer.stopSpin().andThen(serializer.stopSpin()));
 
-    operatorController.y()
-        .onTrue(indexer.spin())
-        .onFalse(indexer.stopSpin());
-    
-    operatorController.a()
-        .onTrue(serializer.spin())
-        .onFalse(serializer.stopSpin());
+    driveController.y().onTrue(indexer.spin10V()).onFalse(indexer.stopSpin());
+
+    driveController.a().onTrue(serializer.spin()).onFalse(serializer.stopSpin());
 
     driveController
         .povDown()
@@ -152,6 +150,14 @@ public class RobotContainer {
                     drivetrain.resetPose(
                         new Pose2d(
                             Meters.of(3.407), Meters.of(2.620), new Rotation2d(Degrees.of(45))))));
+
+    // Reset the field-centric heading on left bumper press.
+    driveController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+    drivetrain.registerTelemetry(logger::telemeterize);
+
+    driveController.x().toggleOnTrue(intake.spin5V()).toggleOnFalse(intake.stopSpin());
+    driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
 
     // driveController
     //     .y()
@@ -192,14 +198,6 @@ public class RobotContainer {
     //     .start()
     //     .and(driveJoystick.x())
     //     .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-    // Reset the field-centric heading on left bumper press.
-    driveController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-    drivetrain.registerTelemetry(logger::telemeterize);
-
-    operatorController.x().toggleOnTrue(intake.spin()).toggleOnFalse(intake.stopSpin());
-    operatorController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
   }
 
   public Command goToHub() {

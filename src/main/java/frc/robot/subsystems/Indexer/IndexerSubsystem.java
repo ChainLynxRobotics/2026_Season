@@ -146,7 +146,6 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public Command stopSpin() {
-    return runOnce(
-        () -> indexerMotor.setControl(indexerControl.withVelocity(RotationsPerSecond.of(0))));
+    return runOnce(() -> indexerMotor.setControl(new VoltageOut(Volts.of(0))));
   }
 }
