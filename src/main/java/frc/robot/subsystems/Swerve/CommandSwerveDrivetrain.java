@@ -375,6 +375,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   // pose passed from vision
   public void passVisionPose(VisionPose pose) {
+    System.out.println("Passing vision pose");
+    System.out.println(pose.pose());
     addVisionMeasurement(pose.pose().toPose2d(), pose.timestamp(), pose.deviation());
   }
 

@@ -84,6 +84,7 @@ public class Vision extends SubsystemBase {
       }
     }
     if (poseAmbiguity >= kAmbiguityTolerance) {
+      System.out.println("Ambiguity to high");
       return true;
     }
 
@@ -100,6 +101,7 @@ public class Vision extends SubsystemBase {
                   + Math.pow(target.bestCameraToTarget.getY(), 2)
                   + Math.pow(target.bestCameraToTarget.getZ(), 2));
       if (dist < closestTagDistance) {
+        System.out.println("Closest tag to far");
         closestTagDistance = dist;
       }
     }
@@ -144,9 +146,14 @@ public class Vision extends SubsystemBase {
         Optional<EstimatedRobotPose> optionalPoseResult =
             cameraRecord.estimator.estimateCoprocMultiTagPose(result);
         if (optionalPoseResult.isEmpty()) {
+          System.out.println("No results");
           continue;
         }
         EstimatedRobotPose poseResult = optionalPoseResult.get();
+
+        if (!isOnField(poseResult)) {
+          System.out.println("Not on field");
+        }
 
         // goes through checks to see if to discard the data
         if (!isOnField(poseResult)
@@ -160,7 +167,7 @@ public class Vision extends SubsystemBase {
                 .times(Math.pow(getAverageDistance(poseResult).in(Meters), 1.5))
                 .times(1 / Math.pow(poseResult.targetsUsed.size(), 2))
                 .times(Math.pow(getAverageAmbiguity(poseResult) * 10, 0.75));
-
+        System.out.println(deviation);
         VisionPose swervePose =
             new VisionPose(poseResult.estimatedPose, result.getTimestampSeconds(), deviation);
 
