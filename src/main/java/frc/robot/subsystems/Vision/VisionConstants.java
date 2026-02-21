@@ -16,10 +16,10 @@ import java.util.List;
 
 public class VisionConstants {
   public static final AprilTagFieldLayout kTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
-  public static final double kAmbiguityTolerance = 0.25;
-  public static final double kDistanceTolerance = 2.5;
+  public static final double kAmbiguityTolerance = 15;
+  public static final double kDistanceTolerance = 5;
   public static final double kMaxAngleTolerance = 70;
   // TODO: kMaxAngleTolerance is not used
   public static final Distance kFieldHeight = Meters.of(8.07); // y
@@ -31,7 +31,7 @@ public class VisionConstants {
               Inches.of(8.522),
               Inches.of(12.473),
               Inches.of(7.88),
-              new Rotation3d(Degrees.of(20), Degrees.zero(), Degrees.of(90)))
+              new Rotation3d(Degrees.zero(), Degrees.of(-20), Degrees.of(90)))
           /*new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))*/ );
 
   public static Pose3d getHubLocation() {
