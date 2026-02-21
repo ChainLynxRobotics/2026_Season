@@ -32,6 +32,8 @@ import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Swerve.DrivetrainConstants;
+import frc.robot.subsystems.Vision.Vision;
+
 import org.ironmaple.simulation.SimulatedArena;
 
 @Logged
@@ -61,6 +63,8 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+  public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
   private final IntakeSubsystem intake =
       new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio));
