@@ -39,8 +39,7 @@ import org.ironmaple.simulation.SimulatedArena;
 public class RobotContainer {
 
   private double MaxSpeed =
-      0.25
-          * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
       RotationsPerSecond.of(0.75)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -212,16 +211,18 @@ public class RobotContainer {
         () ->
             new SwerveRequest.FieldCentricFacingAngle()
                 .withTargetDirection(shooter.getShooterPose().getRotation().plus(getAngleToHub()))
-                .withHeadingPID(6, 0, 0)
+                .withHeadingPID(4, 0, 0)
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
-                .withVelocityY(-driveController.getLeftX() * MaxSpeed));
+                .withVelocityY(-driveController.getLeftX() * MaxSpeed)
+                .withDeadband(MaxSpeed * 0.1)
+                .withRotationalDeadband(MaxAngularRate * 0.1));
   }
 
   public Rotation2d getAngleToHub() {
     return new Transform2d(shooter.getShooterPose(), DrivetrainConstants.kHubLocation.toPose2d())
         .getTranslation()
         .getAngle()
-        .plus(new Rotation2d(Math.PI / 2));
+        .minus(new Rotation2d(Math.PI / 2).plus(new Rotation2d(Degrees.of(-3))));
   }
 
   public Command getAutonomousCommand() {
