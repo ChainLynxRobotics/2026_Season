@@ -16,9 +16,8 @@ import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
@@ -203,18 +202,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @param robotPose Robot pose
    * @return Shooter pose
    */
-  public Pose3d convertRobotPoseToShooterPose(Pose3d robotPose) {
-    return kShooterLocation.transformBy(new Transform3d(kShooterLocation, robotPose));
-  }
-
-  /**
-   * @param robotPose Robot pose
-   * @return Shooter pose
-   */
-  public Pose2d convertRobotPoseToShooterPose(Pose2d robotPose) {
-    return kShooterLocation
-        .toPose2d()
-        .transformBy(new Transform2d(kShooterLocation.toPose2d(), robotPose));
+  public Pose2d getShooterPose() {
+    return new Pose2d(
+        kShooterLocation.getX() + drivetrainPose.get().getX(),
+        kShooterLocation.getY() + drivetrainPose.get().getY(),
+        new Rotation2d());
   }
 
   /**
@@ -228,11 +220,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return Distance from the shooter to the hub
    */
   public Distance getDistance() {
-    // return Meters.of(
-    //     Math.sqrt(
-    //         Math.pow(getRelativeHubLocation().getX(), 2)
-    //             + Math.pow(getRelativeHubLocation().getY(), 2)));
-    return Meters.of(Math.sin(Timer.getTimestamp()) * 1.4 + 3.4);
+    return Meters.of(
+        Math.sqrt(
+            Math.pow(getRelativeHubLocation().getX(), 2)
+                + Math.pow(getRelativeHubLocation().getY(), 2)));
+    // return Meters.of(Math.sin(Timer.getTimestamp()) * 1.4 + 3.4);
   }
 
   public Command sinHoodTest() {
@@ -251,8 +243,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return RotationsPerSecond.of(Math.sin(Timer.getTimestamp()) * 20 + 40);
   }
 
-  public Pose3d getRelativeHubLocation() {
-    Pose3d pose = convertRobotPoseToShooterPose(new Pose3d(drivetrainPose.get()));
+  public Pose2d getRelativeHubLocation() {
+    Pose2d pose = getShooterPose();
     return kHubLocation.relativeTo(pose);
   }
 
@@ -556,10 +548,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         .addGamePieceProjectile(
             new RebuiltFuelOnFly(
                 simPose.get().getTranslation(),
-                kShooterLocation.getTranslation().toTranslation2d(),
+                kShooterLocation.getTranslation(),
                 chassisSpeeds.get(),
-                kShooterLocation.getRotation().toRotation2d(),
-                kShooterLocation.getMeasureZ(),
+                kShooterLocation.getRotation(),
+                kShooterHeight,
                 convertAngularVelocityToLinear(
                     getFlywheelVelocity().times(kEstimatedFlywheelSpeedToFuelSpeed)),
                 getHoodPosition()));

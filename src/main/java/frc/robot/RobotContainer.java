@@ -208,18 +208,19 @@ public class RobotContainer {
     return drivetrain.applyRequest(
         () ->
             new SwerveRequest.FieldCentricFacingAngle()
-                .withTargetDirection(getAngleToHub().plus(new Rotation2d(Degrees.of(-90))))
-                .withHeadingPID(4, 0, 0)
+                .withTargetDirection(
+                    shooter.getShooterPose().getRotation().plus(getAngleToHub()))
+                .withHeadingPID(6, 0, 0)
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
 
   public Rotation2d getAngleToHub() {
     return new Transform2d(
-            shooter.convertRobotPoseToShooterPose(drivetrain.getState().Pose),
-            DrivetrainConstants.kHubLocation.toPose2d())
+            shooter.getShooterPose(), DrivetrainConstants.kHubLocation.toPose2d())
         .getTranslation()
-        .getAngle();
+        .getAngle()
+        .plus(new Rotation2d(Math.PI / 2));
   }
 
   public Command getAutonomousCommand() {

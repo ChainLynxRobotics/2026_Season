@@ -8,17 +8,19 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.epilogue.*;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
 
 @Logged
 public class ShooterConstants {
-  public static final Pose3d kShooterLocation =
-      new Pose3d(Inches.of(-8.5), Inches.of(-8.5), Inches.of(0), new Rotation3d(0, 0, 90));
-  public static final Pose3d kHubLocation =
-      new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
+  public static final Pose2d kShooterLocation =
+      new Pose2d(Inches.of(8.5), Inches.of(8.5), new Rotation2d(Degrees.of(90).in(Radians)));
+  public static final Pose2d kHubLocation =
+      new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation2d());
+
+  public static final Distance kShooterHeight = Meters.of(0);
 
   public static final Distance kFlywheelRadius = Inches.of(2);
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
