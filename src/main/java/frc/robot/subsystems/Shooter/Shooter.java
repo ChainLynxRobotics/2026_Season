@@ -8,7 +8,7 @@ import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -24,6 +24,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -67,6 +68,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected TunableNumber tunableHoodP;
   protected TunableNumber tunableHoodI;
   protected TunableNumber tunableHoodD;
+  protected TunableNumber tunableHoodGravOffset;
 
   protected TunableNumber tunableHoodAngle;
   protected TunableNumber tunableShooterSpeed;
@@ -94,6 +96,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.tunableHoodP = new TunableNumber("tunablekHoodP", kHoodP);
     this.tunableHoodI = new TunableNumber("tunablekHoodI", kHoodI);
     this.tunableHoodD = new TunableNumber("tunablekHoodD", kHoodD);
+    this.tunableHoodGravOffset = new TunableNumber("gravoffset", -05);
 
     this.tunableHoodAngle = new TunableNumber("Hood angle", 5);
     this.tunableShooterSpeed = new TunableNumber("Flywheel speed", 0);
@@ -171,6 +174,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   /**
    * @return Flywheel veclotiy
    */
+  public double getFlywheelVelocityRps() {
+    return flywheelMotor.getVelocity().getValue().in(RotationsPerSecond);
+  }
+
+  /**
+   * @return Flywheel veclotiy
+   */
   public AngularVelocity getFlywheelVelocity() {
     return flywheelMotor.getVelocity().getValue();
   }
@@ -218,10 +228,27 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return Distance from the shooter to the hub
    */
   public Distance getDistance() {
-    return Meters.of(
-        Math.sqrt(
-            Math.pow(getRelativeHubLocation().getX(), 2)
-                + Math.pow(getRelativeHubLocation().getY(), 2)));
+    // return Meters.of(
+    //     Math.sqrt(
+    //         Math.pow(getRelativeHubLocation().getX(), 2)
+    //             + Math.pow(getRelativeHubLocation().getY(), 2)));
+    return Meters.of(Math.sin(Timer.getTimestamp()) * 1.4 + 3.4);
+  }
+
+  public Command sinHoodTest() {
+    return run(() -> setHoodAngleInternal(sinHoodMath()));
+  }
+
+  public Command sinFlywheelTest() {
+    return run(() -> setFlywheelVelocityInternal(sinFlywheelMath()));
+  }
+
+  public Angle sinHoodMath() {
+    return Degrees.of(Math.sin(Timer.getTimestamp()) * 18 + 27);
+  }
+
+  public AngularVelocity sinFlywheelMath() {
+    return RotationsPerSecond.of(Math.sin(Timer.getTimestamp()) * 20 + 40);
   }
 
   public Pose3d getRelativeHubLocation() {
@@ -303,6 +330,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   /**
+   * @return The position of the hood
+   */
+  public double getHoodPositionDegrees() {
+    return hoodMotor.getPosition().getValue().in(Degrees);
+  }
+
+  /**
    * @return Command to slowly push the hood against the limit switch
    */
   public Command homeHood() {
@@ -320,7 +354,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return The hoods position setpoint
    */
   public double getHoodClosedLoopReference() {
-    return hoodMotor.getClosedLoopReference().getValue();
+    return Rotations.of(hoodMotor.getClosedLoopReference().getValue()).in(Degrees);
   }
 
   /**
@@ -396,7 +430,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     flywheelMotor.setControl(new VoltageOut(voltage));
   }
 
-  final MotionMagicExpoVoltage request = new MotionMagicExpoVoltage(0).withEnableFOC(true);
+  final MotionMagicVoltage request = new MotionMagicVoltage(0).withEnableFOC(true);
 
   /**
    * @param position Position to set the hood to
@@ -448,7 +482,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         tunableHoodV.get(),
         tunableHoodP.get(),
         tunableHoodI.get(),
-        tunableHoodD.get());
+        tunableHoodD.get(),
+        tunableHoodGravOffset.get());
   }
 
   public void detectTunableFlywheelChanges() {
@@ -469,7 +504,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         || tunableHoodV.hasChanged()
         || tunableHoodP.hasChanged()
         || tunableHoodI.hasChanged()
-        || tunableHoodD.hasChanged()) {
+        || tunableHoodD.hasChanged()
+        || tunableHoodGravOffset.hasChanged()) {
       this.hoodMotor.getConfigurator().apply(generateTunableHoodConfig());
     }
   }
