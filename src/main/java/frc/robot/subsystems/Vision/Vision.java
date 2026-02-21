@@ -8,6 +8,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.units.Units;
@@ -77,16 +78,16 @@ public class Vision extends SubsystemBase {
   }
 
   public boolean isMinAmbiguityTooHigh(EstimatedRobotPose pose) {
-    double poseAmbiguity = 1;
+    double poseAmbiguity = Double.MAX_VALUE;
     for (PhotonTrackedTarget target : pose.targetsUsed) {
       if (target.poseAmbiguity != -1 && target.poseAmbiguity < poseAmbiguity) {
         poseAmbiguity = target.poseAmbiguity;
       }
     }
-    if (poseAmbiguity >= kAmbiguityTolerance) {
-      System.out.println("Ambiguity to high");
-      return true;
-    }
+    // if (
+    // /*poseAmbiguity*/ 0 >= kAmbiguityTolerance) {
+    //   return true;
+    // }
 
     return false;
   }
@@ -101,7 +102,6 @@ public class Vision extends SubsystemBase {
                   + Math.pow(target.bestCameraToTarget.getY(), 2)
                   + Math.pow(target.bestCameraToTarget.getZ(), 2));
       if (dist < closestTagDistance) {
-        System.out.println("Closest tag to far");
         closestTagDistance = dist;
       }
     }
@@ -133,7 +133,7 @@ public class Vision extends SubsystemBase {
       averageAmbiguity += target.getPoseAmbiguity();
     }
 
-    return averageAmbiguity / pose.targetsUsed.size();
+    return 0.2; // averageAmbiguity / pose.targetsUsed.size();
   }
 
   @Override
@@ -146,14 +146,9 @@ public class Vision extends SubsystemBase {
         Optional<EstimatedRobotPose> optionalPoseResult =
             cameraRecord.estimator.estimateCoprocMultiTagPose(result);
         if (optionalPoseResult.isEmpty()) {
-          System.out.println("No results");
           continue;
         }
         EstimatedRobotPose poseResult = optionalPoseResult.get();
-
-        if (!isOnField(poseResult)) {
-          System.out.println("Not on field");
-        }
 
         // goes through checks to see if to discard the data
         if (!isOnField(poseResult)
@@ -167,7 +162,6 @@ public class Vision extends SubsystemBase {
                 .times(Math.pow(getAverageDistance(poseResult).in(Meters), 1.5))
                 .times(1 / Math.pow(poseResult.targetsUsed.size(), 2))
                 .times(Math.pow(getAverageAmbiguity(poseResult) * 10, 0.75));
-        System.out.println(deviation);
         VisionPose swervePose =
             new VisionPose(poseResult.estimatedPose, result.getTimestampSeconds(), deviation);
 
@@ -195,5 +189,10 @@ public class Vision extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     visionSim.update(getSimPose.get());
+  }
+
+  public Transform3d[] getCameraPositions() {
+    Transform3d[] tempStorage = new Transform3d[kCameraOffsets.size()];
+    return kCameraOffsets.toArray(tempStorage);
   }
 }
