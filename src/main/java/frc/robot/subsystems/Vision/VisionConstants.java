@@ -27,7 +27,11 @@ public class VisionConstants {
 
   public static final List<Transform3d> kCameraOffsets =
       List.of(
-          new Transform3d(0.268, 0.19684, 0.5715, new Rotation3d(0, 0, 0))
+          new Transform3d(
+              Inches.of(8.522),
+              Inches.of(12.473),
+              Inches.of(7.88),
+              new Rotation3d(Degrees.of(20), Degrees.zero(), Degrees.of(90)))
           /*new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))*/ );
 
   public static Pose3d getHubLocation() {

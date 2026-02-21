@@ -33,7 +33,6 @@ import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Swerve.DrivetrainConstants;
 import frc.robot.subsystems.Vision.Vision;
-
 import org.ironmaple.simulation.SimulatedArena;
 
 @Logged
