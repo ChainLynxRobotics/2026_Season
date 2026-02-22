@@ -221,6 +221,10 @@ public class RobotContainer {
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
 
+  public Rotation2d hubTrackingError() {
+    return getAngleToHub().minus(drivetrain.getPose().getRotation());
+  }
+
   public Rotation2d getAngleToHub() {
     return getAngleToHub(drivetrain.getPose());
   }
