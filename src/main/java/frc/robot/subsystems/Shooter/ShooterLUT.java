@@ -40,7 +40,7 @@ public class ShooterLUT {
               robotPose.getX() + robotSpeeds.vxMetersPerSecond * timeOfFlight,
               robotPose.getY() + robotSpeeds.vyMetersPerSecond * timeOfFlight,
               robotPose.getRotation());
-      distance = Shooter.getDistance(robotPose);
+      distance = Shooter.getDistance(iteratedPose);
       timeOfFlight = kShooterTOFMap.get(distance.in(Meters));
       if (iteratedPose.getTranslation().getDistance(lastPose.getTranslation())
           <= kRecursionTarget.in(Meters)) {
