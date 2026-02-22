@@ -542,7 +542,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
       hoodMotor.setPosition(Degrees.of(90));
     }
     var controller = new CommandXboxController(0);
-    if (timeLastBall >= 5 && controller.rightBumper().getAsBoolean()) {
+    if (timeLastBall >= 15 && controller.rightBumper().getAsBoolean()) {
       this.shootSimulatedProjectile();
       timeLastBall = 0;
     } else {
