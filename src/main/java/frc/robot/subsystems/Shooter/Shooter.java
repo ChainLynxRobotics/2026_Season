@@ -202,10 +202,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return Shooter pose
    */
   public Pose2d getShooterPose() {
+    var rotatedShooter = kShooterLocation.rotateBy(drivetrainPose.get().getRotation());
     return new Pose2d(
-        kShooterLocation.getX() + drivetrainPose.get().getX(),
-        kShooterLocation.getY() + drivetrainPose.get().getY(),
-        new Rotation2d());
+        rotatedShooter.getX() + drivetrainPose.get().getX(),
+        rotatedShooter.getY() + drivetrainPose.get().getY(),
+        rotatedShooter.getRotation());
   }
 
   /**
