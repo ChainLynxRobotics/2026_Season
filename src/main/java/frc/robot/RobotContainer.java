@@ -219,10 +219,12 @@ public class RobotContainer {
   }
 
   public Rotation2d getAngleToHub() {
-    return new Transform2d(shooter.getShooterPose(), DrivetrainConstants.kHubLocation.toPose2d())
+    return shooter
+        .getShooterPose()
         .getTranslation()
+        .minus(kHubLocation.toPose2d().getTranslation())
         .getAngle()
-        .minus(new Rotation2d(Math.PI / 2).plus(new Rotation2d(Degrees.of(-3))));
+        .plus(kShooterLocation.getRotation()) /*.plus(new Rotation2d(Degrees.of(-3)))*/;
   }
 
   public Command getAutonomousCommand() {
