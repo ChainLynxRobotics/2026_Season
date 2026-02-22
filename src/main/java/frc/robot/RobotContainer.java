@@ -206,16 +206,18 @@ public class RobotContainer {
     //     .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
   }
 
+  private SwerveRequest.FieldCentricFacingAngle pointAtHub =
+      new SwerveRequest.FieldCentricFacingAngle()
+          .withHeadingPID(16, 2, 0)
+          .withDeadband(MaxSpeed * 0.1);
+
   public Command goToHub() {
     return drivetrain.applyRequest(
         () ->
-            new SwerveRequest.FieldCentricFacingAngle()
-                .withTargetDirection(shooter.getShooterPose().getRotation().plus(getAngleToHub()))
-                .withHeadingPID(4, 0, 0)
+            pointAtHub
+                .withTargetDirection(getAngleToHub())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
-                .withVelocityY(-driveController.getLeftX() * MaxSpeed)
-                .withDeadband(MaxSpeed * 0.1)
-                .withRotationalDeadband(MaxAngularRate * 0.1));
+                .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
 
   public Rotation2d getAngleToHub() {
