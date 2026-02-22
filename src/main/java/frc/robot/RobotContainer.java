@@ -91,7 +91,7 @@ public class RobotContainer {
 
     configureBindings();
 
-    if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
+    // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
   }
 
   public Pose3d[] getGamePieces() {
