@@ -17,6 +17,7 @@ public class ShooterLUT {
 
   private static final InterpolatingDoubleTreeMap kShooterSpeedMap = generateSpeedMap();
   private static final InterpolatingDoubleTreeMap kShooterAngleMap = generateAngleMap();
+  private static final InterpolatingDoubleTreeMap kShooterTOFMap = generateTOFMap();
 
   private static InterpolatingDoubleTreeMap generateSpeedMap() {
     var map = new InterpolatingDoubleTreeMap();
@@ -68,6 +69,25 @@ public class ShooterLUT {
       map.put(5.0, 24.27);
       map.put(5.5, 26.23);
       map.put(6.0, 28.14);
+    }
+    return map;
+  }
+
+  private static InterpolatingDoubleTreeMap generateTOFMap() {
+    var map = new InterpolatingDoubleTreeMap();
+    if (RobotBase.isReal()) {
+
+    } else {
+      map.put(1.5, 1.1833);
+      map.put(2.0, 1.16);
+      map.put(2.5, 1.33);
+      map.put(3.0, 1.216);
+      map.put(3.5, 1.26);
+      map.put(4.0, 1.33);
+      map.put(4.5, 1.33);
+      map.put(5.0, 1.3);
+      map.put(5.5, 1.33);
+      map.put(6.0, 0.7);
     }
     return map;
   }
