@@ -7,6 +7,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.kCanBusBlinky;
 import static frc.robot.Constants.kCanBusRio;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kShooterLocation;
+import static frc.robot.subsystems.Vision.VisionConstants.kHubLocation;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -17,7 +19,8 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -31,7 +34,6 @@ import frc.robot.subsystems.Serializer.SerializerSubsystem;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Swerve.DrivetrainConstants;
 import frc.robot.subsystems.Vision.Vision;
 import org.ironmaple.simulation.SimulatedArena;
 
@@ -217,6 +219,7 @@ public class RobotContainer {
         () ->
             pointAtHub
                 .withTargetDirection(getAngleToHub())
+                .withTargetRateFeedforward(getRotationalVelocityToHub())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
@@ -236,6 +239,23 @@ public class RobotContainer {
         .minus(kHubLocation.toPose2d().getTranslation())
         .getAngle()
         .plus(kShooterLocation.getRotation());
+  }
+
+  public AngularVelocity getRotationalVelocityToHub() {
+    var dt = 0.01;
+    var drivetrainFieldRelitiveSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            drivetrain.getState().Speeds, drivetrain.getPose().getRotation());
+    var poseInDt =
+        new Pose2d(
+            drivetrain.getPose().getX() + drivetrainFieldRelitiveSpeeds.vxMetersPerSecond * dt,
+            drivetrain.getPose().getY() + drivetrainFieldRelitiveSpeeds.vyMetersPerSecond * dt,
+            new Rotation2d(
+                drivetrain.getPose().getRotation().getRadians()
+                    + drivetrainFieldRelitiveSpeeds.omegaRadiansPerSecond * dt));
+    return RotationsPerSecond.of(
+        getAngleToHub(poseInDt).getMeasure().minus(getAngleToHub().getMeasure()).in(Rotations)
+            / dt);
   }
 
   public Command getAutonomousCommand() {
