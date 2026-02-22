@@ -20,7 +20,7 @@ public class ShooterConstants {
   public static final Pose2d kHubLocation =
       new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation2d());
 
-  public static final Distance kShooterHeight = Meters.of(0);
+  public static final Distance kShooterHeight = Inches.of(18.442849);
 
   public static final Distance kFlywheelRadius = Inches.of(2);
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
