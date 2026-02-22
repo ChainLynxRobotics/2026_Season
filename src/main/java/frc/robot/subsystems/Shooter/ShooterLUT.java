@@ -2,17 +2,59 @@ package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.RobotContainer;
+import java.util.Optional;
 
 public class ShooterLUT {
   public record ShooterSetpoint(LinearVelocity flywheelSurfaceSpeed, Angle rotation) {}
+
+  public record SOTMSetpoint(
+      ShooterSetpoint shooterSetpoint, Rotation2d robotRotation, Pose2d iteratedPose) {}
 
   public static ShooterSetpoint getSpeedAndRotation(Distance distance) {
     return new ShooterSetpoint(
         MetersPerSecond.of(kShooterSpeedMap.get(distance.in(Meters))),
         Degrees.of(kShooterAngleMap.get(distance.in(Meters))));
+  }
+
+  private static final double kMaxRecursions = 10;
+  private static final Distance kRecursionTarget = Meters.of(0.01);
+
+  public static Optional<SOTMSetpoint> generateShootOnTheMoveSetpoint(
+      Pose2d robotPose, ChassisSpeeds robotSpeeds) {
+    var lastPose = new Pose2d(Double.MAX_VALUE, Double.MAX_VALUE, new Rotation2d());
+    var iteratedPose = robotPose;
+    var distance = Shooter.getDistance(robotPose);
+    var timeOfFlight = kShooterTOFMap.get(distance.in(Meters));
+    var iterations = 0;
+    while (iterations < kMaxRecursions) {
+      lastPose = iteratedPose;
+      iteratedPose =
+          new Pose2d(
+              robotPose.getX() + robotSpeeds.vxMetersPerSecond * timeOfFlight,
+              robotPose.getY() + robotSpeeds.vyMetersPerSecond * timeOfFlight,
+              robotPose.getRotation());
+      distance = Shooter.getDistance(robotPose);
+      timeOfFlight = kShooterTOFMap.get(distance.in(Meters));
+      if (iteratedPose.getTranslation().getDistance(lastPose.getTranslation())
+          <= kRecursionTarget.in(Meters)) {
+        return Optional.of(
+            new SOTMSetpoint(
+                getSpeedAndRotation(distance),
+                RobotContainer.getAngleToHub(iteratedPose),
+                iteratedPose));
+      }
+      iterations += 1;
+    }
+    System.out.println("Recursion didnt converge");
+    System.out.println("Distance at end of recursion: " + distance.toString());
+    return Optional.empty();
   }
 
   private static final InterpolatingDoubleTreeMap kShooterSpeedMap = generateSpeedMap();

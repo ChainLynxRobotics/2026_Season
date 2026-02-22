@@ -33,9 +33,11 @@ import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Serializer.SerializerSubsystem;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.gamepieces.GamePiece;
 
 @Logged
 public class RobotContainer {
@@ -227,8 +229,8 @@ public class RobotContainer {
     return drivetrain.applyRequest(
         () ->
             pointAtHub
-                .withTargetDirection(getAngleToHub())
-                .withTargetRateFeedforward(getRotationalVelocityToHub())
+                .withTargetDirection(getAngleToHubTOF())
+                // .withTargetRateFeedforward(getTOFRotationalVelocityToHub())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
@@ -241,13 +243,52 @@ public class RobotContainer {
     return getAngleToHub(drivetrain.getPose());
   }
 
-  public Rotation2d getAngleToHub(Pose2d robotPose) {
-    return shooter
-        .getShooterPose(robotPose)
+  public static Rotation2d getAngleToHub(Pose2d robotPose) {
+    return Shooter.getShooterPose(robotPose)
         .getTranslation()
         .minus(kHubLocation.toPose2d().getTranslation())
         .getAngle()
         .plus(kShooterLocation.getRotation());
+  }
+
+  Rotation2d lastRotation = new Rotation2d();
+
+  public Rotation2d getAngleToHubTOF(Pose2d robotPose, ChassisSpeeds robotSpeeds) {
+    var setpoint = ShooterLUT.generateShootOnTheMoveSetpoint(robotPose, robotSpeeds);
+    if (setpoint.isEmpty()) {
+      return lastRotation;
+    }
+    lastRotation = setpoint.get().robotRotation();
+    return lastRotation;
+  }
+
+  public Rotation2d getAngleToHubTOF() {
+    return getAngleToHubTOF(
+        drivetrain.getPose(),
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            drivetrain.getState().Speeds, drivetrain.getPose().getRotation()));
+  }
+
+  public AngularVelocity getTOFRotationalVelocityToHub() {
+    var dt = 0.01;
+    var drivetrainFieldRelitiveSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            drivetrain.getState().Speeds, drivetrain.getPose().getRotation());
+    var poseInDt =
+        new Pose2d(
+            drivetrain.getPose().getX() + drivetrainFieldRelitiveSpeeds.vxMetersPerSecond * dt,
+            drivetrain.getPose().getY() + drivetrainFieldRelitiveSpeeds.vyMetersPerSecond * dt,
+            new Rotation2d(
+                drivetrain.getPose().getRotation().getRadians()
+                    + drivetrainFieldRelitiveSpeeds.omegaRadiansPerSecond * dt));
+    return RotationsPerSecond.of(
+        getAngleToHubTOF(poseInDt, drivetrainFieldRelitiveSpeeds)
+                .getMeasure()
+                .minus(
+                    getAngleToHubTOF(drivetrain.getPose(), drivetrainFieldRelitiveSpeeds)
+                        .getMeasure())
+                .in(Rotations)
+            / dt);
   }
 
   public AngularVelocity getRotationalVelocityToHub() {
@@ -265,6 +306,18 @@ public class RobotContainer {
     return RotationsPerSecond.of(
         getAngleToHub(poseInDt).getMeasure().minus(getAngleToHub().getMeasure()).in(Rotations)
             / dt);
+  }
+
+  public Pose2d getTOFPose() {
+    var setpoint =
+        ShooterLUT.generateShootOnTheMoveSetpoint(
+                drivetrain.getPose(),
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                    drivetrain.getState().Speeds, drivetrain.getPose().getRotation()))
+            .get();
+    var pose = setpoint.iteratedPose();
+
+    return new Pose2d(pose.getX(), pose.getY(), setpoint.robotRotation());
   }
 
   public Command getAutonomousCommand() {

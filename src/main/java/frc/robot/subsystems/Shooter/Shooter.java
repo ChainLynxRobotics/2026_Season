@@ -205,7 +205,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return getShooterPose(drivetrainPose.get());
   }
 
-  public Pose2d getShooterPose(Pose2d robotPose) {
+  public static Pose2d getShooterPose(Pose2d robotPose) {
     var rotatedShooter = kShooterLocation.rotateBy(robotPose.getRotation());
     return new Pose2d(
         rotatedShooter.getX() + robotPose.getX(),
@@ -213,22 +213,46 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         rotatedShooter.getRotation());
   }
 
+  ShooterSetpoint lastShooterSetpoint = new ShooterSetpoint(MetersPerSecond.zero(), Degrees.of(5));
   /**
    * @return The speed and position of the shooter to shoot into the hub.
    */
   public ShooterSetpoint getCurrentSetpoint() {
-    return ShooterLUT.getSpeedAndRotation(getDistance());
+    var setpoint =
+        ShooterLUT.generateShootOnTheMoveSetpoint(
+            drivetrainPose.get(),
+            ChassisSpeeds.fromRobotRelativeSpeeds(
+                chassisSpeeds.get(), drivetrainPose.get().getRotation()));
+    if (setpoint.isEmpty()) {
+      return lastShooterSetpoint;
+    }
+    lastShooterSetpoint = setpoint.get().shooterSetpoint();
+    return lastShooterSetpoint;
+  }
+
+  /**
+   * @return Distance from the shooter to the hub
+   */
+  public static Distance getDistance(Pose2d robotPose) {
+    return Meters.of(
+        Math.sqrt(
+            Math.pow(getRelativeHubLocation(robotPose).getX(), 2)
+                + Math.pow(getRelativeHubLocation(robotPose).getY(), 2)));
+  }
+
+  public LinearVelocity getCurrentSetpointMPS() {
+    return getCurrentSetpoint().flywheelSurfaceSpeed();
+  }
+
+  public Angle getCurrentSetpointHoodAngle() {
+    return getCurrentSetpoint().rotation();
   }
 
   /**
    * @return Distance from the shooter to the hub
    */
   public Distance getDistance() {
-    return Meters.of(
-        Math.sqrt(
-            Math.pow(getRelativeHubLocation().getX(), 2)
-                + Math.pow(getRelativeHubLocation().getY(), 2)));
-    // return Meters.of(Math.sin(Timer.getTimestamp()) * 1.4 + 3.4);
+    return getDistance(drivetrainPose.get());
   }
 
   public Command sinHoodTest() {
@@ -247,9 +271,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return RotationsPerSecond.of(Math.sin(Timer.getTimestamp()) * 20 + 40);
   }
 
-  public Pose2d getRelativeHubLocation() {
-    Pose2d pose = getShooterPose();
+  public static Pose2d getRelativeHubLocation(Pose2d robotPose) {
+    Pose2d pose = getShooterPose(robotPose);
     return kHubLocation.relativeTo(pose);
+  }
+
+  public Pose2d getRelativeHubLocation() {
+    return getRelativeHubLocation(drivetrainPose.get());
   }
 
   /**
