@@ -16,7 +16,7 @@ import edu.wpi.first.units.measure.*;
 @Logged
 public class ShooterConstants {
   public static final Pose2d kShooterLocation =
-      new Pose2d(Inches.of(8.5), Inches.of(8.5), new Rotation2d(Degrees.of(90).in(Radians)));
+      new Pose2d(Inches.of(-8.5), Inches.of(-8.5), new Rotation2d(Degrees.of(90).in(Radians)));
   public static final Pose2d kHubLocation =
       new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation2d());
 
