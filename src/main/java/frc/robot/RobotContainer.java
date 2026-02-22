@@ -60,8 +60,6 @@ public class RobotContainer {
 
   private final CommandXboxController driveController = new CommandXboxController(0);
 
-  private final CommandXboxController operatorController = new CommandXboxController(1);
-
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
