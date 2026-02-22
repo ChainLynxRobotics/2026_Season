@@ -554,7 +554,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             new RebuiltFuelOnFly(
                 simPose.get().getTranslation(),
                 kMapleSimShooterLocationNotJankAtAll.getTranslation(),
-                chassisSpeeds.get(),
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                    chassisSpeeds.get(), drivetrainPose.get().getRotation()),
                 kMapleSimSHooterRotationAlsoNotJank.plus(simPose.get().getRotation()),
                 kShooterHeight,
                 getCurrentSetpoint()
