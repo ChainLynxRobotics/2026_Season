@@ -308,16 +308,20 @@ public class RobotContainer {
             / dt);
   }
 
+  Pose2d lastTOFPose = new Pose2d();
+
   public Pose2d getTOFPose() {
     var setpoint =
         ShooterLUT.generateShootOnTheMoveSetpoint(
-                drivetrain.getPose(),
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                    drivetrain.getState().Speeds, drivetrain.getPose().getRotation()))
-            .get();
-    var pose = setpoint.iteratedPose();
-
-    return new Pose2d(pose.getX(), pose.getY(), setpoint.robotRotation());
+            drivetrain.getPose(),
+            ChassisSpeeds.fromRobotRelativeSpeeds(
+                drivetrain.getState().Speeds, drivetrain.getPose().getRotation()));
+    if (setpoint.isEmpty()) {
+      return lastTOFPose;
+    }
+    var pose = setpoint.get().iteratedPose();
+    lastTOFPose = new Pose2d(pose.getX(), pose.getY(), setpoint.get().robotRotation());
+    return lastTOFPose;
   }
 
   public Command getAutonomousCommand() {
