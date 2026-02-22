@@ -21,7 +21,6 @@ public class ShooterLUT {
   private static InterpolatingDoubleTreeMap generateSpeedMap() {
     var map = new InterpolatingDoubleTreeMap();
     if (RobotBase.isReal()) {
-      System.out.println("Real");
       map.put(1.8546, 60.0);
       map.put(2.221275, 65.0);
       map.put(2.647, 65.0);
@@ -31,21 +30,18 @@ public class ShooterLUT {
       map.put(4.1389, 77.5);
       map.put(4.5181, 80.0);
     } else {
-      System.out.println("Sim");
-      map.put(1.0, 26.25);
-      map.put(1.1, 26.75);
-      map.put(1.3, 27.0);
-      map.put(1.5, 27.1);
-      map.put(1.7, 27.2);
-      map.put(2.25, 27.85);
-      map.put(2.5, 28.15);
-      map.put(3.5, 29.25);
-      map.put(4.0, 30.0);
-      map.put(4.5, 30.5);
-      map.put(5.0, 30.85);
-      map.put(5.5, 31.6);
-      map.put(6.13788, 32.5);
-      System.out.println(map.get(3.5));
+      map.put(1.25, 25.2);
+      map.put(1.5, 26.5);
+      map.put(1.7, 26.8);
+      map.put(2.0, 27.0);
+      map.put(2.5, 27.5);
+      map.put(3.0, 28.1);
+      map.put(3.5, 28.5);
+      map.put(4.0, 29.2);
+      map.put(4.5, 29.9);
+      map.put(5.0, 30.4);
+      map.put(5.5, 30.8);
+      map.put(6.0, 31.5);
     }
     return map;
   }
@@ -62,25 +58,16 @@ public class ShooterLUT {
       map.put(4.1389, 30.0);
       map.put(4.5181, 30.0);
     } else {
-      map.put(0.99703, 6.26);
-      map.put(1.10879, 6.83);
-      map.put(1.22055, 7.37);
-      map.put(1.3323, 8.2);
-      map.put(1.444406, 8.74);
-      map.put(1.55582, 9.18);
-      map.put(1.66758, 9.74);
-      map.put(1.77933, 10.31);
-      map.put(1.89109, 10.77);
-      map.put(2.11461, 11.9);
-      map.put(2.22636, 12.45);
-      map.put(2.33812, 12.95);
-      map.put(3.00867, 15.8);
-      map.put(3.56736, 18.35);
-      map.put(4.12624, 20.72);
-      map.put(4.238, 21.17);
-      map.put(5.13206, 24.81);
-      map.put(5.69085, 26.96);
-      map.put(6.13788, 28.66);
+      map.put(1.5, 8.56);
+      map.put(2.0, 11.32);
+      map.put(2.5, 13.63);
+      map.put(3.0, 15.76);
+      map.put(3.5, 18.04);
+      map.put(4.0, 20.18);
+      map.put(4.5, 22.24);
+      map.put(5.0, 24.27);
+      map.put(5.5, 26.23);
+      map.put(6.0, 28.14);
     }
     return map;
   }
