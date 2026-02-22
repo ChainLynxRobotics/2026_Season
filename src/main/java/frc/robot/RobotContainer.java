@@ -161,6 +161,7 @@ public class RobotContainer {
     driveController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+    driveController.povLeft().onTrue(Commands.runOnce(() -> shooter.shootSimulatedProjectile()));
 
     driveController.x().toggleOnTrue(intake.spin5V()).toggleOnFalse(intake.stopSpin());
     driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));

@@ -16,7 +16,6 @@ import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
@@ -552,12 +551,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         .addGamePieceProjectile(
             new RebuiltFuelOnFly(
                 simPose.get().getTranslation(),
-                kShooterLocation.getTranslation(),
+                kMapleSimShooterLocationNotJankAtAll.getTranslation(),
                 chassisSpeeds.get(),
-                kShooterLocation.getRotation(),
+                kMapleSimSHooterRotationAlsoNotJank.plus(simPose.get().getRotation()),
                 kShooterHeight,
-                convertAngularVelocityToLinear(
-                    getFlywheelVelocity().times(kEstimatedFlywheelSpeedToFuelSpeed)),
-                getHoodPosition()));
+                getCurrentSetpoint()
+                    .flywheelSurfaceSpeed()
+                    .times(kEstimatedFlywheelSpeedToFuelSpeed),
+                getCurrentSetpoint().rotation().plus(Degrees.of(90))));
   }
 }
