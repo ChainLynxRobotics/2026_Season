@@ -21,8 +21,6 @@ public class ShooterConstants {
       kShooterLocation.rotateBy(new Rotation2d(Degrees.of(90)));
   public static final Rotation2d kMapleSimSHooterRotationAlsoNotJank =
       new Rotation2d(Degrees.of(-90));
-  public static final Pose2d kHubLocation =
-      new Pose2d(Inches.of(182.11), Inches.of(158.84), new Rotation2d());
 
   public static final Distance kShooterHeight = Inches.of(18.442849);
 

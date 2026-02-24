@@ -5,10 +5,11 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.getAlliance;
+import static frc.robot.Constants.getHubLocation2d;
 import static frc.robot.Constants.kCanBusBlinky;
 import static frc.robot.Constants.kCanBusRio;
 import static frc.robot.subsystems.Shooter.ShooterConstants.kShooterLocation;
-import static frc.robot.subsystems.Vision.VisionConstants.kHubLocation;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -22,6 +23,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -225,7 +227,12 @@ public class RobotContainer {
     return drivetrain.applyRequest(
         () ->
             pointAtHub
-                .withTargetDirection(getAngleToHubTOF())
+                .withTargetDirection(
+                    getAngleToHubTOF()
+                        .minus(
+                            getAlliance().equals(DriverStation.Alliance.Red)
+                                ? new Rotation2d(Degrees.of(180))
+                                : new Rotation2d())) // We want our rotation to not be field centric but we do want our driving to be so we manually flip the rotation
                 // .withTargetRateFeedforward(getTOFRotationalVelocityToHub())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
@@ -242,7 +249,7 @@ public class RobotContainer {
   public static Rotation2d getAngleToHub(Pose2d robotPose) {
     return Shooter.getShooterPose(robotPose)
         .getTranslation()
-        .minus(kHubLocation.toPose2d().getTranslation())
+        .minus(getHubLocation2d().getTranslation())
         .getAngle()
         .plus(kShooterLocation.getRotation());
   }

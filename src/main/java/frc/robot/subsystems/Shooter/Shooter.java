@@ -3,6 +3,7 @@ package frc.robot.subsystems.Shooter;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.Constants.*;
+import static frc.robot.Constants.getHubLocation2d;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import static frc.robot.utils.RobotMath.*;
 
@@ -272,7 +273,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   public static Pose2d getRelativeHubLocation(Pose2d robotPose) {
     Pose2d pose = getShooterPose(robotPose);
-    return kHubLocation.relativeTo(pose);
+    return getHubLocation2d().relativeTo(pose);
   }
 
   public Pose2d getRelativeHubLocation() {
