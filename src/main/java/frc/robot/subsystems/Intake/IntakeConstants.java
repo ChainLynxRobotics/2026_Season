@@ -4,6 +4,10 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -46,6 +50,36 @@ public class IntakeConstants {
           .withKA(kHeightA)
           .withKG(kHeightG)
           .withKS(kHeightS);
+
+  public static TalonFXConfiguration generateHeightConfig(
+      double kG,
+      double kS,
+      double kA,
+      double kV,
+      double kP,
+      double kI,
+      double kD,
+      double gravOffset) {
+    var gains =
+        new Slot0Configs()
+            .withKP(kHeightP)
+            .withKI(kHeightI)
+            .withKD(kHeightD)
+            .withKV(kHeightV)
+            .withKA(kHeightA)
+            .withKG(kHeightG)
+            .withKS(kHeightS)
+            .withGravityType(GravityTypeValue.Arm_Cosine)
+            .withGravityArmPositionOffset(Degrees.of(gravOffset))
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+    var config = new TalonFXConfiguration().withSlot0(gains);
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotionMagic.MotionMagicCruiseVelocity = kIntakeHeightMaxVelocity.in(RotationsPerSecond);
+    config.MotionMagic.MotionMagicAcceleration =
+        kIntakeHeightMaxAcceleration.in(RotationsPerSecondPerSecond);
+    config.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
+    return config;
+  }
 
   public static final Voltage kSpinVoltage = Volts.of(5);
 

@@ -50,6 +50,16 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private TunableNumber tunableIntakeSpinD;
   private TunableNumber tunableIntakeSpinVelocity;
 
+  protected TunableNumber tunableHeightG;
+  protected TunableNumber tunableHeightS;
+  protected TunableNumber tunableHeightA;
+  protected TunableNumber tunableHeightV;
+  protected TunableNumber tunableHeightP;
+  protected TunableNumber tunableHeightI;
+  protected TunableNumber tunableHeightD;
+  protected TunableNumber tunableHeightGravOffset;
+  protected TunableNumber tunableHeightHeight;
+
   private DCMotorSim spinSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
 
@@ -112,6 +122,15 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableIntakeSpinD = new TunableNumber("IntakeSpinD", kSpinD);
     this.tunableIntakeSpinVelocity =
         new TunableNumber("IntakeSpinVelocity", kGoalIntakeSpinVelocity.in(RotationsPerSecond));
+    this.tunableHeightG = new TunableNumber("tunableHeightG", kHeightG);
+    this.tunableHeightS = new TunableNumber("tunablekHeightS", kHeightS);
+    this.tunableHeightA = new TunableNumber("tunablekHeightA", kHeightA);
+    this.tunableHeightV = new TunableNumber("tunablekHeightV", kHeightV);
+    this.tunableHeightP = new TunableNumber("tunablekHeightP", kHeightP);
+    this.tunableHeightI = new TunableNumber("tunablekHeightI", kHeightI);
+    this.tunableHeightD = new TunableNumber("tunablekHeightD", kHeightD);
+    this.tunableHeightD = new TunableNumber("tunableHeightHeight", 0);
+    this.tunableHeightGravOffset = new TunableNumber("gravoffset", -05);
   }
 
   public void runHeightSysId() {
@@ -203,10 +222,14 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command setHeight(IntakeHeightState state) {
+    // return runOnce(
+    //     () -> {
+    //       setpoint = state.getAngle().in(Rotations);
+    //       heightMotor.setControl(heightControl.withPosition(state.getAngle().in(Rotations)));
+    //     });
     return runOnce(
         () -> {
-          setpoint = state.getAngle().in(Rotations);
-          heightMotor.setControl(heightControl.withPosition(state.getAngle().in(Rotations)));
+          heightMotor.setControl(heightControl.withPosition(Degrees.of(tunableHeightHeight.get())));
         });
   }
 
@@ -232,6 +255,31 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.Feedback.SensorToMechanismRatio = kInputToOutputSpinGearRatio;
     return config;
+  }
+
+  private TalonFXConfiguration generateTunableHeightConfig() {
+    return IntakeConstants.generateHeightConfig(
+        tunableHeightG.get(),
+        tunableHeightS.get(),
+        tunableHeightA.get(),
+        tunableHeightV.get(),
+        tunableHeightP.get(),
+        tunableHeightI.get(),
+        tunableHeightD.get(),
+        tunableHeightGravOffset.get());
+  }
+
+  public void detectTunableHeightChanges() {
+    if (tunableHeightG.hasChanged()
+        || tunableHeightS.hasChanged()
+        || tunableHeightA.hasChanged()
+        || tunableHeightV.hasChanged()
+        || tunableHeightP.hasChanged()
+        || tunableHeightI.hasChanged()
+        || tunableHeightD.hasChanged()
+        || tunableHeightGravOffset.hasChanged()) {
+      this.heightMotor.getConfigurator().apply(generateTunableHeightConfig());
+    }
   }
 
   public void detectTunableIntakeSpinChanges() {
