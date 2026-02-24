@@ -13,6 +13,7 @@ import static frc.robot.subsystems.Vision.VisionConstants.kHubLocation;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.epilogue.Logged;
@@ -22,8 +23,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -37,7 +39,6 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.gamepieces.GamePiece;
 
 @Logged
 public class RobotContainer {
@@ -74,6 +75,8 @@ public class RobotContainer {
   private final SerializerSubsystem serializer =
       new SerializerSubsystem(new TalonFX(18, kCanBusBlinky));
 
+  private SendableChooser<Command> autoChooser;
+
   @Logged(name = "Shooter")
   public final Shooter shooter =
       new Shooter(
@@ -86,11 +89,14 @@ public class RobotContainer {
   public RobotContainer() {
     NamedCommands.registerCommand("goToHub", goToHub());
     NamedCommands.registerCommand("Climb", new PrintCommand("Implement it plz"));
-    NamedCommands.registerCommand("Shoot Balls", new PrintCommand("Implement it plz"));
-    NamedCommands.registerCommand("Stop Shoot", new PrintCommand("Implement it plz"));
-    NamedCommands.registerCommand("Scoop", new PrintCommand("Implement it plz"));
-    NamedCommands.registerCommand("Stop Scoop", new PrintCommand("Implement it plz"));
+    NamedCommands.registerCommand("Shoot Balls", (indexer.spin10V().andThen(serializer.spin())));
+    NamedCommands.registerCommand("Stop Shoot", indexer.stopSpin().andThen(serializer.stopSpin()));
+    NamedCommands.registerCommand("Scoop", intake.spin5V());
+    NamedCommands.registerCommand("Stop Scoop", intake.stopSpin());
 
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    shooter.setDefaultCommand(shooter.runShooterControl());
     configureBindings();
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
@@ -134,23 +140,21 @@ public class RobotContainer {
                     point.withModuleDirection(
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-    driveController.povLeft().toggleOnTrue(shooter.runShooterControl());
-
     driveController
         .rightBumper()
         .onTrue(indexer.spin10V().andThen(serializer.spin()))
         .onFalse(indexer.stopSpin().andThen(serializer.stopSpin()));
-    driveController
-        .leftTrigger()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  var pieces = SimulatedArena.getInstance().getGamePiecesByType("Fuel");
-                  for (GamePiece fuel : pieces) {
+    // driveController
+    //     .leftTrigger()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //             () -> {
+    //               var pieces = SimulatedArena.getInstance().getGamePiecesByType("Fuel");
+    //               for (GamePiece fuel : pieces) {
 
-                    SimulatedArena.getInstance().removePiece(fuel);
-                  }
-                }));
+    //                 SimulatedArena.getInstance().removePiece(fuel);
+    //               }
+    //             }));
 
     driveController.y().onTrue(indexer.spin10V()).onFalse(indexer.stopSpin());
 
@@ -161,20 +165,12 @@ public class RobotContainer {
             shooter
                 .setFlywheelVelocity(RotationsPerSecond.of(0))
                 .andThen(shooter.setHoodAngle(Degrees.of(5))));
-    driveController
-        .povDown()
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    drivetrain.resetPose(
-                        new Pose2d(
-                            Meters.of(3.547), Meters.of(4.051), new Rotation2d(Degrees.of(0))))));
 
     // Reset the field-centric heading on left bumper press.
     driveController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
-    driveController.povLeft().onTrue(Commands.runOnce(() -> shooter.shootSimulatedProjectile()));
+    // driveController.povLeft().onTrue(Commands.runOnce(() -> shooter.shootSimulatedProjectile()));
 
     driveController.x().toggleOnTrue(intake.spin5V()).toggleOnFalse(intake.stopSpin());
     driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
@@ -222,7 +218,7 @@ public class RobotContainer {
 
   private SwerveRequest.FieldCentricFacingAngle pointAtHub =
       new SwerveRequest.FieldCentricFacingAngle()
-          .withHeadingPID(16, 2, 0)
+          .withHeadingPID(6, 1, 0)
           .withDeadband(MaxSpeed * 0.1);
 
   public Command goToHub() {

@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
@@ -541,13 +540,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         && isWithinTolerance(getHoodPosition(), Degrees.of(90), Degrees.of(0.01))) {
       hoodMotor.setPosition(Degrees.of(90));
     }
-    var controller = new CommandXboxController(0);
-    if (timeLastBall >= 15 && controller.rightBumper().getAsBoolean()) {
-      this.shootSimulatedProjectile();
-      timeLastBall = 0;
-    } else {
-      timeLastBall += 1;
-    }
+    // var controller = new CommandXboxController(0);
+    // if (timeLastBall >= 15 && controller.rightBumper().getAsBoolean()) {
+    //   this.shootSimulatedProjectile();
+    //   timeLastBall = 0;
+    // } else {
+    //   timeLastBall += 1;
+    // }
     detectTunableFlywheelChanges();
     detectTunableHoodChanges();
   }
