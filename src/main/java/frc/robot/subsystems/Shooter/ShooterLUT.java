@@ -8,7 +8,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.RobotContainer;
+import frc.robot.utils.PointingUtil;
 import java.util.Optional;
 
 public class ShooterLUT {
@@ -47,7 +47,7 @@ public class ShooterLUT {
         return Optional.of(
             new SOTMSetpoint(
                 getSpeedAndRotation(distance),
-                RobotContainer.getAngleToHub(iteratedPose),
+                PointingUtil.getAngleToHub(iteratedPose),
                 iteratedPose));
       }
       iterations += 1;

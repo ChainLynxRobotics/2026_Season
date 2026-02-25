@@ -7,10 +7,9 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static frc.robot.Constants.getAlliance;
-import static frc.robot.Constants.getHubLocation2d;
 import static frc.robot.Constants.kCanBusBlinky;
 import static frc.robot.Constants.kCanBusRio;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kShooterLocation;
+import static frc.robot.utils.PointingUtil.*;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -29,6 +28,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -41,8 +41,10 @@ import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.utils.PointingUtil;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.gamepieces.GamePiece;
 
 @Logged
 public class RobotContainer {
@@ -148,17 +150,6 @@ public class RobotContainer {
         .rightBumper()
         .onTrue(indexer.spin10V().andThen(serializer.spin()))
         .onFalse(indexer.stopSpin().andThen(serializer.stopSpin()));
-    // driveController
-    //     .leftTrigger()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //             () -> {
-    //               var pieces = SimulatedArena.getInstance().getGamePiecesByType("Fuel");
-    //               for (GamePiece fuel : pieces) {
-
-    //                 SimulatedArena.getInstance().removePiece(fuel);
-    //               }
-    //             }));
 
     driveController.y().onTrue(indexer.spin10V()).onFalse(indexer.stopSpin());
 
@@ -174,10 +165,25 @@ public class RobotContainer {
     driveController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
-    // driveController.povLeft().onTrue(Commands.runOnce(() -> shooter.shootSimulatedProjectile()));
 
     driveController.x().toggleOnTrue(intake.spin5V()).toggleOnFalse(intake.stopSpin());
     driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
+
+    if (RobotBase.isReal()) return;
+
+    driveController.povLeft().onTrue(Commands.runOnce(() -> shooter.shootSimulatedProjectile()));
+
+    driveController
+        .leftTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  var pieces = SimulatedArena.getInstance().getGamePiecesByType("Fuel");
+                  for (GamePiece fuel : pieces) {
+
+                    SimulatedArena.getInstance().removePiece(fuel);
+                  }
+                }));
 
     // driveController
     //     .y()
@@ -235,7 +241,9 @@ public class RobotContainer {
                             getAlliance().equals(DriverStation.Alliance.Red)
                                 ? new Rotation2d(Degrees.of(180))
                                 : new Rotation2d())) // We want our rotation to not be field centric
+                //
                 // but we do want our driving to be so we
+                //
                 // manually flip the rotation
                 // .withTargetRateFeedforward(getTOFRotationalVelocityToHub())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
@@ -252,72 +260,30 @@ public class RobotContainer {
   }
 
   public Rotation2d getAngleToHub() {
-    return getAngleToHub(drivetrain.getPose());
-  }
-
-  public static Rotation2d getAngleToHub(Pose2d robotPose) {
-    return Shooter.getShooterPose(robotPose)
-        .getTranslation()
-        .minus(getHubLocation2d().getTranslation())
-        .getAngle()
-        .plus(kShooterLocation.getRotation());
-  }
-
-  Rotation2d lastRotation = new Rotation2d();
-
-  public Rotation2d getAngleToHubTOF(Pose2d robotPose, ChassisSpeeds robotSpeeds) {
-    var setpoint = ShooterLUT.generateShootOnTheMoveSetpoint(robotPose, robotSpeeds);
-    if (setpoint.isEmpty()) {
-      return lastRotation;
-    }
-    lastRotation = setpoint.get().robotRotation();
-    return lastRotation;
+    return PointingUtil.getAngleToHub(drivetrain.getPose());
   }
 
   public Rotation2d getAngleToHubTOF() {
-    return getAngleToHubTOF(
+    return PointingUtil.getAngleToHubTOF(
         drivetrain.getPose(),
         ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds, drivetrain.getPose().getRotation()));
   }
 
   public AngularVelocity getTOFRotationalVelocityToHub() {
-    var dt = 0.01;
     var drivetrainFieldRelitiveSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds, drivetrain.getPose().getRotation());
-    var poseInDt =
-        new Pose2d(
-            drivetrain.getPose().getX() + drivetrainFieldRelitiveSpeeds.vxMetersPerSecond * dt,
-            drivetrain.getPose().getY() + drivetrainFieldRelitiveSpeeds.vyMetersPerSecond * dt,
-            new Rotation2d(
-                drivetrain.getPose().getRotation().getRadians()
-                    + drivetrainFieldRelitiveSpeeds.omegaRadiansPerSecond * dt));
-    return RotationsPerSecond.of(
-        getAngleToHubTOF(poseInDt, drivetrainFieldRelitiveSpeeds)
-                .getMeasure()
-                .minus(
-                    getAngleToHubTOF(drivetrain.getPose(), drivetrainFieldRelitiveSpeeds)
-                        .getMeasure())
-                .in(Rotations)
-            / dt);
+    return PointingUtil.getTOFRotationalVelocityToHub(
+        drivetrain.getPose(), drivetrainFieldRelitiveSpeeds);
   }
 
   public AngularVelocity getRotationalVelocityToHub() {
-    var dt = 0.01;
     var drivetrainFieldRelitiveSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds, drivetrain.getPose().getRotation());
-    var poseInDt =
-        new Pose2d(
-            drivetrain.getPose().getX() + drivetrainFieldRelitiveSpeeds.vxMetersPerSecond * dt,
-            drivetrain.getPose().getY() + drivetrainFieldRelitiveSpeeds.vyMetersPerSecond * dt,
-            new Rotation2d(
-                drivetrain.getPose().getRotation().getRadians()
-                    + drivetrainFieldRelitiveSpeeds.omegaRadiansPerSecond * dt));
-    return RotationsPerSecond.of(
-        getAngleToHub(poseInDt).getMeasure().minus(getAngleToHub().getMeasure()).in(Rotations)
-            / dt);
+    return PointingUtil.getRotationalVelocityToHub(
+        drivetrain.getPose(), drivetrainFieldRelitiveSpeeds);
   }
 
   Pose2d lastTOFPose = new Pose2d();
