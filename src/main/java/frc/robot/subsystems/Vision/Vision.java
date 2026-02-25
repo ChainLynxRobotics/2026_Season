@@ -140,6 +140,8 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     for (var cameraRecord : cameras) {
 
+      List<PhotonTrackedTarget> allTargets = new ArrayList<>();
+
       List<PhotonPipelineResult> data = cameraRecord.camera.getAllUnreadResults();
 
       for (PhotonPipelineResult result : data) {
@@ -149,6 +151,8 @@ public class Vision extends SubsystemBase {
           continue;
         }
         EstimatedRobotPose poseResult = optionalPoseResult.get();
+
+        allTargets.addAll(poseResult.targetsUsed);
 
         // goes through checks to see if to discard the data
         if (!isOnField(poseResult)
@@ -167,6 +171,8 @@ public class Vision extends SubsystemBase {
 
         updateDrivetrain.accept(swervePose);
       }
+
+      populateLogs(allTargets);
     }
   }
 
@@ -194,5 +200,63 @@ public class Vision extends SubsystemBase {
   public Transform3d[] getCameraPositions() {
     Transform3d[] tempStorage = new Transform3d[kCameraOffsets.size()];
     return kCameraOffsets.toArray(tempStorage);
+  }
+
+  // tag pose, distance, ambiguity
+  private Pose3d closestTagPose = new Pose3d();
+  private double closestTagDistance = -1;
+  private double closestTagAmbiguity = -1;
+
+  private Pose3d furthestTagPose = new Pose3d();
+  private double furthestTagDistance = -1;
+  private double furthestTagAmbiguity = -1;
+
+  public Pose3d getClosestTagPose() {
+    return closestTagPose;
+  }
+
+  public double getClosestTagDistance() {
+    return closestTagDistance;
+  }
+
+  public double getClosestTagAmbiguity() {
+    return closestTagAmbiguity;
+  }
+
+  public Pose3d getFurthestTagPose() {
+    return furthestTagPose;
+  }
+
+  public double getFurthestTagDistance() {
+    return furthestTagDistance;
+  }
+
+  public double getFurthestTagAmbiguity() {
+    return furthestTagAmbiguity;
+  }
+
+  public void populateLogs(List<PhotonTrackedTarget> allTargets) {
+    double minDist = Double.MAX_VALUE;
+    double maxDist = -1;
+
+    for (int i = 0; i < allTargets.size(); i++) {
+      PhotonTrackedTarget target = allTargets.get(i);
+      double distance = target.bestCameraToTarget.getTranslation().getDistance(new Translation3d());
+      Pose3d pose = kTagLayout.getTagPose(target.getFiducialId()).orElse(new Pose3d());
+      double ambiguity = target.getPoseAmbiguity();
+
+      if (distance < minDist) {
+        minDist = distance;
+        closestTagAmbiguity = ambiguity;
+        closestTagDistance = distance;
+        closestTagPose = pose;
+      }
+      if (distance > maxDist) {
+        maxDist = distance;
+        furthestTagAmbiguity = ambiguity;
+        furthestTagDistance = distance;
+        furthestTagPose = pose;
+      }
+    }
   }
 }
