@@ -157,6 +157,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
   }
 
+  public static void pathplannerPointAtHub(Rotation2d angle) {
+    PPHolonomicDriveController.overrideRotationFeedback(
+        () -> {
+          // find a number to replace the 5
+          return 0.00001 * angle.getRotations();
+        });
+  }
+
+  public static void pathplannerClearOverride() {
+    PPHolonomicDriveController.clearRotationFeedbackOverride();
+  }
+
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *

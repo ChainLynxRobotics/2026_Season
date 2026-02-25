@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static frc.robot.Constants.getAlliance;
 import static frc.robot.Constants.getHubLocation2d;
 import static frc.robot.Constants.kCanBusBlinky;
@@ -40,6 +41,7 @@ import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
+import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 
 @Logged
@@ -232,10 +234,17 @@ public class RobotContainer {
                         .minus(
                             getAlliance().equals(DriverStation.Alliance.Red)
                                 ? new Rotation2d(Degrees.of(180))
-                                : new Rotation2d())) // We want our rotation to not be field centric but we do want our driving to be so we manually flip the rotation
+                                : new Rotation2d())) // We want our rotation to not be field centric
+                // but we do want our driving to be so we
+                // manually flip the rotation
                 // .withTargetRateFeedforward(getTOFRotationalVelocityToHub())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
+  }
+
+  public Command goToHub(Supplier<ChassisSpeeds> Speed) {
+    return run(() -> CommandSwerveDrivetrain.pathplannerPointAtHub(getAngleToHub()))
+        .finallyDo(() -> CommandSwerveDrivetrain.pathplannerClearOverride());
   }
 
   public Rotation2d hubTrackingError() {
@@ -328,7 +337,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("0");
+    return new PathPlannerAuto("shoot");
 
     // Simple drive forward auton
     /*
