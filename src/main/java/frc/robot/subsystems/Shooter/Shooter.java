@@ -217,12 +217,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   /**
    * @return The speed and position of the shooter to shoot into the hub.
    */
-  public ShooterSetpoint getCurrentSetpoint() {
+  public ShooterSetpoint getCurrentSetpoint(Pose2d targetPose) {
     var setpoint =
         ShooterLUT.generateShootOnTheMoveSetpoint(
             drivetrainPose.get(),
             ChassisSpeeds.fromRobotRelativeSpeeds(
-                chassisSpeeds.get(), drivetrainPose.get().getRotation()));
+                chassisSpeeds.get(), drivetrainPose.get().getRotation()),
+            targetPose);
     if (setpoint.isEmpty()) {
       return lastShooterSetpoint;
     }
@@ -233,26 +234,22 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   /**
    * @return Distance from the shooter to the hub
    */
-  public static Distance getDistance(Pose2d robotPose) {
+  public static Distance getDistanceToHub(Pose2d robotPose) {
+    return getDistanceToPose(robotPose, getHubLocation2d());
+  }
+
+  public static Distance getDistanceToPose(Pose2d robotPose, Pose2d targetPose) {
     return Meters.of(
         Math.sqrt(
-            Math.pow(getRelativeHubLocation(robotPose).getX(), 2)
-                + Math.pow(getRelativeHubLocation(robotPose).getY(), 2)));
-  }
-
-  public LinearVelocity getCurrentSetpointMPS() {
-    return getCurrentSetpoint().flywheelSurfaceSpeed();
-  }
-
-  public Angle getCurrentSetpointHoodAngle() {
-    return getCurrentSetpoint().rotation();
+            Math.pow(getRelativeLocation(robotPose, targetPose).getX(), 2)
+                + Math.pow(getRelativeLocation(robotPose, targetPose).getY(), 2)));
   }
 
   /**
    * @return Distance from the shooter to the hub
    */
   public Distance getDistance() {
-    return getDistance(drivetrainPose.get());
+    return getDistanceToHub(drivetrainPose.get());
   }
 
   public Command sinHoodTest() {
@@ -272,8 +269,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public static Pose2d getRelativeHubLocation(Pose2d robotPose) {
+    return getRelativeLocation(robotPose, getHubLocation2d());
+  }
+
+  public static Pose2d getRelativeLocation(Pose2d robotPose, Pose2d targetPose) {
     Pose2d pose = getShooterPose(robotPose);
-    return getHubLocation2d().relativeTo(pose);
+    return targetPose.relativeTo(pose);
   }
 
   public Pose2d getRelativeHubLocation() {
@@ -308,11 +309,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     //       setHoodAngleInternal(Degrees.of(tunableHoodAngle.get()));
     //     })
     //     .withName("Shooter Tuning");
+    // TODO: REPLACE HUB WITH VARIABLE TARGET
     return run(() -> {
           setFlywheelVelocityInternal(
               RotationsPerSecond.of(
-                  getCurrentSetpoint().flywheelSurfaceSpeed().in(MetersPerSecond)));
-          setHoodAngleInternal(getCurrentSetpoint().rotation());
+                  getCurrentSetpoint(getHubLocation2d())
+                      .flywheelSurfaceSpeed()
+                      .in(MetersPerSecond)));
+          setHoodAngleInternal(getCurrentSetpoint(getHubLocation2d()).rotation());
         })
         .withName("Shooter control");
   }
@@ -325,18 +329,21 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return runOnce(() -> setFlywheelVelocityInternal(velocity)).withName("Flywheel velocity");
   }
 
+  // TODO: REPLACE HUB WITH VARIABLE TARGET
   /**
    * @return The target angular velocity for the flywheel
    */
   public AngularVelocity targetVelocity() {
-    return convertLinearVelocityToAngular(getCurrentSetpoint().flywheelSurfaceSpeed());
+    return convertLinearVelocityToAngular(
+        getCurrentSetpoint(getHubLocation2d()).flywheelSurfaceSpeed());
   }
 
+  // TODO: REPLACE HUB WITH VARIABLE TARGET
   /**
    * @return The target linear velocity for the flywheel
    */
   public LinearVelocity targetLinearVelocity() {
-    return getCurrentSetpoint().flywheelSurfaceSpeed();
+    return getCurrentSetpoint(getHubLocation2d()).flywheelSurfaceSpeed();
   }
 
   /**
@@ -575,6 +582,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     hoodMotorSim.setRotorAcceleration(hoodSim.getAngularAcceleration().times(kHoodGearRatio));
   }
 
+  // TODO: REPLACE HUB WITH VARIABLE TARGET
   /** Shoots a fuel in maple sim */
   public void shootSimulatedProjectile() {
     SimulatedArena.getInstance()
@@ -586,9 +594,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                     chassisSpeeds.get(), drivetrainPose.get().getRotation()),
                 kMapleSimSHooterRotationAlsoNotJank.plus(simPose.get().getRotation()),
                 kShooterHeight,
-                getCurrentSetpoint()
+                getCurrentSetpoint(getHubLocation2d())
                     .flywheelSurfaceSpeed()
                     .times(kEstimatedFlywheelSpeedToFuelSpeed),
-                getCurrentSetpoint().rotation().plus(Degrees.of(90))));
+                getCurrentSetpoint(getHubLocation2d()).rotation().plus(Degrees.of(90))));
   }
 }

@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -37,4 +38,9 @@ public class Constants {
   public static Pose2d getHubLocation2d() {
     return getHubLocation().toPose2d();
   }
+
+  public static final Pose2d kBlueAllienceCorner1 = new Pose2d();
+  public static final Pose2d kBlueAllienceCorner2 = new Pose2d(Inches.of(182.11), Inches.of(317.69), new Rotation2d());
+  public static final Pose2d kRedAllienceCorner1 = new Pose2d(Inches.of(469.11), Inches.of(0), new Rotation2d());
+  public static final Pose2d kRedAllienceCorner2 = new Pose2d(Inches.of(651.22), Inches.of(317.69), new Rotation2d());
 }

@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static frc.robot.Constants.getAlliance;
+import static frc.robot.Constants.getHubLocation2d;
 import static frc.robot.Constants.kCanBusBlinky;
 import static frc.robot.Constants.kCanBusRio;
 import static frc.robot.utils.PointingUtil.*;
@@ -293,7 +294,8 @@ public class RobotContainer {
         ShooterLUT.generateShootOnTheMoveSetpoint(
             drivetrain.getPose(),
             ChassisSpeeds.fromRobotRelativeSpeeds(
-                drivetrain.getState().Speeds, drivetrain.getPose().getRotation()));
+                drivetrain.getState().Speeds, drivetrain.getPose().getRotation()),
+            getHubLocation2d());
     if (setpoint.isEmpty()) {
       return lastTOFPose;
     }

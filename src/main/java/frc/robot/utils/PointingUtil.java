@@ -1,6 +1,7 @@
 package frc.robot.utils;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.getAlliance;
 import static frc.robot.Constants.getHubLocation2d;
 import static frc.robot.subsystems.Shooter.ShooterConstants.kShooterLocation;
 
@@ -14,10 +15,18 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 
 public class PointingUtil {
 
+  public static Pose2d getShootingTarget(Pose2d robotPose) {
+    if (getAlliance() === )
+  }
+
   public static Rotation2d getAngleToHub(Pose2d robotPose) {
+    return getAngleToPose(robotPose, getHubLocation2d());
+  }
+
+  public static Rotation2d getAngleToPose(Pose2d robotPose, Pose2d targetPose) {
     return Shooter.getShooterPose(robotPose)
         .getTranslation()
-        .minus(getHubLocation2d().getTranslation())
+        .minus(targetPose.getTranslation())
         .getAngle()
         .plus(kShooterLocation.getRotation());
   }
@@ -25,7 +34,12 @@ public class PointingUtil {
   private static Rotation2d lastRotation = new Rotation2d();
 
   public static Rotation2d getAngleToHubTOF(Pose2d robotPose, ChassisSpeeds robotSpeeds) {
-    var setpoint = ShooterLUT.generateShootOnTheMoveSetpoint(robotPose, robotSpeeds);
+    return getAngleToPoseTOF(robotPose, robotSpeeds, getHubLocation2d());
+  }
+
+  public static Rotation2d getAngleToPoseTOF(
+      Pose2d robotPose, ChassisSpeeds robotSpeeds, Pose2d targetPose) {
+    var setpoint = ShooterLUT.generateShootOnTheMoveSetpoint(robotPose, robotSpeeds, targetPose);
     if (setpoint.isEmpty()) {
       return lastRotation;
     }

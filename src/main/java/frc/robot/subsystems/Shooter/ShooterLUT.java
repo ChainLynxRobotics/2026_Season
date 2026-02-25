@@ -27,10 +27,10 @@ public class ShooterLUT {
   private static final Distance kRecursionTarget = Meters.of(0.01);
 
   public static Optional<SOTMSetpoint> generateShootOnTheMoveSetpoint(
-      Pose2d robotPose, ChassisSpeeds robotSpeeds) {
+      Pose2d robotPose, ChassisSpeeds robotSpeeds, Pose2d targetPose) {
     var lastPose = new Pose2d(Double.MAX_VALUE, Double.MAX_VALUE, new Rotation2d());
     var iteratedPose = robotPose;
-    var distance = Shooter.getDistance(robotPose);
+    var distance = Shooter.getDistanceToPose(robotPose, targetPose);
     var timeOfFlight = kShooterTOFMap.get(distance.in(Meters));
     var iterations = 0;
     while (iterations < kMaxIterations) {
@@ -40,14 +40,14 @@ public class ShooterLUT {
               robotPose.getX() + robotSpeeds.vxMetersPerSecond * timeOfFlight,
               robotPose.getY() + robotSpeeds.vyMetersPerSecond * timeOfFlight,
               robotPose.getRotation());
-      distance = Shooter.getDistance(iteratedPose);
+      distance = Shooter.getDistanceToPose(iteratedPose, targetPose);
       timeOfFlight = kShooterTOFMap.get(distance.in(Meters));
       if (iteratedPose.getTranslation().getDistance(lastPose.getTranslation())
           <= kRecursionTarget.in(Meters)) {
         return Optional.of(
             new SOTMSetpoint(
                 getSpeedAndRotation(distance),
-                PointingUtil.getAngleToHub(iteratedPose),
+                PointingUtil.getAngleToPose(iteratedPose, targetPose),
                 iteratedPose));
       }
       iterations += 1;
