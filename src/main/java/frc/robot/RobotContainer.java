@@ -6,11 +6,11 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
-import static frc.robot.Constants.getAlliance;
-import static frc.robot.Constants.getHubLocation2d;
+import static frc.robot.Constants.*;
 import static frc.robot.Constants.kCanBusBlinky;
 import static frc.robot.Constants.kCanBusRio;
 import static frc.robot.utils.PointingUtil.*;
+import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -75,7 +75,7 @@ public class RobotContainer {
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
   private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio));
+      new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusBlinky));
 
   private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17, kCanBusBlinky));
 
@@ -94,7 +94,7 @@ public class RobotContainer {
           new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky));
 
   public RobotContainer() {
-    NamedCommands.registerCommand("goToHub", goToHub());
+    NamedCommands.registerCommand("goToHub", autoAimShooter());
     NamedCommands.registerCommand("Climb", new PrintCommand("Implement it plz"));
     NamedCommands.registerCommand("Shoot Balls", (indexer.spin10V().andThen(serializer.spin())));
     NamedCommands.registerCommand("Stop Shoot", indexer.stopSpin().andThen(serializer.stopSpin()));
@@ -103,7 +103,7 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    shooter.setDefaultCommand(shooter.runShooterControl());
+    // shooter.setDefaultCommand(shooter.runShooterControl());
     configureBindings();
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
@@ -154,7 +154,7 @@ public class RobotContainer {
 
     driveController.y().onTrue(indexer.spin10V()).onFalse(indexer.stopSpin());
 
-    driveController.a().toggleOnTrue(goToHub());
+    driveController.a().toggleOnTrue(autoAimShooter());
     driveController
         .povRight()
         .onTrue(
@@ -227,24 +227,22 @@ public class RobotContainer {
     //     .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
   }
 
-  private SwerveRequest.FieldCentricFacingAngle pointAtHub =
+  private SwerveRequest.FieldCentricFacingAngle shooterAming =
       new SwerveRequest.FieldCentricFacingAngle()
           .withHeadingPID(6, 1, 0)
           .withDeadband(MaxSpeed * 0.1);
 
-  public Command goToHub() {
+  public Command autoAimShooter() {
     return drivetrain.applyRequest(
         () ->
-            pointAtHub
+            shooterAming
                 .withTargetDirection(
-                    getAngleToHubTOF()
+                    getAngleToTargetTOF()
                         .minus(
                             getAlliance().equals(DriverStation.Alliance.Red)
                                 ? new Rotation2d(Degrees.of(180))
                                 : new Rotation2d())) // We want our rotation to not be field centric
-                //
                 // but we do want our driving to be so we
-                //
                 // manually flip the rotation
                 // .withTargetRateFeedforward(getTOFRotationalVelocityToHub())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
@@ -271,6 +269,14 @@ public class RobotContainer {
             drivetrain.getState().Speeds, drivetrain.getPose().getRotation()));
   }
 
+  public Rotation2d getAngleToTargetTOF() {
+    return PointingUtil.getAngleToPoseTOF(
+        drivetrain.getPose(),
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            drivetrain.getState().Speeds, drivetrain.getPose().getRotation()),
+        getShootingTarget(drivetrain.getPose()));
+  }
+
   public AngularVelocity getTOFRotationalVelocityToHub() {
     var drivetrainFieldRelitiveSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -295,13 +301,17 @@ public class RobotContainer {
             drivetrain.getPose(),
             ChassisSpeeds.fromRobotRelativeSpeeds(
                 drivetrain.getState().Speeds, drivetrain.getPose().getRotation()),
-            getHubLocation2d());
+            getShootingTarget(drivetrain.getPose()));
     if (setpoint.isEmpty()) {
       return lastTOFPose;
     }
     var pose = setpoint.get().iteratedPose();
     lastTOFPose = new Pose2d(pose.getX(), pose.getY(), setpoint.get().robotRotation());
     return lastTOFPose;
+  }
+
+  public Pose2d getTarget() {
+    return getShootingTarget(drivetrain.getPose());
   }
 
   public Command getAutonomousCommand() {

@@ -1,22 +1,53 @@
 package frc.robot.utils;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.getAlliance;
-import static frc.robot.Constants.getHubLocation2d;
+import static frc.robot.Constants.*;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kFunnlingLocation;
 import static frc.robot.subsystems.Shooter.ShooterConstants.kShooterLocation;
+import static frc.robot.subsystems.Vision.VisionConstants.kFieldHeight;
+import static frc.robot.subsystems.Vision.VisionConstants.kFieldWidth;
+import static frc.robot.utils.RobotMath.getDistanceBetweenPoses;
+import static frc.robot.utils.RobotMath.isPoseInSquare;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterLUT;
 
 public class PointingUtil {
 
   public static Pose2d getShootingTarget(Pose2d robotPose) {
-    if (getAlliance() === )
+    var isInAllianceZone = false;
+    if (getAlliance() == DriverStation.Alliance.Blue) {
+      isInAllianceZone = isPoseInSquare(robotPose, kBlueAllienceCorner1, kBlueAllienceCorner2);
+    } else {
+      isInAllianceZone = isPoseInSquare(robotPose, kRedAllienceCorner1, kRedAllienceCorner2);
+    }
+
+    if (isInAllianceZone) return getHubLocation2d();
+
+    var funnlingPoint1 =
+        getAlliance() == Alliance.Blue
+            ? kFunnlingLocation
+            : new Pose2d(
+                kFieldWidth.minus(kFunnlingLocation.getMeasureX()),
+                kFunnlingLocation.getMeasureY(),
+                new Rotation2d());
+    var funnlingPoint2 =
+        new Pose2d(
+            funnlingPoint1.getMeasureX(),
+            kFieldHeight.minus(funnlingPoint1.getMeasureY()),
+            new Rotation2d());
+
+    return getDistanceBetweenPoses(funnlingPoint1, robotPose)
+            .lt(getDistanceBetweenPoses(funnlingPoint2, robotPose))
+        ? funnlingPoint1
+        : funnlingPoint2;
   }
 
   public static Rotation2d getAngleToHub(Pose2d robotPose) {
