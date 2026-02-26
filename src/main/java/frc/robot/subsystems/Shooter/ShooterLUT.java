@@ -118,7 +118,8 @@ public class ShooterLUT {
   private static InterpolatingDoubleTreeMap generateTOFMap() {
     var map = new InterpolatingDoubleTreeMap();
     if (RobotBase.isReal()) {
-
+      map.put(0.0, 0.0);
+      map.put(1.0, 0.0);
     } else {
       map.put(1.5, 1.1833);
       map.put(2.0, 1.16);
