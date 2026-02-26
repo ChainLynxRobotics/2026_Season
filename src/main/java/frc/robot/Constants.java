@@ -40,7 +40,10 @@ public class Constants {
   }
 
   public static final Pose2d kBlueAllienceCorner1 = new Pose2d();
-  public static final Pose2d kBlueAllienceCorner2 = new Pose2d(Inches.of(182.11), Inches.of(317.69), new Rotation2d());
-  public static final Pose2d kRedAllienceCorner1 = new Pose2d(Inches.of(469.11), Inches.of(0), new Rotation2d());
-  public static final Pose2d kRedAllienceCorner2 = new Pose2d(Inches.of(651.22), Inches.of(317.69), new Rotation2d());
+  public static final Pose2d kBlueAllienceCorner2 =
+      new Pose2d(Inches.of(182.11), Inches.of(317.69), new Rotation2d());
+  public static final Pose2d kRedAllienceCorner1 =
+      new Pose2d(Inches.of(469.11), Inches.of(0), new Rotation2d());
+  public static final Pose2d kRedAllienceCorner2 =
+      new Pose2d(Inches.of(651.22), Inches.of(317.69), new Rotation2d());
 }
