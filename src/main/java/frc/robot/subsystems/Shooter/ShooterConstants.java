@@ -22,6 +22,9 @@ public class ShooterConstants {
   public static final Rotation2d kMapleSimSHooterRotationAlsoNotJank =
       new Rotation2d(Degrees.of(-90));
 
+  public static final Pose2d kFunnlingLocation =
+      new Pose2d(Inches.of(90), Inches.of(90), new Rotation2d());
+
   public static final Distance kShooterHeight = Inches.of(18.442849);
 
   public static final Distance kFlywheelRadius = Inches.of(2);
