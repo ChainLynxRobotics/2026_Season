@@ -10,7 +10,7 @@ public class IndexerConstants {
   public static AngularVelocity kGoalIndexerVelocity = RotationsPerSecond.of(3);
   public static double kT = 0.02;
 
-  public static double kIndexerGearRatio = 15 / 12;
+  public static double kIndexerGearRatio = 12;
 
   public static double kIndexerP = 1;
   public static double kIndexerI = 0.5;
