@@ -103,7 +103,7 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    // shooter.setDefaultCommand(shooter.runShooterControl());
+    shooter.setDefaultCommand(shooter.runShooterControl());
     configureBindings();
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
@@ -154,7 +154,7 @@ public class RobotContainer {
 
     driveController.y().onTrue(indexer.spin10V()).onFalse(indexer.stopSpin());
 
-    driveController.a().toggleOnTrue(autoAimShooter());
+    driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     driveController
         .povRight()
         .onTrue(
@@ -163,7 +163,7 @@ public class RobotContainer {
                 .andThen(shooter.setHoodAngle(Degrees.of(5))));
 
     // Reset the field-centric heading on left bumper press.
-    driveController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    driveController.leftBumper().toggleOnTrue(autoAimShooter());
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
