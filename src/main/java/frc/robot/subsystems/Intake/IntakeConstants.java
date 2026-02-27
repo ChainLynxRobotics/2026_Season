@@ -52,6 +52,8 @@ public class IntakeConstants {
           .withKG(kHeightG)
           .withKS(kHeightS);
 
+  // Joe: The method params (kG, kS, etc.) aren't used below — just the static constants. Is that
+  // intentional?
   public static TalonFXConfiguration generateHeightConfig(
       double kG,
       double kS,
@@ -74,11 +76,15 @@ public class IntakeConstants {
             .withGravityArmPositionOffset(Degrees.of(gravOffset))
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     var config = new TalonFXConfiguration().withSlot0(gains);
+    // Joe: This sets Coast, but the constructor in IntakeSubsystem sets Brake — could the arm
+    // backdrive under gravity after a tunable change?
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotionMagic.MotionMagicCruiseVelocity = kIntakeHeightMaxVelocity.in(RotationsPerSecond);
     config.MotionMagic.MotionMagicAcceleration =
         kIntakeHeightMaxAcceleration.in(RotationsPerSecondPerSecond);
     config.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
+    // Joe: The constructor doesn't set an inversion but this does — what happens to the arm if the
+    // motor direction flips while MotionMagic is holding position?
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     return config;
   }
@@ -86,6 +92,8 @@ public class IntakeConstants {
   public static final Voltage kSpinVoltage = Volts.of(5);
 
   public static double kSpinP = 1;
+  // Joe: I-gain of 3.0 seems pretty high — what happens to the integral if a game piece stalls
+  // the roller?
   public static double kSpinI = 3;
   public static double kSpinD = 1.5;
 

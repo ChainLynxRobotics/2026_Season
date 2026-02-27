@@ -64,6 +64,8 @@ public class ShooterLUT {
   private static InterpolatingDoubleTreeMap generateSpeedMap() {
     var map = new InterpolatingDoubleTreeMap();
     if (RobotBase.isReal()) {
+      // Joe: These values are supposed to be flywheel surface speed in m/s, but 60-80 seems really
+      // high for m/s — are these actually RPS from the old shooter? Might need retuning.
       map.put(1.8546, 60.0);
       map.put(2.221275, 65.0);
       map.put(2.647, 65.0);
