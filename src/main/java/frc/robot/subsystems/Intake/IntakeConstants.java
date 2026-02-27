@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.Angle;
@@ -33,13 +34,13 @@ public class IntakeConstants {
           .withMotionMagicCruiseVelocity(kIntakeHeightMaxVelocity)
           .withMotionMagicAcceleration(kIntakeHeightMaxAcceleration);
 
-  public static double kHeightP = 0.5;
+  public static double kHeightP = 50;
   public static double kHeightI = 0;
   public static double kHeightD = 0;
-  public static double kHeightV = 7.47;
-  public static double kHeightA = 0.02;
-  public static double kHeightG = 0.09;
-  public static double kHeightS = 0;
+  public static double kHeightV = 0.1;
+  public static double kHeightA = 0;
+  public static double kHeightG = 0;
+  public static double kHeightS = 0.75;
 
   public static Slot0Configs kIntakeHeightSlot0Config =
       new Slot0Configs()
@@ -78,6 +79,7 @@ public class IntakeConstants {
     config.MotionMagic.MotionMagicAcceleration =
         kIntakeHeightMaxAcceleration.in(RotationsPerSecondPerSecond);
     config.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     return config;
   }
 
