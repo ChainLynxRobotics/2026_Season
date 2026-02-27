@@ -112,6 +112,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     heightMotorConfiguration.Slot0 = kIntakeHeightSlot0Config;
     heightMotorConfiguration.MotionMagic = kIntakeHeightMotionMagic;
     heightMotorConfiguration.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
+    heightMotorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     heightMotor.getConfigurator().apply(heightMotorConfiguration);
 
     spinSimState = spinMotor.getSimState();
@@ -129,8 +130,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableHeightP = new TunableNumber("tunablekHeightP", kHeightP);
     this.tunableHeightI = new TunableNumber("tunablekHeightI", kHeightI);
     this.tunableHeightD = new TunableNumber("tunablekHeightD", kHeightD);
-    this.tunableHeightD = new TunableNumber("tunableHeightHeight", 0);
-    this.tunableHeightGravOffset = new TunableNumber("gravoffset", -05);
+    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 0);
+    this.tunableHeightGravOffset = new TunableNumber("gravoffset", 126.95);
   }
 
   public void runHeightSysId() {
@@ -221,16 +222,31 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     return runOnce(() -> spinMotor.setControl(voltageOut.withOutput(0)));
   }
 
-  public Command setHeight(IntakeHeightState state) {
-    // return runOnce(
-    //     () -> {
-    //       setpoint = state.getAngle().in(Rotations);
-    //       heightMotor.setControl(heightControl.withPosition(state.getAngle().in(Rotations)));
-    //     });
-    return runOnce(
+  // public Command setHeight() {
+  //   return runOnce(
+  //       () -> {
+  //         setpoint = state.getAngle().in(Rotations);
+  //         heightMotor.setControl(heightControl.withPosition(state.getAngle().in(Rotations)));
+  //       });
+  // }
+
+  public Command runIntakeControl() {
+    return run(
         () -> {
           heightMotor.setControl(heightControl.withPosition(Degrees.of(tunableHeightHeight.get())));
+          spinMotor.setControl(new VoltageOut(Volts.of(5)));
         });
+  }
+
+  public Command setHeightToZero() {
+    return runOnce(
+        () -> {
+          heightMotor.setControl(heightControl.withPosition(Degrees.of(0)));
+        });
+  }
+
+  public void zeroHeight() {
+    heightMotor.setPosition(Degrees.of(0));
   }
 
   public double getHeightReference() {
@@ -278,6 +294,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
         || tunableHeightI.hasChanged()
         || tunableHeightD.hasChanged()
         || tunableHeightGravOffset.hasChanged()) {
+      System.out.println("Hight tuned");
       this.heightMotor.getConfigurator().apply(generateTunableHeightConfig());
     }
   }
@@ -293,5 +310,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   @Override
   public void periodic() {
     detectTunableIntakeSpinChanges();
+
+    detectTunableHeightChanges();
   }
 }
