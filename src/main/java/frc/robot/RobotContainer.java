@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static frc.robot.Constants.*;
 import static frc.robot.Constants.kCanBusBlinky;
 import static frc.robot.Constants.kCanBusRio;
@@ -104,6 +105,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
+    intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
@@ -149,18 +151,13 @@ public class RobotContainer {
 
     driveController
         .rightBumper()
-        .onTrue(indexer.spin10V().andThen(serializer.spin()))
+        .onTrue(indexer.spin().andThen(serializer.spin()))
         .onFalse(indexer.stopSpin().andThen(serializer.stopSpin()));
 
-    driveController.y().onTrue(indexer.spin10V()).onFalse(indexer.stopSpin());
+    driveController.y().onTrue(indexer.spin()).onFalse(indexer.stopSpin());
 
     driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-    driveController
-        .povRight()
-        .onTrue(
-            shooter
-                .setFlywheelVelocity(RotationsPerSecond.of(0))
-                .andThen(shooter.setHoodAngle(Degrees.of(5))));
+    // driveController.povRight().whileTrue(intake.setHeight()).onFalse(intake.setHeightToZero());
 
     // Reset the field-centric heading on left bumper press.
     driveController.leftBumper().toggleOnTrue(autoAimShooter());
@@ -169,6 +166,8 @@ public class RobotContainer {
 
     driveController.x().toggleOnTrue(intake.spin5V()).toggleOnFalse(intake.stopSpin());
     driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
+
+    driveController.povLeft().onTrue(runOnce(() -> intake.zeroHeight()).ignoringDisable(true));
 
     if (RobotBase.isReal()) return;
 
