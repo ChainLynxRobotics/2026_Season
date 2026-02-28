@@ -119,30 +119,31 @@ public class RobotContainer {
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
         // Drivetrain will execute this command periodically
-        
+
         drivetrain.applyRequest(
             () -> {
-            if (driveController.b().getAsBoolean()) {
+              if (driveController.b().getAsBoolean()) {
                 return drive
                     .withVelocityX(
                         -driveController.getLeftY()
-                            * MaxSpeed / kSlowMoveRate) // Drive forward with negative Y (forward)
+                            * MaxSpeed
+                            / kSlowMoveRate) // Drive forward with negative Y (forward)
                     .withVelocityY(
-                        -driveController.getLeftX() * MaxSpeed / kSlowMoveRate) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -driveController.getRightX()
-                            * MaxAngularRate);}// Drive counterclockwise with negative X (left)
-            else {                 return drive
+                        -driveController.getLeftX()
+                            * MaxSpeed
+                            / kSlowMoveRate) // Drive left with negative X (left)
+                    .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
+              } // Drive counterclockwise with negative X (left)
+              else {
+                return drive
                     .withVelocityX(
                         -driveController.getLeftY()
                             * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(
                         -driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -driveController.getRightX()
-                            * MaxAngularRate);}// Drive counterclockwise with negative X (left)
-                }
-            ));
+                    .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
+              } // Drive counterclockwise with negative X (left)
+            }));
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
@@ -170,13 +171,15 @@ public class RobotContainer {
     driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     // driveController.povRight().whileTrue(intake.setHeight()).onFalse(intake.setHeightToZero());
 
-
     driveController.leftBumper().toggleOnTrue(autoAimShooter());
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    driveController.x().toggleOnTrue(intake.spin5V()).toggleOnFalse(intake.stopSpin()); //spin intake
-    driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true)); //zero hud
+    driveController
+        .x()
+        .toggleOnTrue(intake.spin5V())
+        .toggleOnFalse(intake.stopSpin()); // spin intake
+    driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true)); // zero hud
 
     driveController.povLeft().onTrue(runOnce(() -> intake.zeroHeight()).ignoringDisable(true));
 
