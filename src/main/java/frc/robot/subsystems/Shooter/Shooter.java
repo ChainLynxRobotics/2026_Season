@@ -3,7 +3,6 @@ package frc.robot.subsystems.Shooter;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.Constants.*;
-import static frc.robot.Constants.getHubLocation2d;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import static frc.robot.utils.RobotMath.*;
 
@@ -38,6 +37,8 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 
 @Logged
 public class Shooter extends SubsystemBase implements AutoCloseable {
+  private double trench = -1;
+
   protected final Supplier<Pose2d> drivetrainPose;
   protected final Supplier<Pose2d> simPose;
   protected final Supplier<ChassisSpeeds> chassisSpeeds;
@@ -319,7 +320,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                   getCurrentSetpoint(getHubLocation2d())
                       .flywheelSurfaceSpeed()
                       .in(MetersPerSecond)));
-          setHoodAngleInternal(getCurrentSetpoint(getHubLocation2d()).rotation());
+          setHoodAngleInternal(calculateHoodAngle());
         })
         .withName("Shooter control");
   }
@@ -560,6 +561,23 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     // }
     detectTunableFlywheelChanges();
     detectTunableHoodChanges();
+  }
+
+  public Angle calculateHoodAngle() {
+    if (isPoseInSquare(drivetrainPose.get(), kBlueTrench1Corner1, kBlueTrench1Corner2)
+        || isPoseInSquare(drivetrainPose.get(), kBlueTrench2Corner1, kBlueTrench2Corner2)
+        || isPoseInSquare(drivetrainPose.get(), kRedTrench1Corner1, kRedTrench1Corner2)
+        || isPoseInSquare(drivetrainPose.get(), kRedTrench2Corner1, kRedTrench2Corner2)) {
+      trench = 1;
+      return Degrees.of(5);
+    }
+    ;
+    trench = -1;
+    return getCurrentSetpoint(getHubLocation2d()).rotation();
+  }
+
+  public double getTrench() {
+    return trench;
   }
 
   @Override

@@ -15,8 +15,8 @@ public class Constants {
   public static final boolean tuningMode = true;
   public static final CANBus kCanBusBlinky = new CANBus("blinky");
   public static final CANBus kCanBusRio = new CANBus("rio");
-  public static final double kSlowMoveRate = 4.2; 
-//dont ask its the answer to everything
+  public static final double kSlowMoveRate = 4.2;
+  // dont ask its the answer to everything
   private static final Pose3d kBlueHubPose =
       new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
   private static final Pose3d kRedHubPose =
@@ -47,4 +47,22 @@ public class Constants {
       new Pose2d(Inches.of(469.11), Inches.of(0), new Rotation2d());
   public static final Pose2d kRedAllienceCorner2 =
       new Pose2d(Inches.of(651.22), Inches.of(317.69), new Rotation2d());
+
+  public static final Pose2d kBlueTrench1Corner1 =
+      new Pose2d(Meters.of(4), Meters.of(0), new Rotation2d());
+  public static final Pose2d kBlueTrench1Corner2 =
+      new Pose2d(Meters.of(5.25), Meters.of(1.5), new Rotation2d());
+  public static final Pose2d kBlueTrench2Corner1 =
+      new Pose2d(Meters.of(4), Meters.of(6.6), new Rotation2d());
+  public static final Pose2d kBlueTrench2Corner2 =
+      new Pose2d(Meters.of(5.25), Meters.of(8.1), new Rotation2d());
+
+  public static final Pose2d kRedTrench1Corner1 =
+      new Pose2d(Meters.of(11.25), Meters.of(0), new Rotation2d());
+  public static final Pose2d kRedTrench1Corner2 =
+      new Pose2d(Meters.of(12.6), Meters.of(1.5), new Rotation2d());
+  public static final Pose2d kRedTrench2Corner1 =
+      new Pose2d(Meters.of(11.25), Meters.of(6.6), new Rotation2d());
+  public static final Pose2d kRedTrench2Corner2 =
+      new Pose2d(Meters.of(12.6), Meters.of(8.1), new Rotation2d());
 }
