@@ -37,7 +37,6 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 
 @Logged
 public class Shooter extends SubsystemBase implements AutoCloseable {
-  private double trench = -1;
 
   protected final Supplier<Pose2d> drivetrainPose;
   protected final Supplier<Pose2d> simPose;
@@ -568,16 +567,9 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         || isPoseInSquare(drivetrainPose.get(), kBlueTrench2Corner1, kBlueTrench2Corner2)
         || isPoseInSquare(drivetrainPose.get(), kRedTrench1Corner1, kRedTrench1Corner2)
         || isPoseInSquare(drivetrainPose.get(), kRedTrench2Corner1, kRedTrench2Corner2)) {
-      trench = 1;
       return Degrees.of(5);
     }
-    ;
-    trench = -1;
     return getCurrentSetpoint(getHubLocation2d()).rotation();
-  }
-
-  public double getTrench() {
-    return trench;
   }
 
   @Override
