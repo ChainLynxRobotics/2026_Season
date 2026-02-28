@@ -4,31 +4,52 @@
     {
       "anchor": {
         "x": 4.40938577586207,
-        "y": 0.644
+        "y": 7.356
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.6660560344827591,
-        "y": 0.624452586206897
+        "x": 2.6332010135135135,
+        "y": 7.316342905405405
       },
       "isLocked": false,
-      "linkedName": "Scoop End"
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.011005067567568,
+        "y": 6.9237668918918915
+      },
+      "prevControl": {
+        "x": 2.2924746621621623,
+        "y": 7.160793918918919
+      },
+      "nextControl": {
+        "x": 1.7077092644110883,
+        "y": 6.668359899760119
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
         "x": 1.0374568965517248,
-        "y": 2.8328340517241384
+        "y": 4.8
       },
       "prevControl": {
-        "x": 1.0960991379310352,
-        "y": 1.7968211206896556
+        "x": 1.3739949324324325,
+        "y": 5.642339527027027
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.21301775147928995,
+      "rotationDegrees": -179.9
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
@@ -40,13 +61,13 @@
     },
     {
       "name": "stopShoot",
-      "waypointRelativePos": 0.9,
+      "waypointRelativePos": 1.8,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "Climb",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 2.0,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -61,7 +82,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.72522429905926
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
