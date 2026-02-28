@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.950021551724138,
-        "y": 0.6728448275862069
+        "x": 2.6957291666666663,
+        "y": 2.530600961538462
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.503512931034483,
-        "y": 0.6532974137931038
+        "x": 1.1477243589743589,
+        "y": 2.661418269230769
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shoot end"
     },
     {
       "anchor": {
-        "x": 2.513286637931035,
-        "y": 2.5884913793103452
+        "x": 1.0314423076923074,
+        "y": 2.7268269230769238
       },
       "prevControl": {
-        "x": 2.5507712924049737,
-        "y": 1.660746181080364
-      },
-      "nextControl": {
-        "x": 2.4741918103448284,
-        "y": 3.556088362068966
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.5554633620689664,
-        "y": 3.7222413793103444
-      },
-      "prevControl": {
-        "x": 1.956185344827587,
-        "y": 3.7026939655172413
+        "x": 2.2451362179487178,
+        "y": 2.777700320512821
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.05390005890058
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Climbing",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -45.0
   },
   "useDefaultConstraints": true
 }

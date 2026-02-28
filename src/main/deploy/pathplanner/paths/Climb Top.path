@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.0408805031446575,
-      "rotationDegrees": -90.81613844718791
+      "rotationDegrees": -90.81613844718792
     }
   ],
   "constraintZones": [],
@@ -63,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -0.3857678617597194
   },
   "reversed": false,
   "folder": "Climbing",

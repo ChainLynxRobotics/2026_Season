@@ -120,7 +120,6 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     heightConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     heightMotor.getConfigurator().apply(heightConfiguration);
 
-
     spinSimState = spinMotor.getSimState();
     heightSimState = heightMotor.getSimState();
 

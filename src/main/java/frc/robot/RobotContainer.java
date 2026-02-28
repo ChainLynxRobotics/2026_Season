@@ -16,7 +16,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -95,8 +94,9 @@ public class RobotContainer {
   public RobotContainer() {
     NamedCommands.registerCommand("goToHub", autoAimShooter());
     NamedCommands.registerCommand("Climb", new PrintCommand("Implement it plz"));
-    NamedCommands.registerCommand("Shoot Balls", (indexer.spin10V().andThen(serializer.spin())));
-    NamedCommands.registerCommand("Stop Shoot", indexer.stopSpin().andThen(serializer.stopSpin()));
+    NamedCommands.registerCommand("Shoot Balls", (indexer.spin10V().alongWith(serializer.spin())));
+    NamedCommands.registerCommand(
+        "Stop Shoot", indexer.stopSpin().alongWith(serializer.stopSpin()));
     NamedCommands.registerCommand("Scoop", intake.spin5V());
     NamedCommands.registerCommand("Stop Scoop", intake.stopSpin());
 
@@ -328,7 +328,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("shoot");
+    return autoChooser.getSelected();
 
     // Simple drive forward auton
     /*

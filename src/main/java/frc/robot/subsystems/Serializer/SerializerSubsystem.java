@@ -95,7 +95,7 @@ public class SerializerSubsystem extends SubsystemBase {
 
   @Logged
   public Command spin() {
-    return runOnce(() -> serializerMotor.setControl(voltageOut.withOutput(Volts.of(10))));
+    return run(() -> serializerMotor.setControl(voltageOut.withOutput(Volts.of(10))));
   }
 
   @Logged
