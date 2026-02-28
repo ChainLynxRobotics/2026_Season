@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static frc.robot.Constants.*;
-import static frc.robot.Constants.kCanBusBlinky;
-import static frc.robot.Constants.kCanBusRio;
 import static frc.robot.utils.PointingUtil.*;
 import static frc.robot.utils.RobotMath.*;
 
@@ -121,9 +119,20 @@ public class RobotContainer {
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
         // Drivetrain will execute this command periodically
+        
         drivetrain.applyRequest(
-            () ->
-                drive
+            () -> {
+            if (driveController.b().getAsBoolean()) {
+                return drive
+                    .withVelocityX(
+                        -driveController.getLeftY()
+                            * MaxSpeed / kSlowMoveRate) // Drive forward with negative Y (forward)
+                    .withVelocityY(
+                        -driveController.getLeftX() * MaxSpeed / kSlowMoveRate) // Drive left with negative X (left)
+                    .withRotationalRate(
+                        -driveController.getRightX()
+                            * MaxAngularRate);}// Drive counterclockwise with negative X (left)
+            else {                 return drive
                     .withVelocityX(
                         -driveController.getLeftY()
                             * MaxSpeed) // Drive forward with negative Y (forward)
@@ -131,7 +140,8 @@ public class RobotContainer {
                         -driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(
                         -driveController.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                            * MaxAngularRate);}// Drive counterclockwise with negative X (left)
+                }
             ));
 
     // Idle while the robot is disabled. This ensures the configured
@@ -156,16 +166,17 @@ public class RobotContainer {
 
     driveController.y().onTrue(indexer.spin()).onFalse(indexer.stopSpin());
 
+    // Reset the field-centric heading on left bumper press.
     driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     // driveController.povRight().whileTrue(intake.setHeight()).onFalse(intake.setHeightToZero());
 
-    // Reset the field-centric heading on left bumper press.
+
     driveController.leftBumper().toggleOnTrue(autoAimShooter());
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    driveController.x().toggleOnTrue(intake.spin5V()).toggleOnFalse(intake.stopSpin());
-    driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true));
+    driveController.x().toggleOnTrue(intake.spin5V()).toggleOnFalse(intake.stopSpin()); //spin intake
+    driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true)); //zero hud
 
     driveController.povLeft().onTrue(runOnce(() -> intake.zeroHeight()).ignoringDisable(true));
 

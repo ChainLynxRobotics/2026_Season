@@ -15,7 +15,8 @@ public class Constants {
   public static final boolean tuningMode = true;
   public static final CANBus kCanBusBlinky = new CANBus("blinky");
   public static final CANBus kCanBusRio = new CANBus("rio");
-
+  public static final double kSlowMoveRate = 4.2; 
+//dont ask its the answer to everything
   private static final Pose3d kBlueHubPose =
       new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
   private static final Pose3d kRedHubPose =
