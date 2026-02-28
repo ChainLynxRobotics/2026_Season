@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Robot;
 import frc.robot.subsystems.Intake.IntakeConstants.IntakeHeightState;
 import frc.robot.utils.CurrentSpikeDetector;
 import frc.robot.utils.TunableNumber;
@@ -38,7 +37,6 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private TalonFX heightMotor;
 
   private TalonFXConfiguration spinConfiguration = new TalonFXConfiguration();
-  private TalonFXConfiguration simHeightConfiguration = new TalonFXConfiguration();
   private TalonFXConfiguration heightConfiguration = new TalonFXConfiguration();
 
   private VelocityVoltage spinControl = new VelocityVoltage(kGoalIntakeSpinVelocity);
@@ -120,17 +118,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     heightConfiguration.MotionMagic = kIntakeHeightMotionMagic;
     heightConfiguration.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
     heightConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    heightMotor.getConfigurator().apply(heightConfiguration);
 
-    simHeightConfiguration.Slot0 = kSimIntakeHeightSlot0Config;
-    simHeightConfiguration.MotionMagic = kIntakeHeightMotionMagic;
-    simHeightConfiguration.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
-    simHeightConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-    if (Robot.isReal()) {
-      heightMotor.getConfigurator().apply(heightConfiguration);
-    } else {
-      heightMotor.getConfigurator().apply(simHeightConfiguration);
-    }
 
     spinSimState = spinMotor.getSimState();
     heightSimState = heightMotor.getSimState();
