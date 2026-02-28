@@ -199,6 +199,8 @@ public class RobotContainer {
                   }
                 }));
 
+    driveController.povDown().onTrue(runOnce(() -> intake.increaseSetpoint(5)));
+
     // driveController
     //     .y()
     //     .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(60)))

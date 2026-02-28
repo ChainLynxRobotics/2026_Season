@@ -333,6 +333,11 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     }
   }
 
+  public void increaseSetpoint(double amount) {
+    tunableHeightHeight =
+        new TunableNumber("tunableHeightHeight", tunableHeightHeight.get() + amount);
+  }
+
   @Override
   public void periodic() {
     currentSpikeDetector.recordCurrent(heightMotor);
