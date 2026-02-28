@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.298265086206897,
-        "y": 0.7901293103448279
+        "x": 2.298,
+        "y": 0.79
       },
       "prevControl": {
-        "x": 2.8455926724137934,
-        "y": 0.6728448275862071
+        "x": 2.8453275862068965,
+        "y": 0.6727155172413792
       },
       "nextControl": {
-        "x": 2.053814482687544,
-        "y": 0.8425115825275464
+        "x": 2.0535493964806473,
+        "y": 0.8423822721827186
       },
       "isLocked": false,
       "linkedName": null
@@ -76,7 +76,18 @@
       }
     }
   ],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.64,
+        "y": 4.0
+      },
+      "rotationOffset": -93.4,
+      "minWaypointRelativePos": 0.8480565371024809,
+      "maxWaypointRelativePos": 2.065017667844523,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
       "name": "shootBalls",
