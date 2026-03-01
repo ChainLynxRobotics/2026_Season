@@ -77,8 +77,8 @@ public class PointingUtil {
     return lastRotation;
   }
 
-  public static AngularVelocity getTOFRotationalVelocityToHub(
-      Pose2d robotPose, ChassisSpeeds robotSpeeds) {
+  public static AngularVelocity getTOFRotationalVelocityToTarget(
+      Pose2d robotPose, ChassisSpeeds robotSpeeds, Pose2d targetPose) {
     var dt = 0.01;
     var poseInDt =
         new Pose2d(
@@ -87,9 +87,9 @@ public class PointingUtil {
             new Rotation2d(
                 robotPose.getRotation().getRadians() + robotSpeeds.omegaRadiansPerSecond * dt));
     return RotationsPerSecond.of(
-        getAngleToHubTOF(poseInDt, robotSpeeds)
+        getAngleToPoseTOF(poseInDt, robotSpeeds, targetPose)
                 .getMeasure()
-                .minus(getAngleToHubTOF(robotPose, robotSpeeds).getMeasure())
+                .minus(getAngleToPoseTOF(robotPose, robotSpeeds, targetPose).getMeasure())
                 .in(Rotations)
             / dt);
   }

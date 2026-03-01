@@ -136,7 +136,9 @@ public class IndexerSubsystem extends SubsystemBase {
 
   public Command spin() {
     return run(
-        () -> indexerMotor.setControl(indexerControl.withVelocity(RotationsPerSecond.of(15))));
+        () ->
+            indexerMotor.setControl(
+                indexerControl.withVelocity(RotationsPerSecond.of(tunableIndexerVelocity.get()))));
   }
 
   public Command spin10V() {

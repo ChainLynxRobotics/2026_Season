@@ -43,7 +43,6 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.utils.PointingUtil;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.gamepieces.GamePiece;
 
 @Logged
 public class RobotContainer {
@@ -73,7 +72,7 @@ public class RobotContainer {
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
   private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusBlinky));
+      new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio));
 
   private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17, kCanBusBlinky));
 
@@ -122,7 +121,7 @@ public class RobotContainer {
 
         drivetrain.applyRequest(
             () -> {
-              if (driveController.b().getAsBoolean()) {
+              if (driveController.leftTrigger().getAsBoolean()) {
                 return drive
                     .withVelocityX(
                         -driveController.getLeftY()
@@ -132,7 +131,8 @@ public class RobotContainer {
                         -driveController.getLeftX()
                             * MaxSpeed
                             / kSlowMoveRate) // Drive left with negative X (left)
-                    .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
+                    .withRotationalRate(
+                        -driveController.getRightX() * MaxAngularRate / kSlowMoveRate);
               } // Drive counterclockwise with negative X (left)
               else {
                 return drive
@@ -152,21 +152,15 @@ public class RobotContainer {
         .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
     // driveController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    driveController
-        .b()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    point.withModuleDirection(
-                        new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
     driveController
         .rightBumper()
-        .onTrue(indexer.spin().andThen(serializer.spin()))
-        .onFalse(indexer.stopSpin().andThen(serializer.stopSpin()));
+        .onTrue(indexer.spin().alongWith(serializer.spin()))
+        .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
     driveController.y().onTrue(indexer.spin()).onFalse(indexer.stopSpin());
 
+    driveController.rightTrigger().onTrue(runOnce(() -> intake.swapIntake()));
     // Reset the field-centric heading on left bumper press.
     driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     // driveController.povRight().whileTrue(intake.setHeight()).onFalse(intake.setHeightToZero());
@@ -187,17 +181,17 @@ public class RobotContainer {
 
     driveController.povLeft().onTrue(Commands.runOnce(() -> shooter.shootSimulatedProjectile()));
 
-    driveController
-        .leftTrigger()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  var pieces = SimulatedArena.getInstance().getGamePiecesByType("Fuel");
-                  for (GamePiece fuel : pieces) {
+    // driveController
+    //     .leftTrigger()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //             () -> {
+    //               var pieces = SimulatedArena.getInstance().getGamePiecesByType("Fuel");
+    //               for (GamePiece fuel : pieces) {
 
-                    SimulatedArena.getInstance().removePiece(fuel);
-                  }
-                }));
+    //                 SimulatedArena.getInstance().removePiece(fuel);
+    //               }
+    //             }));
 
     driveController.povDown().onTrue(runOnce(() -> intake.increaseSetpoint(5)));
 
@@ -244,8 +238,8 @@ public class RobotContainer {
 
   private SwerveRequest.FieldCentricFacingAngle shooterAming =
       new SwerveRequest.FieldCentricFacingAngle()
-          .withHeadingPID(6, 1, 0)
-          .withDeadband(MaxSpeed * 0.1);
+          .withHeadingPID(7, 3, 0)
+          .withDeadband(MaxSpeed * 0.1 / kSlowMoveRate / 2);
 
   public Command autoAimShooter() {
     return drivetrain.applyRequest(
@@ -259,9 +253,10 @@ public class RobotContainer {
                                 : new Rotation2d())) // We want our rotation to not be field centric
                 // but we do want our driving to be so we
                 // manually flip the rotation
-                // .withTargetRateFeedforward(getTOFRotationalVelocityToHub())
-                .withVelocityX(-driveController.getLeftY() * MaxSpeed)
-                .withVelocityY(-driveController.getLeftX() * MaxSpeed));
+                .withTargetRateFeedforward(
+                    getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
+                .withVelocityX(-driveController.getLeftY() * MaxSpeed / (kSlowMoveRate * 2))
+                .withVelocityY(-driveController.getLeftX() * MaxSpeed / (kSlowMoveRate * 2)));
   }
 
   public Command goToHub(Supplier<ChassisSpeeds> Speed) {
@@ -292,12 +287,16 @@ public class RobotContainer {
         getShootingTarget(drivetrain.getPose()));
   }
 
-  public AngularVelocity getTOFRotationalVelocityToHub() {
+  public AngularVelocity getTOFRotationalVelocityToTarget(Pose2d target) {
     var drivetrainFieldRelitiveSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds, drivetrain.getPose().getRotation());
-    return PointingUtil.getTOFRotationalVelocityToHub(
-        drivetrain.getPose(), drivetrainFieldRelitiveSpeeds);
+    return PointingUtil.getTOFRotationalVelocityToTarget(
+        drivetrain.getPose(), drivetrainFieldRelitiveSpeeds, target);
+  }
+
+  public AngularVelocity getTOFRotationalVelocityReal() {
+    return getTOFRotationalVelocityToTarget(PointingUtil.getShootingTarget(drivetrain.getPose()));
   }
 
   public AngularVelocity getRotationalVelocityToHub() {

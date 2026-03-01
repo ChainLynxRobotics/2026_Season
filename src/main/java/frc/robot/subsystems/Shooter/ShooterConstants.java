@@ -34,7 +34,7 @@ public class ShooterConstants {
   public static final double kFlywheelS = 0.18;
   public static final double kFlywheelA = 0.01;
   public static final double kFlywheelV = 0.06325;
-  public static final double kFlywheelP = 0.2;
+  public static final double kFlywheelP = 0.08;
   public static final double kFlywheelI = 0.555;
   public static final double kFlywheelD = 0.0;
   public static final double kFlywheelGearRatio = 0.5;

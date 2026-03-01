@@ -310,6 +310,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     //     })
     //     .withName("Shooter Tuning");
     // TODO: REPLACE HUB WITH VARIABLE TARGET
+    // return run(() -> {
+    //       setFlywheelVelocityInternal(RotationsPerSecond.of(tunableShooterSpeed.get()));
+    //       setHoodAngleInternal(Degrees.of(tunableHoodAngle.get()));
+    //     })
+    //     .withName("Shooter Tuning");
+    // TODO: REPLACE HUB WITH VARIABLE TARGET
     // Joe: The LUT returns flywheelSurfaceSpeed as m/s, but setFlywheelVelocityInternal expects
     // RPS — wrapping m/s in RotationsPerSecond.of() won't give the right value, right? Should we
     // use convertLinearVelocityToAngular() here?

@@ -83,6 +83,10 @@ public class IntakeConstants {
     config.MotionMagic.MotionMagicAcceleration =
         kIntakeHeightMaxAcceleration.in(RotationsPerSecondPerSecond);
     config.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
+
+    config.CurrentLimits.StatorCurrentLimit = 7.5;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+
     // Joe: The constructor doesn't set an inversion but this does — what happens to the arm if the
     // motor direction flips while MotionMagic is holding position?
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;

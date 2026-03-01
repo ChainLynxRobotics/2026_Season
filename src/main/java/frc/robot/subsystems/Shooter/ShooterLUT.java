@@ -23,7 +23,7 @@ public class ShooterLUT {
         Degrees.of(kShooterAngleMap.get(distance.in(Meters))));
   }
 
-  private static final double kMaxIterations = 5;
+  private static final double kMaxIterations = 15;
   private static final Distance kRecursionTarget = Meters.of(0.01);
 
   public static Optional<SOTMSetpoint> generateShootOnTheMoveSetpoint(
@@ -39,7 +39,7 @@ public class ShooterLUT {
           new Pose2d(
               robotPose.getX() + robotSpeeds.vxMetersPerSecond * timeOfFlight,
               robotPose.getY() + robotSpeeds.vyMetersPerSecond * timeOfFlight,
-              robotPose.getRotation());
+              PointingUtil.getAngleToPose(iteratedPose, targetPose));
       distance = Shooter.getDistanceToPose(iteratedPose, targetPose);
       timeOfFlight = kShooterTOFMap.get(distance.in(Meters));
       if (iteratedPose.getTranslation().getDistance(lastPose.getTranslation())

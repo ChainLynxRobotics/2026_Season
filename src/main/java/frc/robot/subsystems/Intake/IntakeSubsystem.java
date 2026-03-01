@@ -65,6 +65,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   protected TunableNumber tunableHeightGravOffset;
   protected TunableNumber tunableHeightHeight;
 
+  public boolean intakeDirection;
+
   private DCMotorSim spinSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
 
@@ -113,6 +115,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     spinConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     spinMotor.getConfigurator().apply(spinConfiguration);
 
+    this.intakeDirection = true;
+
     this.heightMotor = heightMotor;
     heightConfiguration.Slot0 = kIntakeHeightSlot0Config;
     heightConfiguration.MotionMagic = kIntakeHeightMotionMagic;
@@ -135,7 +139,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableHeightP = new TunableNumber("tunablekHeightP", kHeightP);
     this.tunableHeightI = new TunableNumber("tunablekHeightI", kHeightI);
     this.tunableHeightD = new TunableNumber("tunablekHeightD", kHeightD);
-    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 0);
+    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 110);
     this.tunableHeightGravOffset = new TunableNumber("gravoffset", 126.95);
   }
 
@@ -250,13 +254,21 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public Command runIntakeControl() {
     return run(
         () -> {
-          heightMotor.setControl(heightControl.withPosition(Degrees.of(tunableHeightHeight.get())));
-          spinMotor.setControl(new VoltageOut(Volts.of(5)));
+          // heightMotor.setControl(heightControl.withPosition(Degrees.of(tunableHeightHeight.get())));
+          spinMotor.setControl(new VoltageOut(intakeDirection ? -5 : 5));
         });
   }
 
+  public void swapIntake() {
+    if (intakeDirection) {
+      intakeDirection = false;
+    } else {
+      intakeDirection = true;
+    }
+  }
+
   public void zeroHeight() {
-    runOnce(() -> heightMotor.setVoltage(-10)).until(currentSpikeDetector.detectSpike());
+    runOnce(() -> heightMotor.setVoltage(-1)).until(currentSpikeDetector.detectSpike());
     heightMotor.setPosition(Degrees.of(0));
   }
 
