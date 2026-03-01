@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -163,6 +164,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           // find a number to replace the 5
           return 0.00001 * angle.getRotations();
         });
+  }
+
+  public Angle leftleftMotorPos() {
+    return this.getModule(0).getDriveMotor().getPosition().getValue();
   }
 
   public static void pathplannerClearOverride() {

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1809806034482766,
-        "y": 0.8199267241379307
+        "x": 1.1151364175563478,
+        "y": 0.4145314353499402
       },
       "isLocked": false,
       "linkedName": "Scoop End"
@@ -30,6 +30,10 @@
   ],
   "rotationTargets": [
     {
+      "waypointRelativePos": 0.14791851195748942,
+      "rotationDegrees": 177.47479523588098
+    },
+    {
       "waypointRelativePos": 1.0,
       "rotationDegrees": 40.0
     }
@@ -42,7 +46,7 @@
         "y": 4.0
       },
       "rotationOffset": -87.4,
-      "minWaypointRelativePos": 0.0,
+      "minWaypointRelativePos": 0.5885650224215234,
       "maxWaypointRelativePos": 1.0,
       "name": "Point Towards Zone"
     }

@@ -41,7 +41,7 @@
       },
       "nextControl": {
         "x": 7.788489755096602,
-        "y": 2.4752575915932753
+        "y": 2.475257591593277
       },
       "isLocked": false,
       "linkedName": null
@@ -115,7 +115,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -126,7 +126,7 @@
     "rotation": -179.3346784937395
   },
   "reversed": false,
-  "folder": "Funnel",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

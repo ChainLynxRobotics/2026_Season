@@ -93,9 +93,8 @@ public class RobotContainer {
   public RobotContainer() {
     NamedCommands.registerCommand("goToHub", autoAimShooter());
     NamedCommands.registerCommand("Climb", new PrintCommand("Implement it plz"));
-    NamedCommands.registerCommand("Shoot Balls", (indexer.spin10V().alongWith(serializer.spin())));
-    NamedCommands.registerCommand(
-        "Stop Shoot", indexer.stopSpin().alongWith(serializer.stopSpin()));
+    NamedCommands.registerCommand("shootBalls", (indexer.spin().alongWith(serializer.spin())));
+    NamedCommands.registerCommand("stopShoot", indexer.stopSpin().alongWith(serializer.stopSpin()));
     NamedCommands.registerCommand("Scoop", intake.spin5V());
     NamedCommands.registerCommand("Stop Scoop", intake.stopSpin());
 
