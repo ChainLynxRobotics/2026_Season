@@ -569,10 +569,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public Angle calculateHoodAngle() {
-    if (isPoseInSquare(drivetrainPose.get(), kBlueTrench1Corner1, kBlueTrench1Corner2)
-        || isPoseInSquare(drivetrainPose.get(), kBlueTrench2Corner1, kBlueTrench2Corner2)
-        || isPoseInSquare(drivetrainPose.get(), kRedTrench1Corner1, kRedTrench1Corner2)
-        || isPoseInSquare(drivetrainPose.get(), kRedTrench2Corner1, kRedTrench2Corner2)) {
+    Trench closestTrench = getClosestTrench(drivetrainPose.get());
+    Pose2d[] trenchCorners = getTrenchCorners(closestTrench);
+
+    if (isPoseInSquare(drivetrainPose.get(), trenchCorners[0], trenchCorners[1])) {
       return Degrees.of(5);
     }
     return getCurrentSetpoint(getHubLocation2d()).rotation();

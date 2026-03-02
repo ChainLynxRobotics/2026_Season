@@ -41,6 +41,7 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.utils.PointingUtil;
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 
@@ -133,7 +134,16 @@ public class RobotContainer {
                     .withRotationalRate(
                         -driveController.getRightX() * MaxAngularRate / kSlowMoveRate);
               } // Drive counterclockwise with negative X (left)
-              else {
+              if (isPoseInSquare(
+                      drivetrain.getState().Pose,
+                      getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
+                      getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1])
+                  && handleTrenchAlignment().isPresent()) {
+                return trenchAlign
+                    .withTargetDirection(handleTrenchAlignment().get())
+                    .withVelocityX(-driveController.getLeftY() * MaxSpeed / 2)
+                    .withVelocityY(calculateTrenchAlignYVelocity());
+              } else {
                 return drive
                     .withVelocityX(
                         -driveController.getLeftY()
@@ -240,6 +250,9 @@ public class RobotContainer {
           .withHeadingPID(7, 3, 0)
           .withDeadband(MaxSpeed * 0.1 / kSlowMoveRate / 2);
 
+  private SwerveRequest.FieldCentricFacingAngle trenchAlign =
+      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(5, 3, 0);
+
   public Command autoAimShooter() {
     return drivetrain.applyRequest(
         () ->
@@ -256,6 +269,36 @@ public class RobotContainer {
                     getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed / (kSlowMoveRate * 2))
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed / (kSlowMoveRate * 2)));
+  }
+
+  public Command alignToTrench() {
+    return drivetrain.applyRequest(
+        () ->
+            trenchAlign
+                .withTargetDirection(handleTrenchAlignment().get())
+                .withVelocityX(-driveController.getLeftY() * MaxSpeed / 2)
+                .withVelocityY(calculateTrenchAlignYVelocity()));
+  }
+
+  public Optional<Rotation2d> handleTrenchAlignment() {
+    if (-30.0 < drivetrain.getState().Pose.getRotation().getDegrees()
+        && drivetrain.getState().Pose.getRotation().getDegrees() < 30) {
+      return Optional.of(new Rotation2d(Degrees.of(0)));
+    }
+    if (150.0 < drivetrain.getState().Pose.getRotation().getDegrees()
+        && drivetrain.getState().Pose.getRotation().getDegrees() < 210) {
+      return Optional.of(new Rotation2d(Degrees.of(180)));
+    }
+    return Optional.empty();
+  }
+
+  public LinearVelocity calculateTrenchAlignYVelocity() {
+    double kP = 1;
+    double centerOfTrench =
+        (getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0].getY()
+                + getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1].getY())
+            / 2;
+    return MetersPerSecond.of(kP * (centerOfTrench - drivetrain.getState().Pose.getY()));
   }
 
   public Command goToHub(Supplier<ChassisSpeeds> Speed) {

@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import java.util.Map;
 
 public class Constants {
   public static final Time kDT = Seconds.of(0.02);
@@ -48,21 +49,41 @@ public class Constants {
   public static final Pose2d kRedAllienceCorner2 =
       new Pose2d(Inches.of(651.22), Inches.of(317.69), new Rotation2d());
 
-  public static final Pose2d kBlueTrench1Corner1 =
-      new Pose2d(Meters.of(4), Meters.of(0), new Rotation2d());
-  public static final Pose2d kBlueTrench1Corner2 =
-      new Pose2d(Meters.of(5.25), Meters.of(1.5), new Rotation2d());
-  public static final Pose2d kBlueTrench2Corner1 =
-      new Pose2d(Meters.of(4), Meters.of(6.6), new Rotation2d());
-  public static final Pose2d kBlueTrench2Corner2 =
-      new Pose2d(Meters.of(5.25), Meters.of(8.1), new Rotation2d());
+  public enum Trench {
+    LowerBlueTrench,
+    UpperBlueTrench,
+    LowerRedTrench,
+    UpperRedTrench
+  }
 
-  public static final Pose2d kRedTrench1Corner1 =
-      new Pose2d(Meters.of(11.25), Meters.of(0), new Rotation2d());
-  public static final Pose2d kRedTrench1Corner2 =
-      new Pose2d(Meters.of(12.6), Meters.of(1.5), new Rotation2d());
-  public static final Pose2d kRedTrench2Corner1 =
-      new Pose2d(Meters.of(11.25), Meters.of(6.6), new Rotation2d());
-  public static final Pose2d kRedTrench2Corner2 =
-      new Pose2d(Meters.of(12.6), Meters.of(8.1), new Rotation2d());
+  public static final Map<Trench, Pose2d[]> trenchCorners =
+      Map.ofEntries(
+          Map.entry(
+              Trench.LowerBlueTrench,
+              new Pose2d[] {
+                new Pose2d(Meters.of(4), Meters.of(0), new Rotation2d()),
+                new Pose2d(Meters.of(5.25), Meters.of(1.5), new Rotation2d())
+              }),
+          Map.entry(
+              Trench.UpperBlueTrench,
+              new Pose2d[] {
+                new Pose2d(Meters.of(4), Meters.of(6.6), new Rotation2d()),
+                new Pose2d(Meters.of(5.25), Meters.of(8.1), new Rotation2d())
+              }),
+          Map.entry(
+              Trench.LowerRedTrench,
+              new Pose2d[] {
+                new Pose2d(Meters.of(11.25), Meters.of(0), new Rotation2d()),
+                new Pose2d(Meters.of(12.6), Meters.of(1.5), new Rotation2d())
+              }),
+          Map.entry(
+              Trench.UpperRedTrench,
+              new Pose2d[] {
+                new Pose2d(Meters.of(11.25), Meters.of(6.6), new Rotation2d()),
+                new Pose2d(Meters.of(12.6), Meters.of(8.1), new Rotation2d())
+              }));
+
+  public static Pose2d[] getTrenchCorners(Trench trench) {
+    return trenchCorners.get(trench);
+  }
 }

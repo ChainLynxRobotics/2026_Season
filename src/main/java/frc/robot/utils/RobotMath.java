@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.measure.*;
+import frc.robot.Constants;
 
 public class RobotMath {
   /**
@@ -116,5 +117,31 @@ public class RobotMath {
     var relitivePose = pose1.relativeTo(pose2);
     return Meters.of(
         Math.sqrt(Math.pow(relitivePose.getX(), 2) + Math.pow(relitivePose.getY(), 2)));
+  }
+
+  public static Constants.Trench getClosestTrench(Pose2d pose) {
+    Constants.Trench[] trenches = Constants.Trench.values();
+
+    double robotX = pose.getX();
+    double robotY = pose.getY();
+    double minDistance = Double.MAX_VALUE;
+    Constants.Trench closestTrench = trenches[0];
+
+    for (Constants.Trench trench : trenches) {
+      Pose2d[] corners = Constants.getTrenchCorners(trench);
+      double centerX = (corners[0].getX() + corners[1].getX()) * 0.5;
+      double centerY = (corners[0].getY() + corners[1].getY()) * 0.5;
+
+      double dx = robotX - centerX;
+      double dy = robotY - centerY;
+      double distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestTrench = trench;
+      }
+    }
+
+    return closestTrench;
   }
 }
