@@ -213,7 +213,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         rotatedShooter.getRotation());
   }
 
-  ShooterSetpoint lastShooterSetpoint = new ShooterSetpoint(MetersPerSecond.zero(), Degrees.of(5));
+  ShooterSetpoint lastShooterSetpoint =
+      new ShooterSetpoint(RotationsPerSecond.zero(), Degrees.of(5));
   /**
    * @return The speed and position of the shooter to shoot into the hub.
    */
@@ -310,21 +311,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     //     })
     //     .withName("Shooter Tuning");
     // TODO: REPLACE HUB WITH VARIABLE TARGET
-    // return run(() -> {
-    //       setFlywheelVelocityInternal(RotationsPerSecond.of(tunableShooterSpeed.get()));
-    //       setHoodAngleInternal(Degrees.of(tunableHoodAngle.get()));
-    //     })
-    //     .withName("Shooter Tuning");
-    // TODO: REPLACE HUB WITH VARIABLE TARGET
-    // Joe: The LUT returns flywheelSurfaceSpeed as m/s, but setFlywheelVelocityInternal expects
-    // RPS — wrapping m/s in RotationsPerSecond.of() won't give the right value, right? Should we
-    // use convertLinearVelocityToAngular() here?
     return run(() -> {
-          setFlywheelVelocityInternal(
-              RotationsPerSecond.of(
-                  getCurrentSetpoint(getHubLocation2d())
-                      .flywheelSurfaceSpeed()
-                      .in(MetersPerSecond)));
+          setFlywheelVelocityInternal(getCurrentSetpoint(getHubLocation2d()).flywheelVelocity());
           setHoodAngleInternal(calculateHoodAngle());
         })
         .withName("Shooter control");
@@ -343,16 +331,15 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return The target angular velocity for the flywheel
    */
   public AngularVelocity targetVelocity() {
-    return convertLinearVelocityToAngular(
-        getCurrentSetpoint(getHubLocation2d()).flywheelSurfaceSpeed());
+    return getCurrentSetpoint(getHubLocation2d()).flywheelVelocity();
   }
 
   // TODO: REPLACE HUB WITH VARIABLE TARGET
   /**
-   * @return The target linear velocity for the flywheel
+   * @return The target angular velocity for the flywheel
    */
-  public LinearVelocity targetLinearVelocity() {
-    return getCurrentSetpoint(getHubLocation2d()).flywheelSurfaceSpeed();
+  public AngularVelocity targetFlywheelVelocity() {
+    return getCurrentSetpoint(getHubLocation2d()).flywheelVelocity();
   }
 
   /**
@@ -613,8 +600,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                     chassisSpeeds.get(), drivetrainPose.get().getRotation()),
                 kMapleSimSHooterRotationAlsoNotJank.plus(simPose.get().getRotation()),
                 kShooterHeight,
-                getCurrentSetpoint(getHubLocation2d())
-                    .flywheelSurfaceSpeed()
+                convertAngularVelocityToLinear(
+                        getCurrentSetpoint(getHubLocation2d()).flywheelVelocity())
                     .times(kEstimatedFlywheelSpeedToFuelSpeed),
                 getCurrentSetpoint(getHubLocation2d()).rotation().plus(Degrees.of(90))));
   }

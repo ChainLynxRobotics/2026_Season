@@ -94,7 +94,7 @@ public class ShooterConstants {
     return config;
   }
 
-  protected static final double kEstimatedFlywheelSpeedToFuelSpeed = 0.3;
+  protected static final double kEstimatedFlywheelSpeedToFuelSpeed = 0.33;
 
   public static final TalonFXConfiguration kFlyWheelConfig =
       generateFlywheelConfig(
