@@ -102,7 +102,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-    intake.setDefaultCommand(intake.runIntakeControl());
+    // intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
@@ -202,7 +202,9 @@ public class RobotContainer {
     //               }
     //             }));
 
-    driveController.povDown().onTrue(runOnce(() -> intake.increaseSetpoint(5)));
+    // driveController.povDown().onTrue(runOnce(() -> intake.increaseSetpoint(5)));
+
+    driveController.povDown().whileTrue(shooter.sinFlywheelTest());
 
     // driveController
     //     .y()
@@ -247,8 +249,8 @@ public class RobotContainer {
 
   private SwerveRequest.FieldCentricFacingAngle shooterAming =
       new SwerveRequest.FieldCentricFacingAngle()
-          .withHeadingPID(7, 3, 0)
-          .withDeadband(MaxSpeed * 0.1 / kSlowMoveRate / 2);
+          .withHeadingPID(5, 2, 0)
+          .withDeadband(MaxSpeed * 0.1 / kSlowMoveRate);
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
       new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(5, 3, 0);
@@ -267,8 +269,8 @@ public class RobotContainer {
                 // manually flip the rotation
                 .withTargetRateFeedforward(
                     getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
-                .withVelocityX(-driveController.getLeftY() * MaxSpeed / (kSlowMoveRate * 2))
-                .withVelocityY(-driveController.getLeftX() * MaxSpeed / (kSlowMoveRate * 2)));
+                .withVelocityX(-driveController.getLeftY() * MaxSpeed / (kSlowMoveRate))
+                .withVelocityY(-driveController.getLeftX() * MaxSpeed / (kSlowMoveRate)));
   }
 
   public Command alignToTrench() {

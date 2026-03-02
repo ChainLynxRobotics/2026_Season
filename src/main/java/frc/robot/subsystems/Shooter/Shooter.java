@@ -70,6 +70,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   protected TunableNumber tunableHoodAngle;
   protected TunableNumber tunableShooterSpeed;
+  protected TunableNumber tunableLUTMult;
 
   public Shooter(
       Supplier<Pose2d> drivetrainPose,
@@ -94,6 +95,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.tunableHoodP = new TunableNumber("tunablekHoodP", kHoodP);
     this.tunableHoodI = new TunableNumber("tunablekHoodI", kHoodI);
     this.tunableHoodD = new TunableNumber("tunablekHoodD", kHoodD);
+
+    this.tunableLUTMult = new TunableNumber("tunableLUTMult", 0.85);
     this.tunableHoodGravOffset = new TunableNumber("gravoffset", -05);
 
     this.tunableHoodAngle = new TunableNumber("Hood angle", 5);
@@ -322,9 +325,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return run(() -> {
           setFlywheelVelocityInternal(
               RotationsPerSecond.of(
-                  getCurrentSetpoint(getHubLocation2d())
-                      .flywheelSurfaceSpeed()
-                      .in(MetersPerSecond)));
+                      getCurrentSetpoint(getHubLocation2d())
+                          .flywheelSurfaceSpeed()
+                          .in(MetersPerSecond))
+                  .times(tunableLUTMult.get()));
           setHoodAngleInternal(calculateHoodAngle());
         })
         .withName("Shooter control");
@@ -450,13 +454,13 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return sequence(
             routine
                 .quasistatic(Direction.kForward)
-                .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
+                .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(100))),
             routine
                 .quasistatic(Direction.kReverse)
                 .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())),
             routine
                 .dynamic(Direction.kForward)
-                .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(50))),
+                .until(() -> getFlywheelVelocity().gt(RotationsPerSecond.of(100))),
             routine
                 .dynamic(Direction.kReverse)
                 .until(() -> getFlywheelVelocity().lt(RotationsPerSecond.zero())))

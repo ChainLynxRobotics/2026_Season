@@ -31,10 +31,10 @@ public class ShooterConstants {
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
-  public static final double kFlywheelS = 0.18;
+  public static final double kFlywheelS = 0.3;
   public static final double kFlywheelA = 0.01;
-  public static final double kFlywheelV = 0.06325;
-  public static final double kFlywheelP = 0.08;
+  public static final double kFlywheelV = 0.06025;
+  public static final double kFlywheelP = 0.12;
   public static final double kFlywheelI = 0.555;
   public static final double kFlywheelD = 0.0;
   public static final double kFlywheelGearRatio = 0.5;
@@ -42,16 +42,23 @@ public class ShooterConstants {
   protected static TalonFXConfiguration generateFlywheelConfig(
       double kS, double kA, double kV, double kP, double kI, double kD) {
     var gains =
-        new Slot0Configs().withKS(kS).withKA(kA).withKV(kV).withKP(kP).withKI(kI).withKD(kD);
+        new Slot0Configs()
+            .withKS(kS)
+            .withKA(kA)
+            .withKV(kV)
+            .withKP(kP)
+            .withKI(kI)
+            .withKD(kD)
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     var config = new TalonFXConfiguration().withSlot0(gains);
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = kFlywheelGearRatio;
 
     // Current Limits
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.SupplyCurrentLimit = 40;
+    config.CurrentLimits.SupplyCurrentLimit = 80;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = 80;
+    config.CurrentLimits.StatorCurrentLimit = 120;
 
     return config;
   }

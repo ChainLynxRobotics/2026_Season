@@ -66,13 +66,21 @@ public class ShooterLUT {
     if (RobotBase.isReal()) {
       // Joe: These values are supposed to be flywheel surface speed in m/s, but 60-80 seems really
       // high for m/s — are these actually RPS from the old shooter? Might need retuning.
-      map.put(1.041, 60.0);
+      map.put(1.041, 42.0);
       map.put(1.92, 65.0);
       map.put(2.31, 65.0);
       map.put(3.25, 72.0);
       map.put(4.17, 78.0);
       map.put(5.71, 92.0);
       map.put(7.37, 103.0);
+
+      // map.put(1.041, 60.0);
+      // map.put(1.92, 65.0);
+      // map.put(2.31, 65.0);
+      // map.put(3.25, 72.0);
+      // map.put(4.17, 78.0);
+      // map.put(5.71, 92.0);
+      // map.put(7.37, 103.0);
     } else {
       map.put(1.25, 25.2);
       map.put(1.5, 26.5);
