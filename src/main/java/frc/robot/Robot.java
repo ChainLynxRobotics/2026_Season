@@ -21,24 +21,27 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+  private final boolean enableLogging = true;
 
   /* log and replay timestamp and joystick data */
   private final HootAutoReplay m_timeAndJoystickReplay =
       new HootAutoReplay().withTimestampReplay().withJoystickReplay();
 
   public Robot() {
-    Epilogue.configure(
-        config -> {
-          if (isSimulation()) {
-            // If running in simulation, then we'd want to re-throw any errors that
-            // occur so we can debug and fix them!
-            config.errorHandler = ErrorHandler.crashOnError();
-          }
+    if (enableLogging) {
+      Epilogue.configure(
+          config -> {
+            if (isSimulation()) {
+              // If running in simulation, then we'd want to re-throw any errors that
+              // occur so we can debug and fix them!
+              config.errorHandler = ErrorHandler.crashOnError();
+            }
 
-          // Change the root data path
-          config.root = "Telemetry";
-        });
-    Epilogue.bind(this);
+            // Change the root data path
+            config.root = "Telemetry";
+          });
+      Epilogue.bind(this);
+    }
     DataLogManager.start();
     m_robotContainer = new RobotContainer();
     if (RobotBase.isSimulation()) {

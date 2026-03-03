@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Indexer.IndexerSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
@@ -41,6 +42,7 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.utils.PointingUtil;
+import frc.robot.utils.TunableNumber;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
@@ -67,6 +69,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandXboxController driveController = new CommandXboxController(0);
+  private final CommandXboxController sysidController = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -81,6 +84,10 @@ public class RobotContainer {
       new SerializerSubsystem(new TalonFX(18, kCanBusBlinky));
 
   private SendableChooser<Command> autoChooser;
+
+  private TunableNumber tunableHeadingP = new TunableNumber("tunableHeadingP", 5);
+  private TunableNumber tunableHeadingI = new TunableNumber("tunableHeadingI", 2);
+  private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 0);
 
   @Logged(name = "Shooter")
   public final Shooter shooter =
@@ -102,7 +109,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-    // intake.setDefaultCommand(intake.runIntakeControl());
+    intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
@@ -126,11 +133,13 @@ public class RobotContainer {
                     .withVelocityX(
                         -driveController.getLeftY()
                             * MaxSpeed
-                            / kSlowMoveRate) // Drive forward with negative Y (forward)
+                            / kSlowMoveRate
+                            / 2) // Drive forward with negative Y (forward)
                     .withVelocityY(
                         -driveController.getLeftX()
                             * MaxSpeed
-                            / kSlowMoveRate) // Drive left with negative X (left)
+                            / kSlowMoveRate
+                            / 2) // Drive left with negative X (left)
                     .withRotationalRate(
                         -driveController.getRightX() * MaxAngularRate / kSlowMoveRate);
               } // Drive counterclockwise with negative X (left)
@@ -149,7 +158,7 @@ public class RobotContainer {
                         -driveController.getLeftY()
                             * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(
-                        -driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                        -driveController.getLeftX() * MaxSpeed) // Drive left with negative X
                     .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
               } // Drive counterclockwise with negative X (left)
             }));
@@ -185,6 +194,17 @@ public class RobotContainer {
     driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true)); // zero hud
 
     driveController.povLeft().onTrue(runOnce(() -> intake.zeroHeight()).ignoringDisable(true));
+
+    sysidController.y().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+
+    sysidController.a().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+
+    sysidController
+        .x()
+        .whileTrue(
+            drivetrain.sysIdQuasistatic(Direction.kForward).alongWith(new PrintCommand("Hello")));
+
+    sysidController.b().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     if (RobotBase.isReal()) return;
 
@@ -229,28 +249,10 @@ public class RobotContainer {
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    // driveJoystick
-    //     .back()
-    //     .and(driveJoystick.y())
-    //     .whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    // driveJoystick
-    //     .back()
-    //     .and(driveJoystick.x())
-    //     .whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    // driveJoystick
-    //     .start()
-    //     .and(driveJoystick.y())
-    //     .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    // driveJoystick
-    //     .start()
-    //     .and(driveJoystick.x())
-    //     .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
   }
 
   private SwerveRequest.FieldCentricFacingAngle shooterAming =
-      new SwerveRequest.FieldCentricFacingAngle()
-          .withHeadingPID(5, 2, 0)
-          .withDeadband(MaxSpeed * 0.1 / kSlowMoveRate);
+      new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.1 / kSlowMoveRate);
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
       new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(5, 3, 0);
@@ -267,8 +269,9 @@ public class RobotContainer {
                                 : new Rotation2d())) // We want our rotation to not be field centric
                 // but we do want our driving to be so we
                 // manually flip the rotation
-                .withTargetRateFeedforward(
-                    getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
+                // .withTargetRateFeedforward(
+                //     getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
+                .withHeadingPID(tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed / (kSlowMoveRate))
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed / (kSlowMoveRate)));
   }
