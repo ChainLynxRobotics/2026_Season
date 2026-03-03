@@ -3,14 +3,17 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Map;
 
+@Logged
 public class Constants {
   public static final Time kDT = Seconds.of(0.02);
   public static final boolean tuningMode = true;
@@ -61,29 +64,32 @@ public class Constants {
           Map.entry(
               Trench.LowerBlueTrench,
               new Pose2d[] {
-                new Pose2d(Meters.of(4), Meters.of(0), new Rotation2d()),
-                new Pose2d(Meters.of(5.25), Meters.of(1.5), new Rotation2d())
+                new Pose2d(Meters.of(3), Meters.of(0), new Rotation2d()),
+                new Pose2d(Meters.of(6.25), Meters.of(1.5), new Rotation2d())
               }),
           Map.entry(
               Trench.UpperBlueTrench,
               new Pose2d[] {
-                new Pose2d(Meters.of(4), Meters.of(6.6), new Rotation2d()),
-                new Pose2d(Meters.of(5.25), Meters.of(8.1), new Rotation2d())
+                new Pose2d(Meters.of(3), Meters.of(6.8), new Rotation2d()),
+                new Pose2d(Meters.of(6.25), Meters.of(8.1), new Rotation2d())
               }),
           Map.entry(
               Trench.LowerRedTrench,
               new Pose2d[] {
-                new Pose2d(Meters.of(11.25), Meters.of(0), new Rotation2d()),
-                new Pose2d(Meters.of(12.6), Meters.of(1.5), new Rotation2d())
+                new Pose2d(Meters.of(10.25), Meters.of(0), new Rotation2d()),
+                new Pose2d(Meters.of(13.6), Meters.of(1.5), new Rotation2d())
               }),
           Map.entry(
               Trench.UpperRedTrench,
               new Pose2d[] {
-                new Pose2d(Meters.of(11.25), Meters.of(6.6), new Rotation2d()),
-                new Pose2d(Meters.of(12.6), Meters.of(8.1), new Rotation2d())
+                new Pose2d(Meters.of(10.25), Meters.of(6.8), new Rotation2d()),
+                new Pose2d(Meters.of(13.6), Meters.of(8.1), new Rotation2d())
               }));
 
   public static Pose2d[] getTrenchCorners(Trench trench) {
+    if (getAlliance().equals(Alliance.Red)) {
+      return new Pose2d[] {trenchCorners.get(trench)[1], trenchCorners.get(trench)[0]};
+    }
     return trenchCorners.get(trench);
   }
 }

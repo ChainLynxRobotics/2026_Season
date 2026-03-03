@@ -20,6 +20,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -85,9 +86,9 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
-  private TunableNumber tunableHeadingP = new TunableNumber("tunableHeadingP", 5);
-  private TunableNumber tunableHeadingI = new TunableNumber("tunableHeadingI", 2);
-  private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 0);
+  private TunableNumber tunableHeadingP = new TunableNumber("tunableHeadingP", 8);
+  private TunableNumber tunableHeadingI = new TunableNumber("tunableHeadingI", 0);
+  private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 1);
 
   @Logged(name = "Shooter")
   public final Shooter shooter =
@@ -145,13 +146,23 @@ public class RobotContainer {
               } // Drive counterclockwise with negative X (left)
               if (isPoseInSquare(
                       drivetrain.getState().Pose,
-                      getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
-                      getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1])
+                      getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0].plus(
+                          new Transform2d(
+                              Meters.of(
+                                  0 + (drivetrain.getState().Speeds.vxMetersPerSecond * -0.5)),
+                              Meters.of(
+                                  -1 + (drivetrain.getState().Speeds.vyMetersPerSecond * -0.5)),
+                              new Rotation2d())),
+                      getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1].plus(
+                          new Transform2d(
+                              Meters.of(0 + (drivetrain.getState().Speeds.vxMetersPerSecond * 0.5)),
+                              Meters.of(1 + (drivetrain.getState().Speeds.vyMetersPerSecond * 0.5)),
+                              new Rotation2d())))
                   && handleTrenchAlignment().isPresent()) {
                 return trenchAlign
                     .withTargetDirection(handleTrenchAlignment().get())
-                    .withVelocityX(-driveController.getLeftY() * MaxSpeed / 2)
-                    .withVelocityY(calculateTrenchAlignYVelocity());
+                    .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
+                    .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
               } else {
                 return drive
                     .withVelocityX(
@@ -255,7 +266,7 @@ public class RobotContainer {
       new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.1 / kSlowMoveRate);
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
-      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(5, 3, 0);
+      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(8, 0, 1);
 
   public Command autoAimShooter() {
     return drivetrain.applyRequest(
@@ -276,34 +287,47 @@ public class RobotContainer {
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed / (kSlowMoveRate)));
   }
 
-  public Command alignToTrench() {
-    return drivetrain.applyRequest(
-        () ->
-            trenchAlign
-                .withTargetDirection(handleTrenchAlignment().get())
-                .withVelocityX(-driveController.getLeftY() * MaxSpeed / 2)
-                .withVelocityY(calculateTrenchAlignYVelocity()));
-  }
-
   public Optional<Rotation2d> handleTrenchAlignment() {
-    if (-30.0 < drivetrain.getState().Pose.getRotation().getDegrees()
-        && drivetrain.getState().Pose.getRotation().getDegrees() < 30) {
+    if (-40.0 < drivetrain.getState().Pose.getRotation().getDegrees()
+        && drivetrain.getState().Pose.getRotation().getDegrees() < 40) {
       return Optional.of(new Rotation2d(Degrees.of(0)));
     }
-    if (150.0 < drivetrain.getState().Pose.getRotation().getDegrees()
-        && drivetrain.getState().Pose.getRotation().getDegrees() < 210) {
+    if (140.0 < drivetrain.getState().Pose.getRotation().getDegrees()
+        && drivetrain.getState().Pose.getRotation().getDegrees() < 220) {
       return Optional.of(new Rotation2d(Degrees.of(180)));
     }
     return Optional.empty();
   }
 
-  public LinearVelocity calculateTrenchAlignYVelocity() {
-    double kP = 1;
+  // public LinearVelocity calculateTrenchAlignYVelocity() {
+  //   double kP = 4;
+  //   double centerOfTrench =
+  //       (getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0].getY()
+  //               + getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1].getY())
+  //           / 2;
+  //   return MetersPerSecond.of(kP * (centerOfTrench - drivetrain.getState().Pose.getY()));
+  // }
+
+  // public LinearVelocity calculateTrenchAlignXVelocity() {
+  //   double centerOfTrench =
+  //       (getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0].getY()
+  //               + getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1].getY())
+  //           / 2;
+  //   return ((centerOfTrench - drivetrain.getState().Pose.getY()) > 0.45) ? MetersPerSecond.of(0)
+  // : MetersPerSecond.of(-driveController.getLeftY() * MaxSpeed / 4);
+
+  public ChassisSpeeds calculateTrenchAlignSpeeds() {
+    double kP = 4;
     double centerOfTrench =
         (getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0].getY()
                 + getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1].getY())
             / 2;
-    return MetersPerSecond.of(kP * (centerOfTrench - drivetrain.getState().Pose.getY()));
+    double ySpeed = kP * (centerOfTrench - drivetrain.getState().Pose.getY());
+    double xSpeed =
+        ((centerOfTrench - drivetrain.getState().Pose.getY()) > 0.45)
+            ? -drivetrain.getState().Speeds.vxMetersPerSecond
+            : -driveController.getLeftY() * MaxSpeed / 4;
+    return new ChassisSpeeds(xSpeed, ySpeed, 0);
   }
 
   public Command goToHub(Supplier<ChassisSpeeds> Speed) {
