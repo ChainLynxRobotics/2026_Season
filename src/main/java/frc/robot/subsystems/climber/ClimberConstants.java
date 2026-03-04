@@ -14,8 +14,8 @@ import edu.wpi.first.units.measure.Time;
 import java.util.Map;
 
 public class ClimberConstants {
-  public static final int kClimberId = -1;
-  public static final int kLimitSwitchId = 1;
+  public static final int kClimberId = 14;
+  public static final int kLimitSwitchId = 8;
   public static final double kGearRatio = 23.0;
   public static final Distance kSpoolRadius = Inches.of(0.5);
   public static final Distance kSetpointTolerance = Inches.of(0.2);

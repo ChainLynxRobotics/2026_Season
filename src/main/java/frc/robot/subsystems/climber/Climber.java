@@ -5,7 +5,7 @@ import static frc.robot.subsystems.climber.ClimberConstants.*;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -14,6 +14,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.utils.RobotMath;
@@ -25,7 +26,7 @@ public class Climber extends SubsystemBase implements AutoCloseable {
   private Distance setpoint;
   private TalonFX motor;
   private ElevatorSim motorSim;
-  private final MotionMagicVoltage request = new MotionMagicVoltage(0);
+  private final PositionVoltage request = new PositionVoltage(0);
   private TalonFXSimState simMotor;
   private DigitalInput limitSwitch;
 
@@ -44,33 +45,29 @@ public class Climber extends SubsystemBase implements AutoCloseable {
             true,
             0);
 
-    limitSwitch = new DigitalInput(1);
+    limitSwitch = new DigitalInput(kLimitSwitchId);
 
     TalonFXConfiguration talonFXConfigs =
         new TalonFXConfiguration()
             .withSlot0(slot0Configs)
             .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
-    talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfigs.CurrentLimits.StatorCurrentLimit = 5;
+    // talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+    // talonFXConfigs.CurrentLimits.StatorCurrentLimit = 5;
     motor.getConfigurator().apply(talonFXConfigs);
     setpoint = climberMap.get(ClimberState.BOTTOM);
   }
 
   @Override
   public void periodic() {
-    if (getHeight().gt(kMaxHeight.plus(Inches.of(0.1))) && limitSwitch.get()) {
-      motor.setPosition(ClimberConstants.convertToAngle(kMaxHeight));
-    }
+    // if (getHeight().gt(kMaxHeight.plus(Inches.of(0.1))) && limitSwitch.get()) {
+    //   motor.setPosition(ClimberConstants.convertToAngle(kMaxHeight));
+    // }
   }
 
   // takes in state and compares with map to get angle value, and sets motionmagic to angle setpoint
   public void setStateSetpoint(ClimberState state) {
     setpoint = climberMap.get(state);
     motor.setControl(request.withPosition(ClimberConstants.convertToAngle(setpoint)));
-  }
-
-  public void setFullPower() {
-    motor.set(1);
   }
 
   public Distance getSetpoint() {
@@ -95,6 +92,19 @@ public class Climber extends SubsystemBase implements AutoCloseable {
   public Distance getHeight() {
     return ClimberConstants.convertToHeight(getPosition());
   }
+
+  public Voltage getVoltage() {
+    return motor.getMotorVoltage().getValue();
+  }
+
+  public Current getStatorCurrent() {
+    return motor.getStatorCurrent().getValue();
+  }
+
+  public Current getSupplyCurrent() {
+    return motor.getSupplyCurrent().getValue();
+  }
+
   // checks internal encoder to setpoint + and - a certain tolerance
   public boolean atSetpoint() {
     return RobotMath.measureWithinBounds(
@@ -107,6 +117,10 @@ public class Climber extends SubsystemBase implements AutoCloseable {
 
   public void zeroClimber() {
     motor.setPosition(Rotations.zero());
+  }
+
+  public Command goToStateCommand(ClimberState state) {
+    return run(() -> setStateSetpoint(state));
   }
 
   @Override

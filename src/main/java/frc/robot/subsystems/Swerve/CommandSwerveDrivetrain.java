@@ -407,6 +407,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public void seedFieldCentric(Rotation2d rotation) {
-    seedFieldCentric(rotation);
+    super.seedFieldCentric(rotation);
   }
 }

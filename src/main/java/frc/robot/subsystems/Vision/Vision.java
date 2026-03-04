@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -44,7 +45,9 @@ public class Vision extends SubsystemBase {
 
   public record VisionPose(Pose3d pose, double timestamp, Matrix<N3, N1> deviation) {}
 
-  private VisionPose swervePose;
+  @NotLogged
+  private VisionPose swervePose =
+      new VisionPose(new Pose3d(), 0, new Matrix<>(N3.instance, N1.instance));
 
   public Vision(Consumer<VisionPose> updateDrivetrain, Supplier<Pose2d> getSimPose) {
     this.updateDrivetrain = updateDrivetrain;
@@ -178,6 +181,7 @@ public class Vision extends SubsystemBase {
     }
   }
 
+  @NotLogged
   public Pose3d getVisionPose() {
     return swervePose.pose;
   }
