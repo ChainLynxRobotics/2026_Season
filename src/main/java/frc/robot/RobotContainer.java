@@ -191,11 +191,15 @@ public class RobotContainer {
 
     driveController.rightTrigger().onTrue(runOnce(() -> intake.swapIntake()));
     // Reset the field-centric heading on left bumper press.
-    //driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    // driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     // driveController.povRight().whileTrue(intake.setHeight()).onFalse(intake.setHeightToZero());
-    driveController.a().onTrue(drivetrain.runOnce(() -> {
-      drivetrain.seedFieldCentric(vision.getVisionPose().getRotation().toRotation2d());
-    }));
+    driveController
+        .a()
+        .onTrue(
+            drivetrain.runOnce(
+                () -> {
+                  drivetrain.seedFieldCentric(vision.getVisionPose().getRotation().toRotation2d());
+                }));
 
     driveController.leftBumper().toggleOnTrue(autoAimShooter());
 
