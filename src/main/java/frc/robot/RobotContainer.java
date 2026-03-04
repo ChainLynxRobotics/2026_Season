@@ -72,7 +72,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandXboxController driveController = new CommandXboxController(0);
-  private final CommandXboxController sysidController = new CommandXboxController(1);
+  // private final CommandXboxController sysidController = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -93,6 +93,7 @@ public class RobotContainer {
   private TunableNumber tunableHeadingP = new TunableNumber("tunableHeadingP", 8);
   private TunableNumber tunableHeadingI = new TunableNumber("tunableHeadingI", 0);
   private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 1);
+  private TunableNumber tunableHeadingFFMult = new TunableNumber("tunableHeadingFFMult", 1.0);
 
   @Logged(name = "Shooter")
   public final Shooter shooter =
@@ -113,8 +114,8 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    shooter.setDefaultCommand(shooter.runShooterControl());
-    intake.setDefaultCommand(intake.runIntakeControl());
+    // shooter.setDefaultCommand(shooter.runShooterControl());
+    // intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
