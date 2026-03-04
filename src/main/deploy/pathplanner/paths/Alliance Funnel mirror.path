@@ -85,7 +85,7 @@
       },
       "prevControl": {
         "x": 7.7714328060799795,
-        "y": 0.6451542116569128
+        "y": 0.6451542116569127
       },
       "nextControl": {
         "x": 7.6601655629139085,
@@ -260,7 +260,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Funnel",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -2.3783795700951718

@@ -45,7 +45,7 @@
     "rotation": 179.4856377428754
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Climbing",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
