@@ -28,8 +28,6 @@ public class Climber extends SubsystemBase implements AutoCloseable {
   private final MotionMagicVoltage request = new MotionMagicVoltage(0);
   private TalonFXSimState simMotor;
   private DigitalInput limitSwitch;
-  private boolean doMotionProfiling;
-  private Angle zeroOffset;
 
   public Climber(TalonFX motor) {
     this.motor = motor;
@@ -53,26 +51,20 @@ public class Climber extends SubsystemBase implements AutoCloseable {
             .withSlot0(slot0Configs)
             .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
     motor.getConfigurator().apply(talonFXConfigs);
-    doMotionProfiling = true;
-    zeroOffset = Rotations.of(0);
     setpoint = climberMap.get(ClimberState.BOTTOM);
   }
 
   @Override
   public void periodic() {
-    if (doMotionProfiling) {
-      motor.setControl(request.withPosition(setpoint));
-    }
   }
 
   // takes in state and compares with map to get angle value, and sets motionmagic to angle setpoint
   public void setStateSetpoint(ClimberState state) {
     setpoint = climberMap.get(state);
-    doMotionProfiling = true;
+    motor.setControl(request.withPosition(setpoint));
   }
 
   public void setFullPower() {
-    doMotionProfiling = false;
     motor.set(1);
   }
 
@@ -92,7 +84,7 @@ public class Climber extends SubsystemBase implements AutoCloseable {
 
   // raw rotations before gear ratio
   public Angle getPosition() {
-    return (motor.getPosition().getValue()).minus(zeroOffset);
+    return (motor.getPosition().getValue());
   }
 
   public Angle getRawPosition() {
@@ -106,10 +98,6 @@ public class Climber extends SubsystemBase implements AutoCloseable {
 
   public boolean getLimitSwitch() {
     return limitSwitch.get();
-  }
-
-  public void setZero() {
-    zeroOffset = getRawPosition();
   }
 
   @Override
