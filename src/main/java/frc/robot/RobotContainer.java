@@ -26,8 +26,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 
 @Logged
 public class RobotContainer {
@@ -103,8 +101,7 @@ public class RobotContainer {
                         .withVelocityX(
                             -joystick.getLeftY()
                                 * MaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(
-                            -joystick.getLeftX() * MaxSpeed)));
+                        .withVelocityY(-joystick.getLeftX() * MaxSpeed)));
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick
@@ -160,7 +157,7 @@ public class RobotContainer {
         climber
             .run(() -> climber.setStateSetpoint(ClimberState.BOTTOM))
             .until(() -> climber.getLimitSwitch())
-            .andThen(() -> climber.setZero()));
+            .andThen(() -> climber.zeroClimber()));
   }
 
   public Command climbTo(ClimberState state) {

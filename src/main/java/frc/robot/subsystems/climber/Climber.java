@@ -55,8 +55,7 @@ public class Climber extends SubsystemBase implements AutoCloseable {
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
   // takes in state and compares with map to get angle value, and sets motionmagic to angle setpoint
   public void setStateSetpoint(ClimberState state) {
@@ -98,6 +97,10 @@ public class Climber extends SubsystemBase implements AutoCloseable {
 
   public boolean getLimitSwitch() {
     return limitSwitch.get();
+  }
+
+  public void zeroClimber() {
+    motor.setPosition(Rotations.zero());
   }
 
   @Override
