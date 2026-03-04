@@ -44,6 +44,8 @@ public class Vision extends SubsystemBase {
 
   public record VisionPose(Pose3d pose, double timestamp, Matrix<N3, N1> deviation) {}
 
+  private VisionPose swervePose;
+
   public Vision(Consumer<VisionPose> updateDrivetrain, Supplier<Pose2d> getSimPose) {
     this.updateDrivetrain = updateDrivetrain;
     this.getSimPose = getSimPose;
@@ -166,7 +168,7 @@ public class Vision extends SubsystemBase {
                 .times(Math.pow(getAverageDistance(poseResult).in(Meters), 1.5))
                 .times(1 / Math.pow(poseResult.targetsUsed.size(), 2))
                 .times(Math.pow(getAverageAmbiguity(poseResult) * 10, 0.75));
-        VisionPose swervePose =
+        swervePose =
             new VisionPose(poseResult.estimatedPose, result.getTimestampSeconds(), deviation);
 
         updateDrivetrain.accept(swervePose);
@@ -174,6 +176,10 @@ public class Vision extends SubsystemBase {
 
       populateLogs(allTargets);
     }
+  }
+
+  public Pose3d getVisionPose() {
+    return swervePose.pose;
   }
 
   // TODO: figure out if only using estimates with one tag makes pose beter or worse

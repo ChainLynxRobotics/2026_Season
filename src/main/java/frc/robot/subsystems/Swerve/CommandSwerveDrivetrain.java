@@ -405,4 +405,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
     return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
   }
+
+  public void seedFieldCentric(Rotation2d rotation) {
+    seedFieldCentric(rotation);
+  }
 }
