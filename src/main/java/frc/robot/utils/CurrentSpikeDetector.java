@@ -18,7 +18,7 @@ public class CurrentSpikeDetector {
 
   public void recordCurrent(TalonFX motor) {
     iterations++;
-    lastCurrent = motor.getSupplyCurrent().getValue().in(Amps);
+    lastCurrent = motor.getStatorCurrent().getValue().in(Amps);
     totalCurrent += lastCurrent;
   }
 
