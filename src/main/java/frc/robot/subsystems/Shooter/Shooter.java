@@ -570,6 +570,21 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     // }
     detectTunableFlywheelChanges();
     detectTunableHoodChanges();
+    ballStuck = ballStuckDebouncer.calculate(hasAStuckBallInternal());
+  }
+
+  private boolean ballStuck = false;
+  private Debouncer ballStuckDebouncer = new Debouncer(1);
+
+  private boolean hasAStuckBallInternal() {
+    var acceleration = flywheelMotor.getAcceleration().getValue();
+    var notAccelerating  = acceleration.lt(RotationsPerSecondPerSecond.of(1)) && acceleration.gt(RotationsPerSecondPerSecond.of(-1));
+    var notMoving = rollingVelocityAverage.lt(RotationsPerSecond.of(1)) && rollingVelocityAverage.gt(RotationsPerSecond.of(-1));
+    return notAccelerating && notMoving && DriverStation.isEnabled();
+  }
+
+  public boolean hasAStuckBall() {
+    return ballStuck;
   }
 
   public Angle calculateHoodAngle() {
