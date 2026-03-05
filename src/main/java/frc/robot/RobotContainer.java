@@ -196,7 +196,7 @@ public class RobotContainer {
 
     // driveController.a().onTrue(climber.goToStateCommand(ClimberState.TOP));
 
-    driveController.y().toggleOnTrue(intake.jiggle());
+    driveController.y().whileTrue(intake.jiggle());
 
     // driveController.b().onTrue(climber.goToStateCommand(ClimberState.BOTTOM));
 
