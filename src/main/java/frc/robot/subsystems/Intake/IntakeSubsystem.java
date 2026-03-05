@@ -67,6 +67,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   protected TunableNumber tunableHeightHeight;
 
   public boolean intakeDirection;
+  public boolean intakeHeightToggle;
 
   private DCMotorSim spinSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
@@ -142,7 +143,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableHeightP = new TunableNumber("tunablekHeightP", kHeightP);
     this.tunableHeightI = new TunableNumber("tunablekHeightI", kHeightI);
     this.tunableHeightD = new TunableNumber("tunablekHeightD", kHeightD);
-    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 110);
+    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 113);
     this.tunableHeightGravOffset = new TunableNumber("gravoffset", 126.95);
   }
 
@@ -260,7 +261,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
 
   public Command runIntakeControl() {
     return run(() -> {
-          heightMotor.setControl(heightControl.withPosition(Degrees.of(tunableHeightHeight.get())));
+          heightMotor.setControl(heightControl.withPosition(intakeHeightToggle ? Degrees.of(tunableHeightHeight.get()) : Degrees.of(0)));
           spinMotor.setControl(new VoltageOut(intakeDirection ? -5 : 5));
         })
         .withName("runIntakeControl");
@@ -271,6 +272,15 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
       intakeDirection = false;
     } else {
       intakeDirection = true;
+    }
+  }
+
+  public void swapIntakeHeight() {
+    if (intakeHeightToggle) {
+      intakeHeightToggle = false;
+    }
+    else {
+      intakeHeightToggle = true;
     }
   }
 

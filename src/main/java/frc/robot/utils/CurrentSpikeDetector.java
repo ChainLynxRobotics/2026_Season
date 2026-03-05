@@ -1,47 +1,42 @@
 package frc.robot.utils;
 
-import static edu.wpi.first.units.Units.Amps;
-
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.units.measure.*;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class CurrentSpikeDetector {
-  private double totalCurrent;
-  private double lastCurrent;
+  private Current totalCurrent;
+  private Current lastCurrent;
   private int iterations = 0;
+
+  private Debouncer debouncer = new Debouncer(0.2);
+
+  private Supplier<Current> currentSupplier;
 
   TalonFX talonFXMotor;
 
-  //   public CurrentSpikeDetector(TalonFX motor) {
-  //     this.talonFXMotor = motor;
-  //     }
+  public CurrentSpikeDetector(Supplier<Current> currentSupplier) {
+    this.currentSupplier = currentSupplier;
+  }
 
-  public void recordCurrent(TalonFX motor) {
+  public void update() {
     iterations++;
-    lastCurrent = motor.getStatorCurrent().getValue().in(Amps);
-    totalCurrent += lastCurrent;
+    lastCurrent = currentSupplier.get();
+    totalCurrent = totalCurrent.plus(lastCurrent);
   }
 
-  public double getAverageCurrent() {
-    return totalCurrent / iterations;
+  public Current getAverageCurrent() {
+    return totalCurrent.div(iterations);
   }
 
-  public BooleanSupplier detectSpike() {
-    if (iterations > 10) {
-      if (lastCurrent > getAverageCurrent() * 2) {
-        return () -> detectSpike(1);
-      }
-    }
-    return () -> false;
+  public BooleanSupplier getSpikeSupplier() {
+    return this::detectSpike;
   }
 
-  private boolean detectSpike(int timesCalled) {
-    if (timesCalled == 5) {
-      return true;
-    } else if (lastCurrent > getAverageCurrent() * 2) {
-      return detectSpike(timesCalled + 1);
-    } else {
-      return false;
-    }
+  private boolean detectSpike() {
+    update();
+    return debouncer.calculate(lastCurrent.gt(getAverageCurrent().times(2)) && iterations > 10);
   }
 }
