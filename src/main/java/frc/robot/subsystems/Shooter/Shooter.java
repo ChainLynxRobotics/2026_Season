@@ -556,7 +556,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     }
   }
 
-  private AngularVelocity rollingVelocityAverage = RotationsPerSecond.zero();
+  public AngularVelocity rollingVelocityAverage = RotationsPerSecond.zero();
   private double averageWindow = 0.1;
 
   @Override
@@ -586,7 +586,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   private boolean ballStuck = false;
   private Debouncer ballStuckDebouncer = new Debouncer(1);
 
-  private boolean hasAStuckBallInternal() {
+  public boolean hasAStuckBallInternal() {
     var acceleration = flywheelMotor.getAcceleration().getValue();
     var notAccelerating =
         acceleration.lt(RotationsPerSecondPerSecond.of(1))

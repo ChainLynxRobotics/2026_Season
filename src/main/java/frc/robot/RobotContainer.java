@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.climber.ClimberConstants.kClimberId;
 import static frc.robot.utils.PointingUtil.*;
@@ -115,7 +116,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
     new Trigger(shooter::hasAStuckBall)
-        .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(-10)).withName("Unjam ball"));
+        .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(-10)).withName("Unjam ball").andThen(waitSeconds(1)));
     intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
