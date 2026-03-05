@@ -2,6 +2,7 @@ package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -166,6 +167,10 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     return heightMotor.getMotorVoltage().getValue();
   }
 
+  public String currentCommand() {
+    return this.getCurrentCommand().getName();
+  }
+
   @Override
   public void simulationPeriodic() {
     spinSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
@@ -253,11 +258,11 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command runIntakeControl() {
-    return run(
-        () -> {
+    return run(() -> {
           heightMotor.setControl(heightControl.withPosition(Degrees.of(tunableHeightHeight.get())));
           spinMotor.setControl(new VoltageOut(intakeDirection ? -5 : 5));
-        });
+        })
+        .withName("runIntakeControl");
   }
 
   public void swapIntake() {
@@ -269,17 +274,19 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public void zeroHeight() {
-    runOnce(() -> heightMotor.setVoltage(-1)).until(currentSpikeDetector.detectSpike());
+    run(() -> heightMotor.setVoltage(-1))
+        .until(currentSpikeDetector.detectSpike())
+        .withName("zero height");
     heightMotor.setPosition(Degrees.of(0));
   }
 
   public Command jiggle() {
     return sequence(
-        runOnce(() -> heightMotor.setControl(heightControl.withPosition(kIntakeLowAngle)))
-            .withTimeout(Seconds.of(1))
-            .andThen(
-                runOnce(() -> heightMotor.setControl(heightControl.withPosition(kIntakeHighAngle)))
-                    .withTimeout(Seconds.of(1))));
+            runOnce(() -> heightMotor.setControl(heightControl.withPosition(kIntakeLowAngle))),
+            waitSeconds(1),
+            runOnce(() -> heightMotor.setControl(heightControl.withPosition(kIntakeHighAngle))),
+            waitSeconds(1))
+        .withName("Jiggle");
   }
 
   public double getHeightReference() {

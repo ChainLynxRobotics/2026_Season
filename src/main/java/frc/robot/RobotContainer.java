@@ -116,7 +116,11 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
     new Trigger(shooter::hasAStuckBall)
-        .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(-10)).withName("Unjam ball").andThen(waitSeconds(1)));
+        .onTrue(
+            shooter
+                .setFlywheelVelocity(RotationsPerSecond.of(-10))
+                .withName("Unjam ball")
+                .andThen(waitSeconds(1)));
     intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
