@@ -73,7 +73,7 @@ public class ShooterLUT {
       map.put(4.17, 78.0);
       map.put(5.71, 92.0);
       map.put(7.37, 103.0);
-      map.put(12.2, 150.0);
+      map.put(12.2, 210.0);
 
       // map.put(1.041, 60.0);
       // map.put(1.92, 65.0);
