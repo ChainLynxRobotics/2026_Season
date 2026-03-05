@@ -6,8 +6,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
@@ -28,13 +26,12 @@ public class ClimberConstants {
   }
 
   public static Map<ClimberState, Distance> climberMap =
-      Map.of(ClimberState.TOP, Inches.zero(), ClimberState.BOTTOM, kMaxHeight.minus(Inches.of(2)));
+      Map.of(
+          ClimberState.TOP, Inches.zero(), ClimberState.BOTTOM, kMaxHeight.minus(Inches.of(0.5)));
 
-  public static final AngularAcceleration kCruiseAcceleration = RotationsPerSecondPerSecond.of(100);
-  public static final AngularVelocity kCruiseVelocity = RotationsPerSecond.of(100);
-  public static final double kP = 5;
+  public static final double kP = 3.5;
   public static final double kI = 0;
-  public static final double kD = 0;
+  public static final double kD = 0.5;
   // meters to rotations
   public static final Per<DistanceUnit, AngleUnit> kPositionConversionFactor =
       kSpoolRadius.times(Math.PI * 2).div(Rotations.one());

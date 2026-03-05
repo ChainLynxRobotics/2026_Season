@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Indexer.IndexerSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
@@ -43,7 +43,6 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import java.util.Optional;
@@ -114,9 +113,10 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    // shooter.setDefaultCommand(shooter.runShooterControl());
-    new Trigger(shooter::hasAStuckBall).onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(-10)).withName("Unjam ball"));
-    // intake.setDefaultCommand(intake.runIntakeControl());
+    shooter.setDefaultCommand(shooter.runShooterControl());
+    new Trigger(shooter::hasAStuckBall)
+        .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(-10)).withName("Unjam ball"));
+    intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
@@ -178,21 +178,22 @@ public class RobotContainer {
     RobotModeTriggers.disabled()
         .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-    // driveController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-
     driveController
         .rightBumper()
         .onTrue(indexer.spin().alongWith(serializer.spin()))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
-    driveController.y().onTrue(indexer.spin()).onFalse(indexer.stopSpin());
-
     driveController.rightTrigger().onTrue(runOnce(() -> intake.swapIntake()));
     // driveController.povRight().whileTrue(intake.setHeight()).onFalse(intake.setHeightToZero());
 
-    // driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    // driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)); ACTUAL BIND
+    // TODO:
 
-    driveController.a().onTrue(climber.goToStateCommand(ClimberState.TOP));
+    // driveController.a().onTrue(climber.goToStateCommand(ClimberState.TOP));
+
+    driveController.y().toggleOnTrue(intake.jiggle());
+
+    // driveController.b().onTrue(climber.goToStateCommand(ClimberState.BOTTOM));
 
     driveController.leftBumper().toggleOnTrue(autoAimShooter());
 
@@ -205,17 +206,6 @@ public class RobotContainer {
     driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true)); // zero hud
 
     driveController.povLeft().onTrue(runOnce(() -> intake.zeroHeight()).ignoringDisable(true));
-
-    sysidController.y().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-
-    sysidController.a().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-
-    sysidController
-        .x()
-        .whileTrue(
-            drivetrain.sysIdQuasistatic(Direction.kForward).alongWith(new PrintCommand("Hello")));
-
-    sysidController.b().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     if (RobotBase.isReal()) return;
 

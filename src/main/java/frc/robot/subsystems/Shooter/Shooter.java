@@ -15,11 +15,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -554,13 +556,21 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     }
   }
 
+  private AngularVelocity rollingVelocityAverage = RotationsPerSecond.zero();
+  private double averageWindow = 0.1;
+
   @Override
   public void periodic() {
+    rollingVelocityAverage =
+        rollingVelocityAverage
+            .times(1 - averageWindow)
+            .plus(getFlywheelVelocity().times(averageWindow));
     if (hoodLimitSwitch.get()
         && RobotBase.isReal()
         && isWithinTolerance(getHoodPosition(), Degrees.of(90), Degrees.of(0.01))) {
       hoodMotor.setPosition(Degrees.of(90));
     }
+
     // var controller = new CommandXboxController(0);
     // if (timeLastBall >= 15 && controller.rightBumper().getAsBoolean()) {
     //   this.shootSimulatedProjectile();
@@ -578,8 +588,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   private boolean hasAStuckBallInternal() {
     var acceleration = flywheelMotor.getAcceleration().getValue();
-    var notAccelerating  = acceleration.lt(RotationsPerSecondPerSecond.of(1)) && acceleration.gt(RotationsPerSecondPerSecond.of(-1));
-    var notMoving = rollingVelocityAverage.lt(RotationsPerSecond.of(1)) && rollingVelocityAverage.gt(RotationsPerSecond.of(-1));
+    var notAccelerating =
+        acceleration.lt(RotationsPerSecondPerSecond.of(1))
+            && acceleration.gt(RotationsPerSecondPerSecond.of(-1));
+    var notMoving =
+        rollingVelocityAverage.lt(RotationsPerSecond.of(1))
+            && rollingVelocityAverage.gt(RotationsPerSecond.of(-1));
     return notAccelerating && notMoving && DriverStation.isEnabled();
   }
 

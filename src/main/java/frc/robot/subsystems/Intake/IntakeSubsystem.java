@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -40,7 +41,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private TalonFXConfiguration heightConfiguration = new TalonFXConfiguration();
 
   private VelocityVoltage spinControl = new VelocityVoltage(kGoalIntakeSpinVelocity);
-  private MotionMagicVoltage heightControl = new MotionMagicVoltage(0.0);
+  private MotionMagicVoltage heightControl = new MotionMagicVoltage(0.0).withEnableFOC(true);
 
   private TalonFXSimState spinSimState;
   private TalonFXSimState heightSimState;
@@ -74,7 +75,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
       new SingleJointedArmSim(
           x60GearBox,
           // kInputToOutputHeightGearRatio,
-          1,
+          kInputToOutputHeightGearRatio,
           0.16564482161292,
           kIntakeLengthFromPivot,
           IntakeHeightState.HIGH.getAngle().in(Radians),
@@ -254,7 +255,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public Command runIntakeControl() {
     return run(
         () -> {
-          // heightMotor.setControl(heightControl.withPosition(Degrees.of(tunableHeightHeight.get())));
+          heightMotor.setControl(heightControl.withPosition(Degrees.of(tunableHeightHeight.get())));
           spinMotor.setControl(new VoltageOut(intakeDirection ? -5 : 5));
         });
   }
@@ -273,18 +274,12 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command jiggle() {
-    return runOnce(
-        () -> setHeight(IntakeHeightState.HIGH)
-        // {
-        //   for (int x = 0; x < 5; x++) {
-        //     new SequentialCommandGroup(
-        //         runOnce(() -> setHeight(Rotations.of(getHeightPosition() + 0.1)))
-        //             .until(heightAtSetpoint()),
-        //         runOnce(() -> setHeight(Rotations.of(getHeightPosition() - 0.1)))
-        //             .until(heightAtSetpoint()));
-        //   }
-        // }
-        );
+    return sequence(
+        runOnce(() -> heightMotor.setControl(heightControl.withPosition(kIntakeLowAngle)))
+            .withTimeout(Seconds.of(1))
+            .andThen(
+                runOnce(() -> heightMotor.setControl(heightControl.withPosition(kIntakeHighAngle)))
+                    .withTimeout(Seconds.of(1))));
   }
 
   public double getHeightReference() {

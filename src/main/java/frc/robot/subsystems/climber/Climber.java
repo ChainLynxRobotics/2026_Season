@@ -36,14 +36,7 @@ public class Climber extends SubsystemBase implements AutoCloseable {
     DCMotor gearbox = DCMotor.getKrakenX60Foc(1);
     motorSim =
         new ElevatorSim(
-            gearbox,
-            kGearRatio,
-            (55),
-            Inches.of(0.5).in(Meters),
-            0,
-            kMaxHeight.in(Meters),
-            true,
-            0);
+            gearbox, kGearRatio, (70), kSpoolRadius.in(Meters), 0, kMaxHeight.in(Meters), true, 0);
 
     limitSwitch = new DigitalInput(kLimitSwitchId);
 
@@ -51,17 +44,17 @@ public class Climber extends SubsystemBase implements AutoCloseable {
         new TalonFXConfiguration()
             .withSlot0(slot0Configs)
             .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
-    // talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-    // talonFXConfigs.CurrentLimits.StatorCurrentLimit = 5;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimit = 100;
     motor.getConfigurator().apply(talonFXConfigs);
     setpoint = climberMap.get(ClimberState.BOTTOM);
   }
 
   @Override
   public void periodic() {
-    // if (getHeight().gt(kMaxHeight.plus(Inches.of(0.1))) && limitSwitch.get()) {
-    //   motor.setPosition(ClimberConstants.convertToAngle(kMaxHeight));
-    // }
+    if (Inches.of(getHeightInches()).gt(kMaxHeight.minus(Inches.of(-2))) && limitSwitch.get()) {
+      motor.setPosition(ClimberConstants.convertToAngle(kMaxHeight));
+    }
   }
 
   // takes in state and compares with map to get angle value, and sets motionmagic to angle setpoint
@@ -89,8 +82,8 @@ public class Climber extends SubsystemBase implements AutoCloseable {
     return motor.getPosition().getValue();
   }
 
-  public Distance getHeight() {
-    return ClimberConstants.convertToHeight(getPosition());
+  public double getHeightInches() {
+    return (ClimberConstants.convertToHeight(getPosition()).in(Inches));
   }
 
   public Voltage getVoltage() {
@@ -108,7 +101,9 @@ public class Climber extends SubsystemBase implements AutoCloseable {
   // checks internal encoder to setpoint + and - a certain tolerance
   public boolean atSetpoint() {
     return RobotMath.measureWithinBounds(
-        getHeight(), setpoint.minus(kSetpointTolerance), setpoint.plus(kSetpointTolerance));
+        Inches.of(getHeightInches()),
+        setpoint.minus(kSetpointTolerance),
+        setpoint.plus(kSetpointTolerance));
   }
 
   public boolean getLimitSwitch() {
@@ -120,7 +115,9 @@ public class Climber extends SubsystemBase implements AutoCloseable {
   }
 
   public Command goToStateCommand(ClimberState state) {
-    return run(() -> setStateSetpoint(state));
+    return run(() -> setStateSetpoint(state))
+        .until(() -> limitSwitch.get())
+        .andThen(() -> stopMotor());
   }
 
   @Override
@@ -130,7 +127,11 @@ public class Climber extends SubsystemBase implements AutoCloseable {
 
     motorSim.update(kDT.in(Seconds));
 
-    simMotor.setRawRotorPosition(motorSim.getPositionMeters());
-    simMotor.setRotorVelocity(motorSim.getVelocityMetersPerSecond());
+    simMotor.setRawRotorPosition(
+        ClimberConstants.convertToAngle(Meters.of(motorSim.getPositionMeters())));
+    simMotor.setRotorVelocity(
+        RotationsPerSecond.of(
+            (ClimberConstants.convertToAngle(Meters.of(motorSim.getVelocityMetersPerSecond()))
+                .in(Rotations))));
   }
 }

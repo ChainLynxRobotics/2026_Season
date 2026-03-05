@@ -21,7 +21,7 @@ public class IntakeConstants {
   public static Angle kIntakeLowAngle = Degree.of(124);
   public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(10);
   public static double kInputToOutputSpinGearRatio = 3;
-  public static double kInputToOutputHeightGearRatio = 60;
+  public static double kInputToOutputHeightGearRatio = 37.5;
   public static double kT = 0.02;
   public static double kIntakeLengthFromPivot = 0.3347841158;
 
