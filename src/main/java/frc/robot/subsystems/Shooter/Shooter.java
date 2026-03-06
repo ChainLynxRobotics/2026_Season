@@ -128,6 +128,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             LinearSystemId.createDCMotorSystem(
                 kHoodMotor, kHoodMOI.in(KilogramSquareMeters), kHoodGearRatio),
             kHoodMotor);
+    hoodMotor.setPosition(Degrees.of(5));
   }
 
   /** Stops the motors */

@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -44,13 +43,13 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 
-@Logged
 public class RobotContainer {
 
   private double MaxSpeed =
@@ -73,20 +72,23 @@ public class RobotContainer {
 
   private final CommandXboxController driveController = new CommandXboxController(0);
   // private final CommandXboxController sysidController = new CommandXboxController(1);
+  @Logged public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+  @Logged
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
 
+  @Logged
   private final IntakeSubsystem intake =
       new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio));
 
+  @Logged
   private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17, kCanBusBlinky));
 
+  @Logged
   private final SerializerSubsystem serializer =
       new SerializerSubsystem(new TalonFX(18, kCanBusBlinky));
 
-  private final Climber climber = new Climber(new TalonFX(kClimberId, kCanBusBlinky));
+  @Logged private final Climber climber = new Climber(new TalonFX(kClimberId, kCanBusBlinky));
 
   private SendableChooser<Command> autoChooser;
 
@@ -105,8 +107,10 @@ public class RobotContainer {
           new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky));
 
   public RobotContainer() {
-    NamedCommands.registerCommand("goToHub", autoAimShooter());
-    NamedCommands.registerCommand("Climb", new PrintCommand("Implement it plz"));
+    NamedCommands.registerCommand(
+        "goToHub", new PrintCommand("use pathplanner point at not commands"));
+    NamedCommands.registerCommand(
+        "Climb", climber.run(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     NamedCommands.registerCommand("shootBalls", (indexer.spin().alongWith(serializer.spin())));
     NamedCommands.registerCommand("stopShoot", indexer.stopSpin().alongWith(serializer.stopSpin()));
     NamedCommands.registerCommand("Scoop", intake.spin5V());
@@ -118,9 +122,16 @@ public class RobotContainer {
     new Trigger(shooter::hasAStuckBall)
         .onTrue(
             shooter
-                .setFlywheelVelocity(RotationsPerSecond.of(-10))
+                .setFlywheelVelocity(RotationsPerSecond.of(-60))
                 .withName("Unjam ball")
                 .andThen(waitSeconds(1)));
+    new Trigger(
+            () ->
+                isPoseInSquare(
+                    drivetrain.getState().Pose,
+                    Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
+                    Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
+        .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
@@ -145,28 +156,31 @@ public class RobotContainer {
                     .withVelocityX(
                         -driveController.getLeftY()
                             * MaxSpeed
-                            / kSlowMoveRate
-                            / 2) // Drive forward with negative Y (forward)
+                            / kSlowMoveRate) // Drive forward with negative Y (forward)
                     .withVelocityY(
                         -driveController.getLeftX()
                             * MaxSpeed
-                            / kSlowMoveRate
-                            / 2) // Drive left with negative X (left)
+                            / kSlowMoveRate) // Drive left with negative X (left)
                     .withRotationalRate(
-                        -driveController.getRightX() * MaxAngularRate / kSlowMoveRate);
+                        -driveController.getRightX() * MaxAngularRate / kSlowMoveRate)
+                    .withDeadband(0.1 * MaxSpeed / kSlowMoveRate)
+                    .withRotationalDeadband(0.1 * MaxAngularRate / kSlowMoveRate);
               } // Drive counterclockwise with negative X (left)
-              if (isPoseInSquare(
-                      drivetrain.getState().Pose,
-                      getTrenchCornersVelocity(
-                          getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[0],
-                      getTrenchCornersVelocity(
-                          getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[1])
-                  && handleTrenchAlignment().isPresent()) {
-                return trenchAlign
-                    .withTargetDirection(handleTrenchAlignment().get())
-                    .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
-                    .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
-              } else {
+              // if (isPoseInSquare(
+              //         drivetrain.getState().Pose,
+              //         getTrenchCornersVelocity(
+              //             getClosestTrench(drivetrain.getState().Pose),
+              // drivetrain.getState())[0],
+              //         getTrenchCornersVelocity(
+              //             getClosestTrench(drivetrain.getState().Pose),
+              // drivetrain.getState())[1])
+              //     && handleTrenchAlignment().isPresent()) {
+              //   return trenchAlign
+              //       .withTargetDirection(handleTrenchAlignment().get())
+              //       .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
+              //       .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
+              // }
+              else {
                 return drive
                     .withVelocityX(
                         -driveController.getLeftY()
@@ -189,72 +203,20 @@ public class RobotContainer {
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
     driveController.rightTrigger().onTrue(runOnce(() -> intake.swapIntake()));
-    // driveController.povRight().whileTrue(intake.setHeight()).onFalse(intake.setHeightToZero());
 
-    // driveController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)); ACTUAL BIND
-    // TODO:
+    driveController
+        .a()
+        .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
 
-    // driveController.a().onTrue(climber.goToStateCommand(ClimberState.TOP));
-
-    driveController.y().whileTrue(intake.jiggle());
-
-    // driveController.b().onTrue(climber.goToStateCommand(ClimberState.BOTTOM));
+    driveController.y().onTrue((runOnce(() -> intake.swapIntakeHeight())));
 
     driveController.leftBumper().toggleOnTrue(autoAimShooter());
 
+    driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
+
+    driveController.povDown().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+
     drivetrain.registerTelemetry(logger::telemeterize);
-
-    driveController
-        .x()
-        .toggleOnTrue(intake.spin5V())
-        .toggleOnFalse(intake.stopSpin()); // spin intake
-    driveController.povUp().onTrue(shooter.zeroHood().ignoringDisable(true)); // zero hud
-
-    driveController.povLeft().onTrue(runOnce(() -> intake.zeroHeight()).ignoringDisable(true));
-
-    if (RobotBase.isReal()) return;
-
-    driveController.povLeft().onTrue(Commands.runOnce(() -> shooter.shootSimulatedProjectile()));
-
-    // driveController
-    //     .leftTrigger()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //             () -> {
-    //               var pieces = SimulatedArena.getInstance().getGamePiecesByType("Fuel");
-    //               for (GamePiece fuel : pieces) {
-
-    //                 SimulatedArena.getInstance().removePiece(fuel);
-    //               }
-    //             }));
-
-    // driveController.povDown().onTrue(runOnce(() -> intake.increaseSetpoint(5)));
-
-    driveController.povDown().whileTrue(shooter.sinFlywheelTest());
-
-    // driveController
-    //     .y()
-    //     .onTrue(shooter.setFlywheelVelocity(RotationsPerSecond.of(60)))
-    //     .onFalse(shooter.setFlywheelVelocity(RotationsPerSecond.of(0)));
-    // driveJoystick
-    //     .y()
-    //     .whileTrue(
-    //         drivetrain.applyRequest(
-    //             () ->
-    //                 // on y button press rotate robot to angle from getAngleToHub()
-    //                 new SwerveRequest.FieldCentricFacingAngle()
-    //                     .withTargetDirection(getAngleToHub())
-    //                     .withHeadingPID(7, 0, 0)
-    //                     // ^This pid is vibes for now fyi
-    //                     .withVelocityX(
-    //                         -driveJoystick.getLeftY()
-    //                             * MaxSpeed) // Drive forward with negative Y (forward)
-    //                     .withVelocityY(
-    //                         -driveJoystick.getLeftX()
-    //                             * MaxSpeed))); // Drive left with negative X (left)));
-
-    // Run SysId routines when holding back/start and X/Y.
-    // Note that each routine should be run exactly once in a single log.
   }
 
   private SwerveRequest.FieldCentricFacingAngle shooterAming =
@@ -294,6 +256,7 @@ public class RobotContainer {
     return Optional.empty();
   }
 
+  @Logged
   public ChassisSpeeds calculateTrenchAlignSpeeds() {
     double kP = 4;
     double centerOfTrenchY = getTrenchCenter(getClosestTrench(lastTOFPose)).getY();
@@ -310,14 +273,17 @@ public class RobotContainer {
         .finallyDo(() -> CommandSwerveDrivetrain.pathplannerClearOverride());
   }
 
+  @Logged
   public Rotation2d hubTrackingError() {
     return getAngleToHub().minus(drivetrain.getPose().getRotation());
   }
 
+  @Logged
   public Rotation2d getAngleToHub() {
     return PointingUtil.getAngleToHub(drivetrain.getPose());
   }
 
+  @Logged
   public Rotation2d getAngleToHubTOF() {
     return PointingUtil.getAngleToHubTOF(
         drivetrain.getPose(),
@@ -325,6 +291,7 @@ public class RobotContainer {
             drivetrain.getState().Speeds, drivetrain.getPose().getRotation()));
   }
 
+  @Logged
   public Rotation2d getAngleToTargetTOF() {
     return PointingUtil.getAngleToPoseTOF(
         drivetrain.getPose(),
@@ -341,10 +308,12 @@ public class RobotContainer {
         drivetrain.getPose(), drivetrainFieldRelitiveSpeeds, target);
   }
 
+  @Logged
   public AngularVelocity getTOFRotationalVelocityReal() {
     return getTOFRotationalVelocityToTarget(PointingUtil.getShootingTarget(drivetrain.getPose()));
   }
 
+  @Logged
   public AngularVelocity getRotationalVelocityToHub() {
     var drivetrainFieldRelitiveSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -355,6 +324,7 @@ public class RobotContainer {
 
   Pose2d lastTOFPose = new Pose2d();
 
+  @Logged
   public Pose2d getTOFPose() {
     var setpoint =
         ShooterLUT.generateShootOnTheMoveSetpoint(
@@ -370,15 +340,18 @@ public class RobotContainer {
     return lastTOFPose;
   }
 
+  @Logged
   public Pose2d getTarget() {
     return getShootingTarget(drivetrain.getPose());
   }
 
+  @Logged
   public Pose2d getTrenchCorner1() {
     return getTrenchCornersVelocity(
         getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[0];
   }
 
+  @Logged
   public Pose2d getTrenchCorner2() {
     return getTrenchCornersVelocity(
         getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[1];

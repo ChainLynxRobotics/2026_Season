@@ -52,9 +52,10 @@ public class Climber extends SubsystemBase implements AutoCloseable {
 
   @Override
   public void periodic() {
-    if (Inches.of(getHeightInches()).gt(kMaxHeight.minus(Inches.of(-2))) && limitSwitch.get()) {
-      motor.setPosition(ClimberConstants.convertToAngle(kMaxHeight));
-    }
+    // Limit switch not wired properly
+    // if (Inches.of(getHeightInches()).gt(kMaxHeight.minus(Inches.of(-2))) && limitSwitch.get()) {
+    //   motor.setPosition(ClimberConstants.convertToAngle(kMaxHeight));
+    // }
   }
 
   // takes in state and compares with map to get angle value, and sets motionmagic to angle setpoint

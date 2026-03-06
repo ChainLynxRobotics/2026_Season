@@ -66,8 +66,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   protected TunableNumber tunableHeightGravOffset;
   protected TunableNumber tunableHeightHeight;
 
-  public boolean intakeDirection;
-  public boolean intakeHeightToggle;
+  public boolean intakeBackward;
+  public boolean intakeHeightUp;
 
   private DCMotorSim spinSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
@@ -119,7 +119,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     spinConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     spinMotor.getConfigurator().apply(spinConfiguration);
 
-    this.intakeDirection = true;
+    this.intakeBackward = true;
+    this.intakeHeightUp = false;
 
     this.heightMotor = heightMotor;
     heightConfiguration.Slot0 = kIntakeHeightSlot0Config;
@@ -145,6 +146,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableHeightD = new TunableNumber("tunablekHeightD", kHeightD);
     this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 113);
     this.tunableHeightGravOffset = new TunableNumber("gravoffset", 126.95);
+    heightMotor.setPosition(Degrees.of(0));
   }
 
   public void runHeightSysId() {
@@ -169,9 +171,14 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     return heightMotor.getMotorVoltage().getValue();
   }
 
-  public String currentCommand() {
-    return this.getCurrentCommand().getName();
-  }
+  // Crashes Sim
+  // public String currentCommand() {
+  //   String name = this.getCurrentCommand().getName();
+  //   if (name == null || name.isEmpty()) {
+  //     return "None";
+  //   }
+  //   return name;
+  // }
 
   @Override
   public void simulationPeriodic() {
@@ -261,26 +268,27 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
 
   public Command runIntakeControl() {
     return run(() -> {
-          heightMotor.setControl(heightControl.withPosition(intakeHeightToggle ? Degrees.of(tunableHeightHeight.get()) : Degrees.of(0)));
-          spinMotor.setControl(new VoltageOut(intakeDirection ? -5 : 5));
+          heightMotor.setControl(
+              heightControl.withPosition(
+                  intakeHeightUp ? Degrees.of(0) : Degrees.of(tunableHeightHeight.get())));
+          spinMotor.setControl(new VoltageOut(intakeBackward ? -5 : 5));
         })
         .withName("runIntakeControl");
   }
 
   public void swapIntake() {
-    if (intakeDirection) {
-      intakeDirection = false;
+    if (intakeBackward) {
+      intakeBackward = false;
     } else {
-      intakeDirection = true;
+      intakeBackward = true;
     }
   }
 
   public void swapIntakeHeight() {
-    if (intakeHeightToggle) {
-      intakeHeightToggle = false;
-    }
-    else {
-      intakeHeightToggle = true;
+    if (intakeHeightUp) {
+      intakeHeightUp = false;
+    } else {
+      intakeHeightUp = true;
     }
   }
 
