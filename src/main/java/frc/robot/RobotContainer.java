@@ -259,7 +259,7 @@ public class RobotContainer {
   @Logged
   public ChassisSpeeds calculateTrenchAlignSpeeds() {
     double kP = 4;
-    double centerOfTrenchY = getTrenchCenter(getClosestTrench(lastTOFPose)).getY();
+    double centerOfTrenchY = getTrenchCenter(getClosestTrench(drivetrain.getPose())).getY();
     double ySpeed = kP * (centerOfTrenchY - drivetrain.getState().Pose.getY());
     double xSpeed =
         ((centerOfTrenchY - drivetrain.getState().Pose.getY()) > 1.5)
