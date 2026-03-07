@@ -58,11 +58,10 @@ public class Vision extends SubsystemBase {
             new PhotonPoseEstimator(kTagLayout, kCameraOffsets.get(0)),
             new PhotonCamera("aprilOne")));
 
-    // cameras.add(
-    //     new CamAndEstimator(
-    //         new PhotonPoseEstimator(
-    //             kTagLayout, kCameraOffsets.get(1)),
-    //         new PhotonCamera("aprilTwo")));
+    cameras.add(
+        new CamAndEstimator(
+            new PhotonPoseEstimator(kTagLayout, kCameraOffsets.get(1)),
+            new PhotonCamera("aprilTwo")));
 
     if (!RobotBase.isReal()) {
       visionSim = new VisionSystemSim("main");

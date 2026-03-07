@@ -26,11 +26,15 @@ public class VisionConstants {
   public static final List<Transform3d> kCameraOffsets =
       List.of(
           new Transform3d(
+              Inches.of(8.522),
+              Inches.of(12.473),
+              Inches.of(7.88),
+              new Rotation3d(Degrees.zero(), Degrees.of(-20), Degrees.of(90))),
+          new Transform3d(
               Inches.of(-12.55),
               Inches.of(8.969),
               Inches.of(9.766),
-              new Rotation3d(Degrees.zero(), Degrees.of(-30), Degrees.of(210)))
-          /*new Transform3d(0, -0.4347972, 0.54864, new Rotation3d(0, 0, Math.PI / 2))*/ );
+              new Rotation3d(Degrees.zero(), Degrees.of(-30), Degrees.of(210))));
 
   public static final Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(1.5, 1.5, 10);
 }
