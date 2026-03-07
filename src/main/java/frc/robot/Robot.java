@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
   private final boolean enableLogging = true;
+  private final boolean logToAdvantageScope = true;
 
   /* log and replay timestamp and joystick data */
   private final HootAutoReplay m_timeAndJoystickReplay =
@@ -38,6 +40,9 @@ public class Robot extends TimedRobot {
             }
 
             // Change the root data path
+            if (!logToAdvantageScope) {
+              config.backend = new FileBackend(DataLogManager.getLog());
+            }
             config.root = "Telemetry";
           });
       Epilogue.bind(this);

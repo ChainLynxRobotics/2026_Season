@@ -7,7 +7,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.climber.ClimberConstants.kClimberId;
 import static frc.robot.utils.PointingUtil.*;
@@ -26,6 +25,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -104,7 +104,8 @@ public class RobotContainer {
           drivetrain::getSimPose,
           () -> drivetrain.getState().Speeds,
           new TalonFX(ShooterConstants.kFlywheelCANId, kCanBusBlinky),
-          new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky));
+          new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky),
+          () -> (vision.getVisionPose() != null));
 
   public RobotContainer() {
     NamedCommands.registerCommand(
@@ -112,19 +113,15 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Climb", climber.run(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     NamedCommands.registerCommand("shootBalls", (indexer.spin().alongWith(serializer.spin())));
-    NamedCommands.registerCommand("stopShoot", indexer.stopSpin().alongWith(serializer.stopSpin()));
+    NamedCommands.registerCommand(
+        "stopShoot", (indexer.stopSpin().alongWith(serializer.stopSpin())));
     NamedCommands.registerCommand("Scoop", intake.spin5V());
     NamedCommands.registerCommand("Stop Scoop", intake.stopSpin());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-    new Trigger(shooter::hasAStuckBall)
-        .onTrue(
-            shooter
-                .setFlywheelVelocity(RotationsPerSecond.of(-60))
-                .withName("Unjam ball")
-                .andThen(waitSeconds(1)));
+
     new Trigger(
             () ->
                 isPoseInSquare(
@@ -166,21 +163,19 @@ public class RobotContainer {
                     .withDeadband(0.1 * MaxSpeed / kSlowMoveRate)
                     .withRotationalDeadband(0.1 * MaxAngularRate / kSlowMoveRate);
               } // Drive counterclockwise with negative X (left)
-              // if (isPoseInSquare(
-              //         drivetrain.getState().Pose,
-              //         getTrenchCornersVelocity(
-              //             getClosestTrench(drivetrain.getState().Pose),
-              // drivetrain.getState())[0],
-              //         getTrenchCornersVelocity(
-              //             getClosestTrench(drivetrain.getState().Pose),
-              // drivetrain.getState())[1])
-              //     && handleTrenchAlignment().isPresent()) {
-              //   return trenchAlign
-              //       .withTargetDirection(handleTrenchAlignment().get())
-              //       .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
-              //       .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
-              // }
-              else {
+              if (isPoseInSquare(
+                      drivetrain.getState().Pose,
+                      getTrenchCornersVelocity(
+                          getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[0],
+                      getTrenchCornersVelocity(
+                          getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[1])
+                  && handleTrenchAlignment().isPresent()
+                  && driveController.rightTrigger().getAsBoolean()) {
+                return trenchAlign
+                    .withTargetDirection(handleTrenchAlignment().get())
+                    .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
+                    .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
+              } else {
                 return drive
                     .withVelocityX(
                         -driveController.getLeftY()
@@ -202,13 +197,15 @@ public class RobotContainer {
         .onTrue(indexer.spin().alongWith(serializer.spin()))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
-    driveController.rightTrigger().onTrue(runOnce(() -> intake.swapIntake()));
+    driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
+
+    driveController.y().onTrue((runOnce(() -> intake.swapIntakeHeight())));
+
+    driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
 
     driveController
         .a()
         .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
-
-    driveController.y().onTrue((runOnce(() -> intake.swapIntakeHeight())));
 
     driveController.leftBumper().toggleOnTrue(autoAimShooter());
 
@@ -217,13 +214,15 @@ public class RobotContainer {
     driveController.povDown().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    if (RobotBase.isReal()) return;
   }
 
   private SwerveRequest.FieldCentricFacingAngle shooterAming =
       new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.1 / kSlowMoveRate);
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
-      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(8, 0, 1);
+      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(4, 2, 0);
 
   public Command autoAimShooter() {
     return drivetrain.applyRequest(
@@ -237,8 +236,8 @@ public class RobotContainer {
                                 : new Rotation2d())) // We want our rotation to not be field centric
                 // but we do want our driving to be so we
                 // manually flip the rotation
-                // .withTargetRateFeedforward(
-                //     getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
+                .withTargetRateFeedforward(
+                    getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
                 .withHeadingPID(tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed / (kSlowMoveRate))
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed / (kSlowMoveRate)));
@@ -355,6 +354,19 @@ public class RobotContainer {
   public Pose2d getTrenchCorner2() {
     return getTrenchCornersVelocity(
         getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[1];
+  }
+
+  public boolean isScoringPhaseSoon() {
+    double time = Timer.getMatchTime();
+    if ((time > 130 && time < 135)
+        || (time > 100 && time < 105)
+        || (time > 80 && time < 85)
+        || (time > 55 && time < 60)
+        || (time > 30 && time < 35)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public Command getAutonomousCommand() {

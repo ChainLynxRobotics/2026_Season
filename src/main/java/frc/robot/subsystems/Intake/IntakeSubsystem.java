@@ -144,7 +144,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableHeightP = new TunableNumber("tunablekHeightP", kHeightP);
     this.tunableHeightI = new TunableNumber("tunablekHeightI", kHeightI);
     this.tunableHeightD = new TunableNumber("tunablekHeightD", kHeightD);
-    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 113);
+    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 115);
     this.tunableHeightGravOffset = new TunableNumber("gravoffset", 126.95);
     heightMotor.setPosition(Degrees.of(0));
   }
@@ -163,11 +163,11 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
         .andThen(spinSysIdRoutine.quasistatic(Direction.kReverse));
   }
 
-  private Voltage getSpinVoltage() {
+  public Voltage getSpinVoltage() {
     return spinMotor.getMotorVoltage().getValue();
   }
 
-  private Voltage getHeightVoltage() {
+  public Voltage getHeightVoltage() {
     return heightMotor.getMotorVoltage().getValue();
   }
 
@@ -293,9 +293,9 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public void zeroHeight() {
-    run(() -> heightMotor.setVoltage(-1))
-        .until(currentSpikeDetector.getSpikeSupplier())
-        .withName("zero height");
+    // run(() -> heightMotor.setVoltage(-1))
+    //     .until(currentSpikeDetector.detectSpike())
+    //     .withName("zero height");
     heightMotor.setPosition(Degrees.of(0));
   }
 

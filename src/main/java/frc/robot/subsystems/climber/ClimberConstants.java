@@ -29,8 +29,8 @@ public class ClimberConstants {
       Map.of(
           ClimberState.TOP, Inches.zero(), ClimberState.BOTTOM, kMaxHeight.minus(Inches.of(0.5)));
 
-  public static final double kP = 5.5;
-  public static final double kI = 2;
+  public static final double kP = 5;
+  public static final double kI = 3;
   public static final double kD = 0.5;
   // meters to rotations
   public static final Per<DistanceUnit, AngleUnit> kPositionConversionFactor =

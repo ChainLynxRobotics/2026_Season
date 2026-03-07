@@ -25,9 +25,9 @@ public class IntakeConstants {
   public static double kT = 0.02;
   public static double kIntakeLengthFromPivot = 0.3347841158;
 
-  public static AngularVelocity kIntakeHeightMaxVelocity = RotationsPerSecond.of(0.5);
+  public static AngularVelocity kIntakeHeightMaxVelocity = RotationsPerSecond.of(10);
   public static AngularAcceleration kIntakeHeightMaxAcceleration =
-      RotationsPerSecondPerSecond.of(0.5);
+      RotationsPerSecondPerSecond.of(10);
 
   public static MotionMagicConfigs kIntakeHeightMotionMagic =
       new MotionMagicConfigs()
@@ -84,7 +84,7 @@ public class IntakeConstants {
         kIntakeHeightMaxAcceleration.in(RotationsPerSecondPerSecond);
     config.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
 
-    config.CurrentLimits.StatorCurrentLimit = 7.5;
+    config.CurrentLimits.StatorCurrentLimit = 25;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Joe: The constructor doesn't set an inversion but this does — what happens to the arm if the

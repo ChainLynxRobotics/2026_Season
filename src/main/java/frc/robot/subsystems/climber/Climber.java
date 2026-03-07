@@ -47,6 +47,7 @@ public class Climber extends SubsystemBase implements AutoCloseable {
     talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
     talonFXConfigs.CurrentLimits.StatorCurrentLimit = 100;
     motor.getConfigurator().apply(talonFXConfigs);
+    motor.setPosition(Degree.of(0));
     setpoint = climberMap.get(ClimberState.BOTTOM);
   }
 
@@ -116,9 +117,9 @@ public class Climber extends SubsystemBase implements AutoCloseable {
   }
 
   public Command goToStateCommand(ClimberState state) {
-    return run(() -> setStateSetpoint(state))
-        .until(() -> limitSwitch.get())
-        .andThen(() -> stopMotor());
+    return run(() -> setStateSetpoint(state));
+    // .until(() -> limitSwitch.get())
+    // .andThen(() -> stopMotor());
   }
 
   @Override

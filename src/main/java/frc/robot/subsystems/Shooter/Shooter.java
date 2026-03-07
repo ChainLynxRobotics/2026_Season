@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
 import frc.robot.utils.TunableNumber;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.dyn4j.geometry.Vector2;
 import org.ironmaple.simulation.SimulatedArena;
@@ -74,12 +75,15 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected TunableNumber tunableShooterSpeed;
   protected TunableNumber tunableLUTMult;
 
+  protected BooleanSupplier hasVisionPose;
+
   public Shooter(
       Supplier<Pose2d> drivetrainPose,
       Supplier<Pose2d> simPose,
       Supplier<ChassisSpeeds> chassisSpeeds,
       TalonFX flywheelMotor,
-      TalonFX hoodMotor) {
+      TalonFX hoodMotor,
+      BooleanSupplier hasVisionPose) {
     this.drivetrainPose = drivetrainPose;
     this.simPose = simPose;
     this.chassisSpeeds = chassisSpeeds;
@@ -112,6 +116,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     this.hoodMotor = hoodMotor;
     hoodMotor.getConfigurator().apply(kHoodConfig);
+
+    this.hasVisionPose = hasVisionPose;
 
     if (RobotBase.isReal()) return;
 
@@ -325,6 +331,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     // Joe: The LUT returns flywheelSurfaceSpeed as m/s, but setFlywheelVelocityInternal expects
     // RPS — wrapping m/s in RotationsPerSecond.of() won't give the right value, right? Should we
     // use convertLinearVelocityToAngular() here?
+    if (!hasVisionPose.getAsBoolean()) {
+      setFlywheelVelocityInternal(RotationsPerSecond.of(60).times(tunableLUTMult.get()));
+      setHoodAngleInternal(calculateHoodAngle());
+    }
     return run(() -> {
           setFlywheelVelocityInternal(
               RotationsPerSecond.of(
