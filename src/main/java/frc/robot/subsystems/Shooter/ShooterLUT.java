@@ -25,9 +25,21 @@ public class ShooterLUT {
 
   private static final double kMaxIterations = 15;
   private static final Distance kRecursionTarget = Meters.of(0.01);
+  private static Optional<SOTMSetpoint> cachedSetpoint = Optional.empty();
+  private static Pose2d cachedRobotPose =
+      new Pose2d(Double.MAX_VALUE, Double.MAX_VALUE, new Rotation2d(Double.MAX_VALUE));
+  private static ChassisSpeeds cachedRobotSpeeds =
+      new ChassisSpeeds(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+  private static Pose2d cachedTargetPose =
+      new Pose2d(Double.MAX_VALUE, Double.MAX_VALUE, new Rotation2d(Double.MAX_VALUE));
 
   public static Optional<SOTMSetpoint> generateShootOnTheMoveSetpoint(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Pose2d targetPose) {
+    if (cachedRobotPose.equals(robotPose)
+        && cachedRobotSpeeds.equals(robotSpeeds)
+        && cachedTargetPose.equals(targetPose)) {
+      return cachedSetpoint;
+    }
     var lastPose = new Pose2d(Double.MAX_VALUE, Double.MAX_VALUE, new Rotation2d());
     var iteratedPose = robotPose;
     var distance = Shooter.getDistanceToPose(robotPose, targetPose);
@@ -44,11 +56,17 @@ public class ShooterLUT {
       timeOfFlight = kShooterTOFMap.get(distance.in(Meters));
       if (iteratedPose.getTranslation().getDistance(lastPose.getTranslation())
           <= kRecursionTarget.in(Meters)) {
-        return Optional.of(
-            new SOTMSetpoint(
-                getSpeedAndRotation(distance),
-                PointingUtil.getAngleToPose(iteratedPose, targetPose),
-                iteratedPose));
+        var setpoint =
+            Optional.of(
+                new SOTMSetpoint(
+                    getSpeedAndRotation(distance),
+                    PointingUtil.getAngleToPose(iteratedPose, targetPose),
+                    iteratedPose));
+        cachedSetpoint = setpoint;
+        cachedRobotPose = robotPose;
+        cachedRobotSpeeds = robotSpeeds;
+        cachedTargetPose = targetPose;
+        return setpoint;
       }
       iterations += 1;
     }
