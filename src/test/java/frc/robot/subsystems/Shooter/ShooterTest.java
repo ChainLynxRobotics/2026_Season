@@ -31,7 +31,8 @@ public class ShooterTest {
             () -> new Pose2d(),
             () -> new ChassisSpeeds(),
             flywheelMotor,
-            hoodMotor);
+            hoodMotor,
+            () -> (false));
     DriverStationSim.setEnabled(true);
     DriverStationSim.notifyNewData();
     Timer.delay(1);
