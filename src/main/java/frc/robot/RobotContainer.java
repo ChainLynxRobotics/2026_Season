@@ -114,8 +114,8 @@ public class RobotContainer {
   public RobotContainer() {
     NamedCommands.registerCommand(
         "goToHub", new PrintCommand("use pathplanner point at not commands"));
-    NamedCommands.registerCommand(
-        "Climb", climber.run(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+    NamedCommands.registerCommand("Climb", new PrintCommand("climber disabled"));
+    // climber.run(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     NamedCommands.registerCommand("shootBalls", (indexer.spin().alongWith(serializer.spin())));
     NamedCommands.registerCommand(
         "stopShoot", (indexer.stopSpin().alongWith(serializer.stopSpin())));
@@ -219,7 +219,7 @@ public class RobotContainer {
 
     driveController
         .rightTrigger()
-        .onTrue(waitSeconds(0.5).andThen(indexer.spin().alongWith(serializer.spin())))
+        .onTrue(waitSeconds(0.75).andThen(indexer.spin().alongWith(serializer.spin())))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
@@ -236,9 +236,10 @@ public class RobotContainer {
 
     driveController.leftBumper().toggleOnTrue(autoAimShooter());
 
-    driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
+    // driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
 
-    driveController.povDown().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+    // driveController.povDown().onTrue(runOnce(() ->
+    // climber.setStateSetpoint(ClimberState.BOTTOM)));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -387,6 +388,7 @@ public class RobotContainer {
         drivetrain.getState().Pose)[1];
   }
 
+  @Logged
   public boolean isScoringPhaseSoon() {
     double time = Timer.getMatchTime();
     if ((time > 130 && time < 135)
