@@ -56,9 +56,9 @@ public class ShooterConstants {
 
     // Current Limits
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.SupplyCurrentLimit = 80;
+    config.CurrentLimits.SupplyCurrentLimit = 100;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = 120;
+    config.CurrentLimits.StatorCurrentLimit = 160;
 
     return config;
   }

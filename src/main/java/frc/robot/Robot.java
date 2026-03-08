@@ -12,6 +12,7 @@ import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -111,4 +112,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {}
+
+  @Logged
+  public double getBatteryVoltage() {
+    return RobotController.getBatteryVoltage();
+  }
+
+  @Logged
+  public double getBrownoutVoltage() {
+    return RobotController.getBatteryVoltage();
+  }
 }
