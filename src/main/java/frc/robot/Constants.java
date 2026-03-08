@@ -3,7 +3,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -66,26 +65,26 @@ public class Constants {
           Map.entry(
               Trench.LowerBlueTrench,
               new Pose2d[] {
-                new Pose2d(Meters.of(4), Meters.of(0), new Rotation2d()),
-                new Pose2d(Meters.of(5.25), Meters.of(1.5), new Rotation2d())
+                new Pose2d(Meters.of(3), Meters.of(0), new Rotation2d()),
+                new Pose2d(Meters.of(6.25), Meters.of(2), new Rotation2d())
               }),
           Map.entry(
               Trench.UpperBlueTrench,
               new Pose2d[] {
-                new Pose2d(Meters.of(4), Meters.of(6.8), new Rotation2d()),
-                new Pose2d(Meters.of(5.25), Meters.of(8.1), new Rotation2d())
+                new Pose2d(Meters.of(3), Meters.of(6.3), new Rotation2d()),
+                new Pose2d(Meters.of(6.25), Meters.of(8.6), new Rotation2d())
               }),
           Map.entry(
               Trench.LowerRedTrench,
               new Pose2d[] {
-                new Pose2d(Meters.of(11.25), Meters.of(0), new Rotation2d()),
-                new Pose2d(Meters.of(12.6), Meters.of(1.5), new Rotation2d())
+                new Pose2d(Meters.of(10.25), Meters.of(0), new Rotation2d()),
+                new Pose2d(Meters.of(13.6), Meters.of(2), new Rotation2d())
               }),
           Map.entry(
               Trench.UpperRedTrench,
               new Pose2d[] {
-                new Pose2d(Meters.of(11.25), Meters.of(6.8), new Rotation2d()),
-                new Pose2d(Meters.of(12.6), Meters.of(8.1), new Rotation2d())
+                new Pose2d(Meters.of(10.25), Meters.of(6.3), new Rotation2d()),
+                new Pose2d(Meters.of(13.6), Meters.of(8.6), new Rotation2d())
               }));
 
   public static Pose2d[] getTrenchCorners(Trench trench) {
@@ -100,14 +99,14 @@ public class Constants {
         new Rotation2d());
   }
 
-  public static Pose2d[] getTrenchCornersVelocity(Trench trench, SwerveDriveState driveState) {
+  public static Pose2d[] getTrenchCornersVelocity(
+      Trench trench, ChassisSpeeds chassisSpeeds, Pose2d drivePose) {
     Pose2d[] corners = getTrenchCorners(trench);
     ChassisSpeeds speeds =
-        ChassisSpeeds.fromRobotRelativeSpeeds(driveState.Speeds, driveState.Pose.getRotation())
-            .div(2);
+        ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, drivePose.getRotation()).div(2);
     double xMult = 1;
     double YMult = 1;
-    if (driveState.Pose.getX() > getTrenchCenter(trench).getX()) {
+    if (drivePose.getX() > getTrenchCenter(trench).getX()) {
       xMult = -xMult;
     }
     // if (driveState.Pose.getY() < getTrenchCenter(trench).getY()) {

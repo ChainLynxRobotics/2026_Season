@@ -152,6 +152,9 @@ public class Vision extends SubsystemBase {
         Optional<EstimatedRobotPose> optionalPoseResult =
             cameraRecord.estimator.estimateCoprocMultiTagPose(result);
         if (optionalPoseResult.isEmpty()) {
+          optionalPoseResult = cameraRecord.estimator.estimateLowestAmbiguityPose(result);
+        }
+        if (optionalPoseResult.isEmpty()) {
           continue;
         }
         EstimatedRobotPose poseResult = optionalPoseResult.get();

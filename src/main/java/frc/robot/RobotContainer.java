@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.climber.ClimberConstants.kClimberId;
 import static frc.robot.utils.PointingUtil.*;
@@ -51,6 +52,8 @@ import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 
 public class RobotContainer {
+
+  private boolean doDriving;
 
   private double MaxSpeed =
       1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -105,7 +108,8 @@ public class RobotContainer {
           () -> drivetrain.getState().Speeds,
           new TalonFX(ShooterConstants.kFlywheelCANId, kCanBusBlinky),
           new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky),
-          () -> (vision.getVisionPose() != null));
+          () -> (vision.getVisionPose() != null),
+          () -> driveController);
 
   public RobotContainer() {
     NamedCommands.registerCommand(
@@ -117,7 +121,7 @@ public class RobotContainer {
         "stopShoot", (indexer.stopSpin().alongWith(serializer.stopSpin())));
     NamedCommands.registerCommand("Scoop", intake.spin5V());
     NamedCommands.registerCommand("Stop Scoop", intake.stopSpin());
-
+    this.doDriving = true;
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
@@ -129,6 +133,13 @@ public class RobotContainer {
                     Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
                     Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
         .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+
+    new Trigger(shooter::hasAStuckBall)
+        .onTrue(
+            shooter
+                .setFlywheelVelocity(RotationsPerSecond.of(-60))
+                .withName("Unjam ball")
+                .andThen(waitSeconds(1)));
     intake.setDefaultCommand(intake.runIntakeControl());
     configureBindings();
 
@@ -143,48 +154,62 @@ public class RobotContainer {
   private void configureBindings() {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
-    drivetrain.setDefaultCommand(
-        // Drivetrain will execute this command periodically
+    if (doDriving) {
+      drivetrain.setDefaultCommand(
+          //     // Drivetrain will execute this command periodically
 
-        drivetrain.applyRequest(
-            () -> {
-              if (driveController.leftTrigger().getAsBoolean()) {
-                return drive
-                    .withVelocityX(
-                        -driveController.getLeftY()
-                            * MaxSpeed
-                            / kSlowMoveRate) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        -driveController.getLeftX()
-                            * MaxSpeed
-                            / kSlowMoveRate) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -driveController.getRightX() * MaxAngularRate / kSlowMoveRate)
-                    .withDeadband(0.1 * MaxSpeed / kSlowMoveRate)
-                    .withRotationalDeadband(0.1 * MaxAngularRate / kSlowMoveRate);
-              } // Drive counterclockwise with negative X (left)
-              if (isPoseInSquare(
-                      drivetrain.getState().Pose,
-                      getTrenchCornersVelocity(
-                          getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[0],
-                      getTrenchCornersVelocity(
-                          getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[1])
-                  && handleTrenchAlignment().isPresent()
-                  && driveController.rightTrigger().getAsBoolean()) {
-                return trenchAlign
-                    .withTargetDirection(handleTrenchAlignment().get())
-                    .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
-                    .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
-              } else {
-                return drive
-                    .withVelocityX(
-                        -driveController.getLeftY()
-                            * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        -driveController.getLeftX() * MaxSpeed) // Drive left with negative X
-                    .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
-              } // Drive counterclockwise with negative X (left)
-            }));
+          drivetrain.applyRequest(
+              () -> {
+                if (driveController.rightBumper().getAsBoolean()) {
+                  return drive
+                      .withVelocityX(
+                          -driveController.getLeftY()
+                              * MaxSpeed
+                              / kSlowMoveRate) // Drive forward with negative Y (forward)
+                      .withVelocityY(
+                          -driveController.getLeftX()
+                              * MaxSpeed
+                              / kSlowMoveRate) // Drive left with negative X (left)
+                      .withRotationalRate(
+                          -driveController.getRightX() * MaxAngularRate / kSlowMoveRate)
+                      .withDeadband(0.1 * MaxSpeed / kSlowMoveRate)
+                      .withRotationalDeadband(0.1 * MaxAngularRate / kSlowMoveRate);
+                } // Drive counterclockwise with negative X (left)
+                // if (isPoseInSquare(
+                //         drivetrain.getState().Pose,
+                //         getTrenchCornersVelocity(
+                //             getClosestTrench(drivetrain.getState().Pose),
+                //             drivetrain.getState().Speeds,
+                //             drivetrain.getState().Pose)[0],
+                //         getTrenchCornersVelocity(
+                //             getClosestTrench(drivetrain.getState().Pose),
+                //             drivetrain.getState().Speeds,
+                //             drivetrain.getState().Pose)[1])
+                //     && handleTrenchAlignment().isPresent()
+                //     && driveController.rightTrigger().getAsBoolean()) {
+                //   return drive
+                //       .withVelocityX(
+                //           -driveController.getLeftY()
+                //               * MaxSpeed) // Drive forward with negative Y (forward)
+                //       .withVelocityY(
+                //           -driveController.getLeftX() * MaxSpeed) // Drive left with negative X
+                //       .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
+                // return trenchAlign
+                //     .withTargetDirection(handleTrenchAlignment().get())
+                //     .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
+                //     .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
+                // }
+                else {
+                  return drive
+                      .withVelocityX(
+                          -driveController.getLeftY()
+                              * MaxSpeed) // Drive forward with negative Y (forward)
+                      .withVelocityY(
+                          -driveController.getLeftX() * MaxSpeed) // Drive left with negative X
+                      .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
+                } // Drive counterclockwise with negative X (left)
+              }));
+    }
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
@@ -193,7 +218,7 @@ public class RobotContainer {
         .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
     driveController
-        .rightBumper()
+        .leftTrigger()
         .onTrue(indexer.spin().alongWith(serializer.spin()))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
@@ -202,6 +227,8 @@ public class RobotContainer {
     driveController.y().onTrue((runOnce(() -> intake.swapIntakeHeight())));
 
     driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
+
+    driveController.povRight().onTrue(runOnce(() -> climber.zeroClimber()).ignoringDisable(true));
 
     driveController
         .a()
@@ -347,13 +374,17 @@ public class RobotContainer {
   @Logged
   public Pose2d getTrenchCorner1() {
     return getTrenchCornersVelocity(
-        getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[0];
+        getClosestTrench(drivetrain.getState().Pose),
+        drivetrain.getState().Speeds,
+        drivetrain.getState().Pose)[0];
   }
 
   @Logged
   public Pose2d getTrenchCorner2() {
     return getTrenchCornersVelocity(
-        getClosestTrench(drivetrain.getState().Pose), drivetrain.getState())[1];
+        getClosestTrench(drivetrain.getState().Pose),
+        drivetrain.getState().Speeds,
+        drivetrain.getState().Pose)[1];
   }
 
   public boolean isScoringPhaseSoon() {

@@ -32,7 +32,7 @@ public class VisionConstants {
               new Rotation3d(Degrees.zero(), Degrees.of(-20), Degrees.of(90))),
           new Transform3d(
               Inches.of(-12.55),
-              Inches.of(8.969),
+              Inches.of(-8.969),
               Inches.of(9.766),
               new Rotation3d(Degrees.zero(), Degrees.of(-30), Degrees.of(210))));
 

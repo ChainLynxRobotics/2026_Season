@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public class IndexerConstants {
   public static final double kIndexerId = 17;
-  public static AngularVelocity kGoalIndexerVelocity = RotationsPerSecond.of(15);
+  public static AngularVelocity kGoalIndexerVelocity = RotationsPerSecond.of(12);
   public static double kT = 0.02;
 
   public static double kIndexerGearRatio = 12;

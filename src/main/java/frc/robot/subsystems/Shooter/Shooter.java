@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
@@ -77,16 +78,20 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   protected BooleanSupplier hasVisionPose;
 
+  protected Supplier<CommandXboxController> driveController;
+
   public Shooter(
       Supplier<Pose2d> drivetrainPose,
       Supplier<Pose2d> simPose,
       Supplier<ChassisSpeeds> chassisSpeeds,
       TalonFX flywheelMotor,
       TalonFX hoodMotor,
-      BooleanSupplier hasVisionPose) {
+      BooleanSupplier hasVisionPose,
+      Supplier<CommandXboxController> driveController) {
     this.drivetrainPose = drivetrainPose;
     this.simPose = simPose;
     this.chassisSpeeds = chassisSpeeds;
+    this.driveController = driveController;
     this.tunableFlywheelS = new TunableNumber("tunablekS", kFlywheelS);
     this.tunableFlywheelA = new TunableNumber("tunablekA", kFlywheelA);
     this.tunableFlywheelV = new TunableNumber("tunablekV", kFlywheelV);
@@ -102,7 +107,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.tunableHoodI = new TunableNumber("tunablekHoodI", kHoodI);
     this.tunableHoodD = new TunableNumber("tunablekHoodD", kHoodD);
 
-    this.tunableLUTMult = new TunableNumber("tunableLUTMult", 0.85);
+    this.tunableLUTMult = new TunableNumber("tunableLUTMult", 0.80);
     this.tunableHoodGravOffset = new TunableNumber("gravoffset", -05);
 
     this.tunableHoodAngle = new TunableNumber("Hood angle", 5);
@@ -119,6 +124,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     this.hasVisionPose = hasVisionPose;
 
+    hoodMotor.setPosition(Degrees.of(5));
+
     if (RobotBase.isReal()) return;
 
     this.flywheelMotorSim = this.flywheelMotor.getSimState();
@@ -134,7 +141,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
             LinearSystemId.createDCMotorSystem(
                 kHoodMotor, kHoodMOI.in(KilogramSquareMeters), kHoodGearRatio),
             kHoodMotor);
-    hoodMotor.setPosition(Degrees.of(5));
   }
 
   /** Stops the motors */
@@ -331,10 +337,10 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     // Joe: The LUT returns flywheelSurfaceSpeed as m/s, but setFlywheelVelocityInternal expects
     // RPS — wrapping m/s in RotationsPerSecond.of() won't give the right value, right? Should we
     // use convertLinearVelocityToAngular() here?
-    if (!hasVisionPose.getAsBoolean()) {
-      setFlywheelVelocityInternal(RotationsPerSecond.of(60).times(tunableLUTMult.get()));
-      setHoodAngleInternal(calculateHoodAngle());
-    }
+    // if (!hasVisionPose.getAsBoolean()) {
+    //   setFlywheelVelocityInternal(RotationsPerSecond.of(60).times(tunableLUTMult.get()));
+    //   setHoodAngleInternal(calculateHoodAngle());
+    // }
     return run(() -> {
           setFlywheelVelocityInternal(
               RotationsPerSecond.of(
@@ -616,13 +622,20 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     Trench closestTrench = getClosestTrench(drivetrainPose.get());
     Pose2d[] trenchCorners = getTrenchCorners(closestTrench);
 
-    if (isPoseInSquare(drivetrainPose.get(), trenchCorners[0], trenchCorners[1])) {
+    Angle setpoint = getCurrentSetpoint(getHubLocation2d()).rotation();
+    if (DriverStation.isAutonomous()) {
+      if (setpoint.gt(Degrees.of(45))) {
+        return Degrees.of(45);
+      }
+      return setpoint;
+    }
+    if (!driveController.get().rightTrigger().getAsBoolean()) {
       return Degrees.of(5);
     }
-    Angle setpoint = getCurrentSetpoint(getHubLocation2d()).rotation();
     if (setpoint.gt(Degrees.of(45))) {
       return Degrees.of(45);
     }
+
     return setpoint;
   }
 
