@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.climber.ClimberConstants.kClimberId;
 import static frc.robot.utils.PointingUtil.*;
@@ -218,8 +219,8 @@ public class RobotContainer {
         .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
     driveController
-        .leftTrigger()
-        .onTrue(indexer.spin().alongWith(serializer.spin()))
+        .rightTrigger()
+        .onTrue(waitSeconds(0.5).andThen(indexer.spin().alongWith(serializer.spin())))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
