@@ -224,7 +224,9 @@ public class RobotContainer {
 
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
 
-    driveController.y().onTrue((runOnce(() -> intake.swapIntakeHeight())));
+    driveController.povLeft().onTrue((runOnce(() -> intake.swapIntakeHeight())));
+
+    driveController.y().whileTrue(intake.raiseIntake());
 
     driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
 

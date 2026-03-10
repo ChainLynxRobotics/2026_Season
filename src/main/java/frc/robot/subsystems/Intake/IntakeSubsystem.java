@@ -7,6 +7,7 @@ import static frc.robot.subsystems.Intake.IntakeConstants.*;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -68,6 +69,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
 
   public boolean intakeBackward;
   public boolean intakeHeightUp;
+
+  public PositionVoltage positionRequest = new PositionVoltage(0.0).withEnableFOC(true);
 
   private DCMotorSim spinSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(x44Gearbox, 0.001, 1), x44Gearbox);
@@ -269,11 +272,31 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public Command runIntakeControl() {
     return run(() -> {
           heightMotor.setControl(
-              heightControl.withPosition(
-                  intakeHeightUp ? Degrees.of(0) : Degrees.of(tunableHeightHeight.get())));
+              positionRequest.withPosition(Degrees.of(tunableHeightHeight.get())));
           spinMotor.setControl(new VoltageOut(intakeBackward ? -5 : 5));
         })
         .withName("runIntakeControl");
+  }
+
+  // public Command raiseIntake() {
+  //   return run(() -> {
+  //     heightMotor.setControl(
+  //       heightControl.withPosition(0));
+  //       spinMotor.setControl(new VoltageOut(intakeBackward ? -5 : 5));
+  //     )
+  //   });
+  // }
+
+  public Command raiseIntake() {
+    return run(() -> {
+          spinMotor.setControl(new VoltageOut(5));
+          heightMotor.setControl(heightControl.withPosition(0));
+        })
+        .andThen(
+            () -> {
+              intakeBackward = true;
+            })
+        .withName("raiseIntake");
   }
 
   public void swapIntake() {
