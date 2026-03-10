@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.144878348230868,
-        "y": 3.8696647007214473
+        "x": 4.321422413793104,
+        "y": 0.63375
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5968735405385617,
-        "y": 4.000482008413754
+        "x": 1.6294642857142851,
+        "y": 0.48798214285714314
       },
       "isLocked": false,
-      "linkedName": "shoot end"
+      "linkedName": "5 end"
     },
     {
       "anchor": {
-        "x": 1.0314423076923074,
-        "y": 2.7268269230769238
+        "x": 0.5443035714285711,
+        "y": 2.512535714285714
       },
       "prevControl": {
-        "x": 1.4701897983392653,
-        "y": 2.0391696322657173
+        "x": 2.196339285714286,
+        "y": 2.577321428571429
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 179.48921334956708
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Possibly Retired",
+  "folder": "Traversal",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.4774537773095
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

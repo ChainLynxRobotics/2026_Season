@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7612930011862398,
-        "y": 8.085836298932385
+        "x": 3.144878348230868,
+        "y": 3.8696647007214473
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.761293001186242,
-        "y": 8.085836298932385
+        "x": 4.144878348230868,
+        "y": 3.8696647007214473
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shoot end"
     },
     {
       "anchor": {
-        "x": 6.236512455516015,
-        "y": 6.106144721233688
+        "x": 0.5928928571428569,
+        "y": 2.512535714285714
       },
       "prevControl": {
-        "x": 5.236512455516015,
-        "y": 6.106144721233688
-      },
-      "nextControl": {
-        "x": 7.236512455516015,
-        "y": 6.106144721233688
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 14.876144721233691,
-        "y": 0.8556583629893237
-      },
-      "prevControl": {
-        "x": 9.938072360616847,
-        "y": 3.427829181494662
+        "x": 1.111178571428571,
+        "y": 1.6055357142857143
       },
       "nextControl": null,
       "isLocked": false,
@@ -61,10 +45,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Traversal",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.4774537773095
   },
   "useDefaultConstraints": true
 }

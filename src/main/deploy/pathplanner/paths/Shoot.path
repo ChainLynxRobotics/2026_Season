@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1151364175563487,
+        "x": 1.1151364175563492,
         "y": 0.4145314353499403
       },
       "isLocked": false,
@@ -16,28 +16,19 @@
     },
     {
       "anchor": {
-        "x": 2.6957291666666663,
-        "y": 2.530600961538462
+        "x": 3.144878348230868,
+        "y": 3.8696647007214473
       },
       "prevControl": {
-        "x": 2.732067307692307,
-        "y": 2.130881410256411
+        "x": 3.1812134970140247,
+        "y": 3.4699448774286448
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "shoot end"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.14791851195748942,
-      "rotationDegrees": 177.47479523588098
-    },
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 40.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -53,18 +44,7 @@
       }
     }
   ],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.64,
-        "y": 4.0
-      },
-      "rotationOffset": -87.4,
-      "minWaypointRelativePos": 0.5885650224215234,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "shootBalls",
@@ -80,15 +60,15 @@
   ],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
-    "nominalVoltage": 12.0,
+    "maxAngularAcceleration": 240.0,
+    "nominalVoltage": 6.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -45.0
+    "rotation": -90.4774537773095
   },
   "reversed": false,
   "folder": "Shoot",

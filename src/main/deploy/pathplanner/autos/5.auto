@@ -13,13 +13,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climb Bottom"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climb"
+            "pathName": "Bottom To Hide"
           }
         }
       ]
