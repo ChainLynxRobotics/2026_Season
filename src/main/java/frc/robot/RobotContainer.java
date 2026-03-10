@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.climber.ClimberConstants.kClimberId;
 import static frc.robot.utils.PointingUtil.*;

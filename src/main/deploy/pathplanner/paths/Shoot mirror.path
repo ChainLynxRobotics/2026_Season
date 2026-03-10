@@ -8,39 +8,34 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1809806388880357,
-        "y": 7.18007282695903
+        "x": 0.6414821428571429,
+        "y": 7.501035714285714
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "top facing alliance trench"
     },
     {
       "anchor": {
-        "x": 2.6957291666666663,
-        "y": 5.468999999999999
+        "x": 3.232910714285714,
+        "y": 3.824446428571429
       },
       "prevControl": {
-        "x": 2.732064315449823,
-        "y": 5.8687198232928015
+        "x": 3.232910714285714,
+        "y": 3.423078542249762
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shoot end"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": -40.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0.6760089686098679,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 2.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -49,18 +44,7 @@
       }
     }
   ],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.64,
-        "y": 4.0
-      },
-      "rotationOffset": -92.6,
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "shootBalls",
@@ -84,7 +68,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 45.0
+    "rotation": -89.81890228476803
   },
   "reversed": false,
   "folder": "Shoot",
