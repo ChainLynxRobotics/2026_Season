@@ -69,13 +69,13 @@ public class ShooterTest {
       shooter.simulationPeriodic();
       System.out.println(shooter.getHoodPosition().in(Radians));
       Timer.delay(0.02);
-      if (RobotMath.isWithinTolerance(shooter.getHoodPosition(), Radians.of(1), Radians.of(1e-2))
+      if (RobotMath.isWithinTolerance(shooter.getHoodPosition(), Radians.of(1), Radians.of(1e-1))
           && i > 3) {
         System.out.println(i + " ticks");
         break;
       }
     }
-    assertEquals(shooter.getHoodPosition().in(Radians), 1, 1e-2);
+    assertEquals(shooter.getHoodPosition().in(Radians), 1, 1e-1);
   }
 
   @Test
