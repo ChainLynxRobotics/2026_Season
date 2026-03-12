@@ -31,12 +31,12 @@ public class ShooterConstants {
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
-  public static final double kFlywheelS = 0.5;
-  public static final double kFlywheelA = 0.01;
-  public static final double kFlywheelV = 0.06025;
-  public static final double kFlywheelP = 0.12;
-  public static final double kFlywheelI = 0.555;
-  public static final double kFlywheelD = 0.0;
+  public static final double kFlywheelS = 0;
+  public static final double kFlywheelA = 0;
+  public static final double kFlywheelV = 0;
+  public static final double kFlywheelP = 10000;
+  public static final double kFlywheelI = 0;
+  public static final double kFlywheelD = 0;
   public static final double kFlywheelGearRatio = 0.5;
 
   protected static TalonFXConfiguration generateFlywheelConfig(
@@ -51,6 +51,7 @@ public class ShooterConstants {
             .withKD(kD)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     var config = new TalonFXConfiguration().withSlot0(gains);
+    config.TorqueCurrent.PeakReverseTorqueCurrent = 0;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = kFlywheelGearRatio;
 
