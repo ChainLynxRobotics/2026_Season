@@ -54,6 +54,7 @@ import org.ironmaple.simulation.SimulatedArena;
 public class RobotContainer {
 
   private boolean doDriving;
+  private boolean doTrenchAlign;
 
   private double MaxSpeed =
       1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -122,26 +123,30 @@ public class RobotContainer {
     NamedCommands.registerCommand("Scoop", intake.spin5V());
     NamedCommands.registerCommand("Stop Scoop", intake.stopSpin());
     this.doDriving = true;
+    this.doTrenchAlign = true;
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-
-    new Trigger(
-            () ->
-                isPoseInSquare(
-                    drivetrain.getState().Pose,
-                    Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
-                    Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
-        .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
-
-    new Trigger(shooter::hasAStuckBall)
-        .onTrue(
-            shooter
-                .setFlywheelVelocity(RotationsPerSecond.of(-60))
-                .withName("Unjam ball")
-                .andThen(waitSeconds(1)));
     intake.setDefaultCommand(intake.runIntakeControl());
-    configureBindings();
+    if (true) {
+      new Trigger(
+              () ->
+                  isPoseInSquare(
+                      drivetrain.getState().Pose,
+                      Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
+                      Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
+          .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+    }
+    if (true) {
+      new Trigger(shooter::hasAStuckBall)
+          .onTrue(
+              shooter
+                  .setFlywheelVelocity(RotationsPerSecond.of(-60))
+                  .withName("Unjam ball")
+                  .andThen(waitSeconds(1)));
+
+      configureBindings();
+    }
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
   }
@@ -175,31 +180,24 @@ public class RobotContainer {
                       .withDeadband(0.1 * MaxSpeed / kSlowMoveRate)
                       .withRotationalDeadband(0.1 * MaxAngularRate / kSlowMoveRate);
                 } // Drive counterclockwise with negative X (left)
-                // if (isPoseInSquare(
-                //         drivetrain.getState().Pose,
-                //         getTrenchCornersVelocity(
-                //             getClosestTrench(drivetrain.getState().Pose),
-                //             drivetrain.getState().Speeds,
-                //             drivetrain.getState().Pose)[0],
-                //         getTrenchCornersVelocity(
-                //             getClosestTrench(drivetrain.getState().Pose),
-                //             drivetrain.getState().Speeds,
-                //             drivetrain.getState().Pose)[1])
-                //     && handleTrenchAlignment().isPresent()
-                //     && driveController.rightTrigger().getAsBoolean()) {
-                //   return drive
-                //       .withVelocityX(
-                //           -driveController.getLeftY()
-                //               * MaxSpeed) // Drive forward with negative Y (forward)
-                //       .withVelocityY(
-                //           -driveController.getLeftX() * MaxSpeed) // Drive left with negative X
-                //       .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
-                // return trenchAlign
-                //     .withTargetDirection(handleTrenchAlignment().get())
-                //     .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
-                //     .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
-                // }
-                else {
+                if (doTrenchAlign
+                    && isPoseInSquare(
+                        drivetrain.getState().Pose,
+                        getTrenchCornersVelocity(
+                            getClosestTrench(drivetrain.getState().Pose),
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose)[0],
+                        getTrenchCornersVelocity(
+                            getClosestTrench(drivetrain.getState().Pose),
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose)[1])
+                    && handleTrenchAlignment().isPresent()
+                    && driveController.rightTrigger().getAsBoolean()) {
+                  return trenchAlign
+                      .withTargetDirection(handleTrenchAlignment().get())
+                      .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
+                      .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
+                } else {
                   return drive
                       .withVelocityX(
                           -driveController.getLeftY()
@@ -220,6 +218,20 @@ public class RobotContainer {
     driveController
         .rightTrigger()
         .onTrue(waitSeconds(0.75).andThen(indexer.spin().alongWith(serializer.spin())))
+        .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
+
+    driveController
+        .rightTrigger()
+        .whileTrue(
+            autoAimShooter()
+                .until(
+                    () ->
+                        (hubTrackingError().getDegrees() < 5
+                            && isWithinTolerance(
+                                shooter.getHoodPosition(),
+                                Degrees.of(shooter.getHoodClosedLoopReference()),
+                                Degrees.of(0.5))))
+                .andThen(indexer.spin().alongWith(serializer.spin())))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));

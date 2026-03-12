@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.utils.RobotMath;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,7 @@ public class ShooterTest {
             () -> new ChassisSpeeds(),
             flywheelMotor,
             hoodMotor,
-            () -> (false));
+            () -> (false),() -> new CommandXboxController(1));
     DriverStationSim.setEnabled(true);
     DriverStationSim.notifyNewData();
     Timer.delay(1);
