@@ -33,7 +33,8 @@ public class ShooterTest {
             () -> new ChassisSpeeds(),
             flywheelMotor,
             hoodMotor,
-            () -> (false),() -> new CommandXboxController(1));
+            () -> (false),
+            () -> new CommandXboxController(1));
     DriverStationSim.setEnabled(true);
     DriverStationSim.notifyNewData();
     Timer.delay(1);
