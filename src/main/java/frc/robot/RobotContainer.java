@@ -123,7 +123,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Scoop", intake.spin5V());
     NamedCommands.registerCommand("Stop Scoop", intake.stopSpin());
     this.doDriving = true;
-    this.doTrenchAlign = true;
+    this.doTrenchAlign = false;
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
@@ -224,15 +224,27 @@ public class RobotContainer {
         .rightTrigger()
         .whileTrue(
             autoAimShooter()
-                .until(
-                    () ->
-                        (hubTrackingError().getDegrees() < 5
-                            && isWithinTolerance(
-                                shooter.getHoodPosition(),
-                                Degrees.of(shooter.getHoodClosedLoopReference()),
-                                Degrees.of(0.5))))
-                .andThen(indexer.spin().alongWith(serializer.spin())))
-        .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
+                .alongWith(
+                    run(
+                        () -> {
+                          if (hubTrackingError().getDegrees() < 3
+                              && isWithinTolerance(
+                                  shooter.getHoodPosition(),
+                                  Degrees.of(shooter.getHoodClosedLoopReference()),
+                                  Degrees.of(1))) {
+                            indexer.spin().alongWith(serializer.spin());
+                          } else {
+                            indexer.stopSpin().alongWith(serializer.stopSpin());
+                          }
+                        })));
+
+    /*.onlyWhile(
+    () ->
+        (hubTrackingError().getDegrees() > 3
+            && !isWithinTolerance(
+                shooter.getHoodPosition(),
+                Degrees.of(shooter.getHoodClosedLoopReference()),
+                Degrees.of(1)))));*/
 
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
 
