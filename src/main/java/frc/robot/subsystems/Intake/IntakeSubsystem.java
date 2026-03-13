@@ -3,6 +3,7 @@ package frc.robot.subsystems.Intake;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
+import static frc.robot.utils.RobotMath.isWithinTolerance;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -276,6 +277,21 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
           spinMotor.setControl(new VoltageOut(intakeBackward ? -5 : 5));
         })
         .withName("runIntakeControl");
+  }
+
+  public Command deployIntake() {
+    return run(() ->
+            heightMotor.setControl(
+                positionRequest.withPosition(Degrees.of(tunableHeightHeight.get()))))
+        .alongWith(run(() -> spinMotor.setControl(new VoltageOut(intakeBackward ? -5 : 5))))
+        .until(
+            () ->
+                isWithinTolerance(
+                    Rotations.of(getHeightPosition()),
+                    Degrees.of(tunableHeightHeight.get()),
+                    Degrees.of(1)))
+        .andThen(() -> intakeBackward = false)
+        .withName("deployIntake");
   }
 
   // public Command raiseIntake() {
