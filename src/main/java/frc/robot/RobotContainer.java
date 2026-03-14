@@ -119,14 +119,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("shootBalls", (indexer.spin().alongWith(serializer.spin())));
     NamedCommands.registerCommand(
         "stopShoot", (indexer.stopSpin().alongWith(serializer.stopSpin())));
-    NamedCommands.registerCommand("Scoop", intake.spin5V());
-    NamedCommands.registerCommand("Stop Scoop", intake.stopSpin());
+    NamedCommands.registerCommand("Scoop", new PrintCommand(""));
+    NamedCommands.registerCommand("Stop Scoop", new PrintCommand(""));
     this.doDriving = true;
     this.doTrenchAlign = false;
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-    intake.setDefaultCommand(intake.runIntakeControl());
+    // intake.setDefaultCommand(intake.runIntakeControl());
     // if (false) {
     //   new Trigger(
     //           () ->
@@ -181,19 +181,7 @@ public class RobotContainer {
                       .withDeadband(0.1 * MaxSpeed / kSlowMoveRate)
                       .withRotationalDeadband(0.1 * MaxAngularRate / kSlowMoveRate);
                 } // Drive counterclockwise with negative X (left)
-                if (doTrenchAlign
-                    && isPoseInSquare(
-                        drivetrain.getState().Pose,
-                        getTrenchCornersVelocity(
-                            getClosestTrench(drivetrain.getState().Pose),
-                            drivetrain.getState().Speeds,
-                            drivetrain.getState().Pose)[0],
-                        getTrenchCornersVelocity(
-                            getClosestTrench(drivetrain.getState().Pose),
-                            drivetrain.getState().Speeds,
-                            drivetrain.getState().Pose)[1])
-                    && handleTrenchAlignment().isPresent()
-                    && driveController.rightTrigger().getAsBoolean()) {
+                if (doTrenchAlign && driveController.leftTrigger().getAsBoolean()) {
                   return trenchAlign
                       .withTargetDirection(handleTrenchAlignment().get())
                       .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
@@ -220,6 +208,8 @@ public class RobotContainer {
         .rightTrigger()
         .onTrue(waitSeconds(0.75).andThen(indexer.spin().alongWith(serializer.spin())))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
+
+    driveController.leftTrigger().whileTrue(serializer.spin());
 
     // driveController
     //     .rightTrigger()
@@ -255,7 +245,10 @@ public class RobotContainer {
 
     driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
 
-    driveController.povRight().onTrue(runOnce(() -> climber.zeroClimber()).ignoringDisable(true));
+    // driveController.povRight().onTrue(runOnce(() ->
+    // climber.zeroClimber()).ignoringDisable(true));
+
+    driveController.povRight().whileTrue(intake.raiseIntakeOcilate());
 
     driveController
         .a()
@@ -277,7 +270,7 @@ public class RobotContainer {
       new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.1 / kSlowMoveRate);
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
-      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(4, 2, 0);
+      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(8, 0, 0);
 
   public Command autoAimShooter() {
     return drivetrain.applyRequest(

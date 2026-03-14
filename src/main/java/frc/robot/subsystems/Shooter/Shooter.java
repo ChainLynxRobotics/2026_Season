@@ -236,23 +236,26 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    * @return The speed and position of the shooter to shoot into the hub.
    */
   public ShooterSetpoint getCurrentSetpoint(Pose2d targetPose) {
-    var setpoint =
-        ShooterLUT.generateShootOnTheMoveSetpoint(
-            drivetrainPose.get(),
-            ChassisSpeeds.fromRobotRelativeSpeeds(
-                chassisSpeeds.get(), drivetrainPose.get().getRotation()),
-            targetPose);
-    if (setpoint.isEmpty()) {
-      return lastShooterSetpoint;
-    }
-    lastShooterSetpoint = setpoint.get().shooterSetpoint();
-    return lastShooterSetpoint;
+    // var setpoint =
+    //     ShooterLUT.generateShootOnTheMoveSetpoint(
+    //         drivetrainPose.get(),
+    //         ChassisSpeeds.fromRobotRelativeSpeeds(
+    //             chassisSpeeds.get(), drivetrainPose.get().getRotation()),
+    //         targetPose);
+    // if (setpoint.isEmpty()) {
+    //   return lastShooterSetpoint;
+    // }
+    // lastShooterSetpoint = setpoint.get().shooterSetpoint();
+    // return lastShooterSetpoint;
+
+    return new ShooterSetpoint(MetersPerSecond.of(30), Degrees.of(15));
   }
 
   /**
    * @return Distance from the shooter to the hub
    */
   public static Distance getDistanceToHub(Pose2d robotPose) {
+    // return Meters.of(3);
     return getDistanceToPose(robotPose, getHubLocation2d());
   }
 
@@ -574,7 +577,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public AngularVelocity rollingVelocityAverage = RotationsPerSecond.zero();
-  private double averageWindow = 0.1;
+  private double averageWindow = 0.25;
 
   @Override
   public void periodic() {
@@ -601,16 +604,16 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   private boolean ballStuck = false;
-  private Debouncer ballStuckDebouncer = new Debouncer(1);
+  private Debouncer ballStuckDebouncer = new Debouncer(0.25);
 
   public boolean hasAStuckBallInternal() {
     var acceleration = flywheelMotor.getAcceleration().getValue();
     var notAccelerating =
-        acceleration.lt(RotationsPerSecondPerSecond.of(1))
-            && acceleration.gt(RotationsPerSecondPerSecond.of(-1));
+        acceleration.lt(RotationsPerSecondPerSecond.of(5))
+            && acceleration.gt(RotationsPerSecondPerSecond.of(-5));
     var notMoving =
-        rollingVelocityAverage.lt(RotationsPerSecond.of(1))
-            && rollingVelocityAverage.gt(RotationsPerSecond.of(-1));
+        rollingVelocityAverage.lt(RotationsPerSecond.of(5))
+            && rollingVelocityAverage.gt(RotationsPerSecond.of(-5));
     return notAccelerating && notMoving && DriverStation.isEnabled();
   }
 

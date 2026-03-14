@@ -50,6 +50,8 @@ public class IndexerSubsystem extends SubsystemBase {
   private TunableNumber tunableIndexerP;
   private TunableNumber tunableIndexerI;
   private TunableNumber tunableIndexerD;
+  private TunableNumber tunableIndexerS;
+  private TunableNumber tunableIndexerV;
   private TunableNumber tunableIndexerVelocity;
 
   private boolean isReverseIndexer;
@@ -65,6 +67,8 @@ public class IndexerSubsystem extends SubsystemBase {
     this.tunableIndexerP = new TunableNumber("indexerP", kIndexerP);
     this.tunableIndexerI = new TunableNumber("indexerI", kIndexerI);
     this.tunableIndexerD = new TunableNumber("indexerD", kIndexerD);
+    this.tunableIndexerV = new TunableNumber("indexerV", kIndexerV);
+    this.tunableIndexerS = new TunableNumber("indexerS", kIndexerS);
     this.tunableIndexerVelocity =
         new TunableNumber("indexerVelocity", kGoalIndexerVelocity.in(RotationsPerSecond));
     this.isReverseIndexer = false;
@@ -93,7 +97,9 @@ public class IndexerSubsystem extends SubsystemBase {
                 new Slot0Configs()
                     .withKP(tunableIndexerP.get())
                     .withKI(tunableIndexerI.get())
-                    .withKD(tunableIndexerD.get()));
+                    .withKD(tunableIndexerD.get())
+                    .withKV(tunableIndexerV.get())
+                    .withKS(tunableIndexerS.get()));
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Feedback.SensorToMechanismRatio = kIndexerGearRatio;
     return config;
