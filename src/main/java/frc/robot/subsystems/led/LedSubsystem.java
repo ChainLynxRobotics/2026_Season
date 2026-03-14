@@ -1,7 +1,7 @@
 package frc.robot.subsystems.led;
 
 import static frc.robot.subsystems.led.LedConstants.kLEDPort;
-import static frc.robot.subsystems.led.LedConstants.kNumberOfPixels;
+import static frc.robot.subsystems.led.LedConstants.kLeds;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.util.Color;
 
 public class LedSubsystem {
   public AddressableLED m_led = new AddressableLED(kLEDPort);
-  public AddressableLEDBuffer m_buffer = new AddressableLEDBuffer(kNumberOfPixels);
+  public AddressableLEDBuffer m_buffer = new AddressableLEDBuffer(kLeds);
   public PowerDistribution pDH = new PowerDistribution(1, ModuleType.kRev);
 
   public LedSubsystem() {
