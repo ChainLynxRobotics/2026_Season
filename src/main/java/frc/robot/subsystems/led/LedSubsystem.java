@@ -1,11 +1,13 @@
 package frc.robot.subsystems.led;
 
+import static frc.robot.subsystems.led.LedConstants.kLEDPort;
+import static frc.robot.subsystems.led.LedConstants.kNumberOfPixels;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
-
-import static frc.robot.subsystems.led.LedConstants.*;
 
 public class LedSubsystem {
   public AddressableLED m_led = new AddressableLED(kLEDPort);
@@ -20,14 +22,27 @@ public class LedSubsystem {
   }
 
   public void setAllLED(Color color) {
-    LEDPattern pattern = LEDPattern.solid(color);
-    pattern.applyTo(m_buffer);
+    LEDPattern alliedColor = LEDPattern.solid(color);
+    alliedColor.applyTo(m_buffer);
     m_led.setData(m_buffer);
   }
 
   public void setRainbow() {
     LEDPattern rainbow = LEDPattern.rainbow(255, 128);
     rainbow.applyTo(m_buffer);
+    m_led.setData(m_buffer);
+  }
+
+  public void setProgressBar(Color color, double time) {
+    double startTime = Timer.getFPGATimestamp();
+
+    LEDPattern base = LEDPattern.solid(color);
+    if ((Timer.getFPGATimestamp() - startTime) / time <= 1) {
+      LEDPattern mask =
+          LEDPattern.progressMaskLayer(() -> (Timer.getFPGATimestamp() - startTime) / time);
+      LEDPattern progress = base.mask(mask);
+      progress.applyTo(m_buffer);
+    }
     m_led.setData(m_buffer);
   }
 }
