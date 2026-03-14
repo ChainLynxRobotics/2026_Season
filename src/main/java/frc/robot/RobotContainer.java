@@ -123,7 +123,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Scoop", new PrintCommand(""));
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand(""));
     this.doDriving = true;
-    this.doTrenchAlign = false;
+    this.doTrenchAlign = true;
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
@@ -182,7 +182,18 @@ public class RobotContainer {
                       .withDeadband(0.1 * MaxSpeed / kSlowMoveRate)
                       .withRotationalDeadband(0.1 * MaxAngularRate / kSlowMoveRate);
                 } // Drive counterclockwise with negative X (left)
-                if (doTrenchAlign && driveController.leftTrigger().getAsBoolean()) {
+                if (doTrenchAlign
+                    && driveController.leftTrigger().getAsBoolean()
+                    && isPoseInSquare(
+                        drivetrain.getState().Pose,
+                        getTrenchCornersVelocity(
+                            getClosestTrench(drivetrain.getState().Pose),
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose)[0],
+                        getTrenchCornersVelocity(
+                            getClosestTrench(drivetrain.getState().Pose),
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose)[1])) {
                   return trenchAlign
                       .withTargetDirection(handleTrenchAlignment().get())
                       .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
@@ -302,25 +313,22 @@ public class RobotContainer {
                 .withTargetRateFeedforward(
                     getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
                 .withHeadingPID(tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
-                .withVelocityX(-driveController.getLeftY() * MaxSpeed / (kSlowMoveRate))
-                .withVelocityY(-driveController.getLeftX() * MaxSpeed / (kSlowMoveRate)));
+                .withVelocityX(-driveController.getLeftY() * MaxSpeed)
+                .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
 
   public Optional<Rotation2d> handleTrenchAlignment() {
     if (-90 < drivetrain.getState().Pose.getRotation().getDegrees()
         && drivetrain.getState().Pose.getRotation().getDegrees() < 90) {
       return Optional.of(new Rotation2d(Degrees.of(0)));
-    }
-    if (90 < drivetrain.getState().Pose.getRotation().getDegrees()
-        && drivetrain.getState().Pose.getRotation().getDegrees() < -90) {
+    } else {
       return Optional.of(new Rotation2d(Degrees.of(180)));
     }
-    return Optional.empty();
   }
 
   @Logged
   public ChassisSpeeds calculateTrenchAlignSpeeds() {
-    double kP = 4;
+    double kP = 6;
     double centerOfTrenchY = getTrenchCenter(getClosestTrench(drivetrain.getPose())).getY();
     double ySpeed = kP * (centerOfTrenchY - drivetrain.getState().Pose.getY());
     double xSpeed =
