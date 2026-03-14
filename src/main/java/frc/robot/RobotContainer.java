@@ -45,6 +45,7 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import java.util.Optional;
@@ -74,8 +75,10 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
+  private final LedSubsystem ledSubsystem = new LedSubsystem(); 
+
   private final CommandXboxController driveController = new CommandXboxController(0);
-  // private final CommandXboxController sysidController = new CommandXboxController(1);
+  private final CommandXboxController testingController = new CommandXboxController(1);
   @Logged public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   @Logged
@@ -259,6 +262,8 @@ public class RobotContainer {
     driveController.y().whileTrue(intake.raiseIntake());
 
     driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
+
+    testingController.a().whileTrue(runOnce(() -> this.ledSubsystem.setRainbow()));
 
     // driveController.povRight().onTrue(runOnce(() ->
     // climber.zeroClimber()).ignoringDisable(true));
