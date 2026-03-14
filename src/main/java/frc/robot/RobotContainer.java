@@ -218,7 +218,7 @@ public class RobotContainer {
 
     driveController
         .rightTrigger()
-        .onTrue(
+        .onTrue(autoAimShooter().alongWith(
             waitSeconds(0.75)
                 .andThen(
                     indexer
@@ -234,7 +234,7 @@ public class RobotContainer {
                                                 waitSeconds(0.25)
                                                     .andThen(
                                                         runOnce(
-                                                            () -> indexer.swapIndexerDir()))))))))
+                                                            () -> indexer.swapIndexerDir())))))))))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
     // driveController
