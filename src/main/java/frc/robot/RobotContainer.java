@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
@@ -24,6 +25,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -65,8 +69,8 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDeadband(MaxSpeed * 0.15)
+          .withRotationalDeadband(MaxAngularRate * 0.15) // Add a 10% deadband
           .withDriveRequestType(
               DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -180,8 +184,8 @@ public class RobotContainer {
                               / kSlowMoveRate) // Drive left with negative X (left)
                       .withRotationalRate(
                           -driveController.getRightX() * MaxAngularRate / kSlowMoveRate)
-                      .withDeadband(0.1 * MaxSpeed / kSlowMoveRate)
-                      .withRotationalDeadband(0.1 * MaxAngularRate / kSlowMoveRate);
+                      .withDeadband(0.15 * MaxSpeed / kSlowMoveRate)
+                      .withRotationalDeadband(0.15 * MaxAngularRate / kSlowMoveRate);
                 } // Drive counterclockwise with negative X (left)
                 if (doTrenchAlign
                     && driveController.leftTrigger().getAsBoolean()
@@ -299,28 +303,64 @@ public class RobotContainer {
   }
 
   private SwerveRequest.FieldCentricFacingAngle shooterAming =
-      new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.1 / kSlowMoveRate);
+      new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.15 / kSlowMoveRate);
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
-      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(8, 0, 0);
+      new SwerveRequest.FieldCentricFacingAngle()
+          .withHeadingPID(8, 0, 0)
+          .withDeadband(MaxSpeed * 0.15);
+  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(0.25, 0.5));
+
+  public void periodic() {}
+
+  private State profileState = new State();
+  private State lastState = new State();
+
+  @Logged
+  public State getProfile() {
+    return profileState;
+  }
+
+  @Logged
+  public State getLastProfileState() {
+    return lastState;
+  }
 
   public Command autoAimShooter() {
-    return drivetrain.applyRequest(
-        () ->
-            shooterAming
-                .withTargetDirection(
-                    getAngleToTargetTOF()
-                        .minus(
-                            getAlliance().equals(DriverStation.Alliance.Red)
-                                ? new Rotation2d(Degrees.of(180))
-                                : new Rotation2d())) // We want our rotation to not be field centric
-                // but we do want our driving to be so we
-                // manually flip the rotation
-                .withTargetRateFeedforward(
-                    getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose())))
-                .withHeadingPID(tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
-                .withVelocityX(-driveController.getLeftY() * MaxSpeed)
-                .withVelocityY(-driveController.getLeftX() * MaxSpeed));
+
+    return parallel(
+        run(
+            () -> {
+              var turningRateFF =
+                  getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose()))
+                      .times(tunableHeadingFFMult.get());
+              lastState = profileState;
+              profileState =
+                  turningProfile.calculate(
+                      kDT.in(Second),
+                      lastState,
+                      new State(
+                          getAngleToTargetTOF()
+                              .minus(
+                                  getAlliance().equals(DriverStation.Alliance.Red)
+                                      ? new Rotation2d(Degrees.of(180))
+                                      : new Rotation2d())
+                              .getRotations() // We want our rotation to not be field centric
+                          // but we do want our driving to be so we
+                          // manually flip the rotation
+                          ,
+                          turningRateFF.in(RotationsPerSecond)));
+              var profileState = getProfile();
+            }),
+        drivetrain.applyRequest(
+            () ->
+                shooterAming
+                    .withTargetDirection(Rotation2d.fromRotations(profileState.position))
+                    .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
+                    .withHeadingPID(
+                        tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
+                    .withVelocityX(-driveController.getLeftY() * MaxSpeed / kSlowMoveRate)
+                    .withVelocityY(-driveController.getLeftX() * MaxSpeed / kSlowMoveRate)));
   }
 
   public Optional<Rotation2d> handleTrenchAlignment() {
@@ -352,6 +392,11 @@ public class RobotContainer {
   @Logged
   public Rotation2d hubTrackingError() {
     return getAngleToHub().minus(drivetrain.getPose().getRotation());
+  }
+
+  @Logged
+  public Rotation2d hubTOFTrackingError() {
+    return getAngleToHubTOF().minus(drivetrain.getPose().getRotation());
   }
 
   @Logged
