@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
@@ -206,10 +207,24 @@ public class RobotContainer {
 
     driveController
         .rightTrigger()
-        .onTrue(waitSeconds(0.75).andThen(indexer.spin().alongWith(serializer.spin())))
+        .onTrue(
+            waitSeconds(0.75)
+                .andThen(
+                    indexer
+                        .spin()
+                        .alongWith(
+                            serializer
+                                .spin()
+                                .alongWith(
+                                    repeatingSequence(
+                                        waitSeconds(2)
+                                            .andThen(runOnce(() -> indexer.swapIndexerDir()))
+                                            .andThen(
+                                                waitSeconds(0.25)
+                                                    .andThen(
+                                                        runOnce(
+                                                            () -> indexer.swapIndexerDir()))))))))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
-
-    driveController.leftTrigger().whileTrue(serializer.spin());
 
     // driveController
     //     .rightTrigger()
