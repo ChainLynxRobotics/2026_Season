@@ -16,7 +16,7 @@ public class IndexerConstants {
   public static double kIndexerI = 2.0;
   public static double kIndexerD = 0.0;
   public static double kIndexerV = 0.0;
-  public static double kIndexerS = 0.0;
+  public static double kIndexerS = 0.55;
 
   public static Slot0Configs kIntakeIndexerSlot0Config =
       new Slot0Configs()
