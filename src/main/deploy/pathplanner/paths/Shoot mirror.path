@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.232910714285714,
-        "y": 3.824446428571429
+        "x": 2.6,
+        "y": 5.614
       },
       "prevControl": {
-        "x": 3.232910714285714,
-        "y": 3.423078542249762
+        "x": 2.3295101351351355,
+        "y": 5.788587837837837
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,19 +45,7 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "shootBalls",
-      "waypointRelativePos": 0.9091928251121206,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "shootBalls"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -68,7 +56,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -89.81890228476803
+    "rotation": -135.0
   },
   "reversed": false,
   "folder": "Shoot",

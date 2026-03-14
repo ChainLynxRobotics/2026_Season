@@ -7,7 +7,37 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Scoop Balls mirror"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Shoot mirror"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootBalls"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 6.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot to Depot"
           }
         },
         {
@@ -38,6 +68,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Mirror",
+  "folder": "Normal",
   "choreoAuto": false
 }

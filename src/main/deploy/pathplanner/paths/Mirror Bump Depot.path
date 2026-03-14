@@ -1,0 +1,113 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.5961233108108113,
+        "y": 5.597896959459459
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.410988175675676,
+        "y": 5.573555743243242
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.8258699324324326,
+        "y": 7.345971283783784
+      },
+      "prevControl": {
+        "x": 1.3147381756756755,
+        "y": 7.064501689189189
+      },
+      "nextControl": {
+        "x": 0.46653199327421946,
+        "y": 7.55286282451124
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.507364864864865,
+        "y": 5.301613175675675
+      },
+      "prevControl": {
+        "x": 0.5073648648648651,
+        "y": 6.762332795404582
+      },
+      "nextControl": {
+        "x": 0.507364864864865,
+        "y": 4.953479729729728
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.5221368243243245,
+        "y": 5.442347972972973
+      },
+      "prevControl": {
+        "x": 0.807120724239865,
+        "y": 5.328606579636748
+      },
+      "nextControl": {
+        "x": 2.237152924408784,
+        "y": 5.556089366309198
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.6,
+        "y": 5.614
+      },
+      "prevControl": {
+        "x": 1.7887922297297298,
+        "y": 5.538640202702702
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Shoot end Mirror"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 0.4,
+        "y": 1.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.6168224299065412,
+      "maxWaypointRelativePos": 1.9392523364485978,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -135.0
+  },
+  "reversed": false,
+  "folder": "Scoop",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

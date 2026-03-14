@@ -96,16 +96,16 @@
     },
     {
       "anchor": {
-        "x": 4.40938577586207,
-        "y": 7.356
+        "x": 3.581309121621622,
+        "y": 7.42004222972973
       },
       "prevControl": {
-        "x": 5.3769825692603215,
-        "y": 7.395099513974
+        "x": 4.548905915019874,
+        "y": 7.45914174370373
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Scoop End Mirror"
+      "linkedName": "top facing alliance trench"
     }
   ],
   "rotationTargets": [

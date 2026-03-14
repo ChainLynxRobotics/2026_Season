@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5887162162162163,
-        "y": 0.6277364864864854
+        "x": 3.581309121621622,
+        "y": 2.420253378378378
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.2944668579104981,
-        "y": 0.3982679218364259
+        "x": 1.9813766891891897,
+        "y": 2.494324324324324
       },
       "isLocked": false,
-      "linkedName": "Scoop End"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "shootBalls",
+      "waypointRelativePos": 0.9458794587945832,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "shootBalls"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 2.0,

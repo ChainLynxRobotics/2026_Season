@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot mirror"
+            "pathName": "Bump Shoot"
           }
         },
         {
@@ -31,13 +31,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot to hide mirror"
+            "pathName": "Shoot to hide"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Mirror",
+  "folder": "Normal",
   "choreoAuto": false
 }
