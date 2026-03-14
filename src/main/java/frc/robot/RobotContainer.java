@@ -443,9 +443,5 @@ public class RobotContainer {
     */
   }
 
-  private PowerDistribution pd = new PowerDistribution();
 
-  public double getLedPower() {
-    return pd.getCurrent(21);
-  }
 }
