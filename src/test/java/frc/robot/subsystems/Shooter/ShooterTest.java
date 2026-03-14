@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 public class ShooterTest {
   Shooter shooter;
   private TalonFX flywheelMotor = new TalonFX(kFlywheelCANId);
+  private TalonFX flywheelFollowerMotor = new TalonFX(kFlywheelFollowerCANId);
   private TalonFX hoodMotor = new TalonFX(kHoodCANId);
 
   @BeforeEach
@@ -32,6 +33,7 @@ public class ShooterTest {
             () -> new Pose2d(),
             () -> new ChassisSpeeds(),
             flywheelMotor,
+            flywheelFollowerMotor,
             hoodMotor,
             () -> (false),
             () -> new CommandXboxController(1));

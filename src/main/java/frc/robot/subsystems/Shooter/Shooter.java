@@ -8,11 +8,13 @@ import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.filter.Debouncer;
@@ -47,6 +49,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected final Supplier<ChassisSpeeds> chassisSpeeds;
 
   protected final TalonFX flywheelMotor;
+  protected final TalonFX flywheelFollower;
   protected final VelocityVoltage flywheelVelocityRequest;
   protected DCMotorSim flywheelSim = null;
   protected TalonFXSimState flywheelMotorSim;
@@ -85,6 +88,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
       Supplier<Pose2d> simPose,
       Supplier<ChassisSpeeds> chassisSpeeds,
       TalonFX flywheelMotor,
+      TalonFX flywheelFollower,
       TalonFX hoodMotor,
       BooleanSupplier hasVisionPose,
       Supplier<CommandXboxController> driveController) {
@@ -116,6 +120,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);
 
     this.flywheelMotor = flywheelMotor;
+    this.flywheelFollower = flywheelFollower;
+    this.flywheelFollower.setControl(new Follower(kFlywheelCANId, MotorAlignmentValue.Opposed));
     this.flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
     flywheelVelocityRequest = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
 

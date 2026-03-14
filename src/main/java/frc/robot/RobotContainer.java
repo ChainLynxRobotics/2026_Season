@@ -108,6 +108,7 @@ public class RobotContainer {
           drivetrain::getSimPose,
           () -> drivetrain.getState().Speeds,
           new TalonFX(ShooterConstants.kFlywheelCANId, kCanBusBlinky),
+          new TalonFX(ShooterConstants.kFlywheelFollowerCANId, kCanBusBlinky),
           new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky),
           () -> (vision.getVisionPose() != null),
           () -> driveController);
@@ -218,23 +219,28 @@ public class RobotContainer {
 
     driveController
         .rightTrigger()
-        .onTrue(autoAimShooter().alongWith(
-            waitSeconds(0.75)
-                .andThen(
-                    indexer
-                        .spin()
-                        .alongWith(
-                            serializer
+        .onTrue(
+            autoAimShooter()
+                .alongWith(
+                    waitSeconds(0.75)
+                        .andThen(
+                            indexer
                                 .spin()
                                 .alongWith(
-                                    repeatingSequence(
-                                        waitSeconds(2)
-                                            .andThen(runOnce(() -> indexer.swapIndexerDir()))
-                                            .andThen(
-                                                waitSeconds(0.25)
+                                    serializer
+                                        .spin()
+                                        .alongWith(
+                                            repeatingSequence(
+                                                waitSeconds(2)
                                                     .andThen(
-                                                        runOnce(
-                                                            () -> indexer.swapIndexerDir())))))))))
+                                                        runOnce(() -> indexer.swapIndexerDir()))
+                                                    .andThen(
+                                                        waitSeconds(0.25)
+                                                            .andThen(
+                                                                runOnce(
+                                                                    () ->
+                                                                        indexer
+                                                                            .swapIndexerDir())))))))))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
     // driveController
