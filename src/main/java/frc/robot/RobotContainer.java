@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -75,7 +76,7 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private final LedSubsystem ledSubsystem = new LedSubsystem(); 
+  private final LedSubsystem ledSubsystem = new LedSubsystem();
 
   private final CommandXboxController driveController = new CommandXboxController(0);
   private final CommandXboxController testingController = new CommandXboxController(1);
@@ -461,5 +462,11 @@ public class RobotContainer {
         drivetrain.applyRequest(() -> idle));
 
     */
+  }
+
+  private PowerDistribution pd = new PowerDistribution();
+
+  public double getLedPower() {
+    return pd.getCurrent(21);
   }
 }
