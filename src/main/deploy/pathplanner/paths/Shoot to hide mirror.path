@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.321422413793104,
-        "y": 7.366
+        "x": 3.232910714285714,
+        "y": 3.824446428571429
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.17737068965517544,
-        "y": 7.358060344827585
+        "x": 2.503512931034483,
+        "y": 3.8395258620689656
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Shoot end Mirror"
     },
     {
       "anchor": {
-        "x": 0.5292241379310352,
-        "y": 7.366
+        "x": 0.5878663793103456,
+        "y": 7.358060344827586
       },
       "prevControl": {
-        "x": 3.901153017241386,
-        "y": 7.346452586206896
+        "x": 2.366681034482759,
+        "y": 7.358060344827586
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.08948004836759285,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -53,7 +48,7 @@
   "folder": "Traversal",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -89.81890228476803
   },
   "useDefaultConstraints": true
 }

@@ -7,6 +7,12 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Scoop Balls Mirror"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Shoot mirror"
           }
         },

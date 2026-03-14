@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Scoop Balls mirror"
+            "pathName": null
           }
         },
         {
@@ -20,6 +20,6 @@
     }
   },
   "resetOdom": false,
-  "folder": "Mirror",
+  "folder": "Possibly Retired",
   "choreoAuto": false
 }

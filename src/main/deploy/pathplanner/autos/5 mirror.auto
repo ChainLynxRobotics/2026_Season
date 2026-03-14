@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Alliance Funnel mirror"
+            "pathName": "Alliance Funnel"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Climb"
+            "pathName": "Bottom To Hide"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Mirror",
+  "folder": "Possibly Retired",
   "choreoAuto": false
 }

@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 4.40938577586207,
-        "y": 0.644
+        "y": 0.6440000000000001
       },
       "prevControl": null,
       "nextControl": {
         "x": 0.6660560344827591,
-        "y": 0.6244525862068969
+        "y": 0.624452586206897
       },
       "isLocked": false,
       "linkedName": "Scoop End"
