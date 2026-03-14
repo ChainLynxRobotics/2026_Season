@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.40938577586207,
-        "y": 7.356
+        "x": 3.581309121621622,
+        "y": 7.42004222972973
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.6414821428571429,
-        "y": 7.501035714285714
+        "x": -0.18659451138330496,
+        "y": 7.565077944015444
       },
       "isLocked": false,
       "linkedName": "top facing alliance trench"
