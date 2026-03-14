@@ -199,6 +199,10 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     heightSimState.setRotorVelocity(heightSim.getVelocityRadPerSec() / 2 / Math.PI);
   }
 
+  // public String getCurrentCommand() {
+  //   if (this.s)
+  // }
+
   public double getSpinPosition() {
     return spinMotor.getPosition().getValueAsDouble();
   }

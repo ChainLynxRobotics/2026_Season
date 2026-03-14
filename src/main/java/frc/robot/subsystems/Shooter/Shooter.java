@@ -9,7 +9,7 @@ import static frc.robot.utils.RobotMath.*;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected final Supplier<ChassisSpeeds> chassisSpeeds;
 
   protected final TalonFX flywheelMotor;
-  protected final VelocityTorqueCurrentFOC flywheelVelocityRequest;
+  protected final VelocityVoltage flywheelVelocityRequest;
   protected DCMotorSim flywheelSim = null;
   protected TalonFXSimState flywheelMotorSim;
 
@@ -117,7 +117,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     this.flywheelMotor = flywheelMotor;
     this.flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
-    flywheelVelocityRequest = new VelocityTorqueCurrentFOC(RotationsPerSecond.zero());
+    flywheelVelocityRequest = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
 
     this.hoodMotor = hoodMotor;
     hoodMotor.getConfigurator().apply(kHoodConfig);

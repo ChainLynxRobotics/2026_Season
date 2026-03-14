@@ -44,7 +44,6 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import java.util.Optional;
@@ -128,15 +127,17 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
     intake.setDefaultCommand(intake.runIntakeControl());
-    if (true) {
-      new Trigger(
-              () ->
-                  isPoseInSquare(
-                      drivetrain.getState().Pose,
-                      Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
-                      Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
-          .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
-    }
+    // if (false) {
+    //   new Trigger(
+    //           () ->
+    //               isPoseInSquare(
+    //                   drivetrain.getState().Pose,
+    //
+    // Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
+    //
+    // Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
+    //       .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+    // }
     if (true) {
       new Trigger(shooter::hasAStuckBall)
           .onTrue(
@@ -220,23 +221,23 @@ public class RobotContainer {
         .onTrue(waitSeconds(0.75).andThen(indexer.spin().alongWith(serializer.spin())))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
-    driveController
-        .rightTrigger()
-        .whileTrue(
-            autoAimShooter()
-                .alongWith(
-                    run(
-                        () -> {
-                          if (hubTrackingError().getDegrees() < 3
-                              && isWithinTolerance(
-                                  shooter.getHoodPosition(),
-                                  Degrees.of(shooter.getHoodClosedLoopReference()),
-                                  Degrees.of(1))) {
-                            indexer.spin().alongWith(serializer.spin());
-                          } else {
-                            indexer.stopSpin().alongWith(serializer.stopSpin());
-                          }
-                        })));
+    // driveController
+    //     .rightTrigger()
+    //     .whileTrue(
+    //         autoAimShooter()
+    //             .alongWith(
+    //                 run(
+    //                     () -> {
+    //                       if (hubTrackingError().getDegrees() < 3
+    //                           && isWithinTolerance(
+    //                               shooter.getHoodPosition(),
+    //                               Degrees.of(shooter.getHoodClosedLoopReference()),
+    //                               Degrees.of(3))) {
+    //                         indexer.spin().alongWith(serializer.spin());
+    //                       } else {
+    //                         indexer.stopSpin().alongWith(serializer.stopSpin());
+    //                       }
+    //                     })));
 
     /*.onlyWhile(
     () ->
