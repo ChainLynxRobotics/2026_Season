@@ -100,9 +100,9 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
-  private TunableNumber tunableHeadingP = new TunableNumber("tunableHeadingP", 8);
+  private TunableNumber tunableHeadingP = new TunableNumber("tunableHeadingP", 6);
   private TunableNumber tunableHeadingI = new TunableNumber("tunableHeadingI", 0);
-  private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 1);
+  private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 0);
   private TunableNumber tunableHeadingFFMult = new TunableNumber("tunableHeadingFFMult", 1.0);
 
   @Logged(name = "Shooter")
