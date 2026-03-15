@@ -5,13 +5,8 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
-import static edu.wpi.first.wpilibj2.command.Commands.run;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.Constants.*;
-import static frc.robot.subsystems.climber.ClimberConstants.kClimberId;
 import static frc.robot.utils.PointingUtil.*;
 import static frc.robot.utils.RobotMath.*;
 
@@ -49,6 +44,8 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberConstants;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import java.util.Optional;
@@ -96,7 +93,9 @@ public class RobotContainer {
   private final SerializerSubsystem serializer =
       new SerializerSubsystem(new TalonFX(18, kCanBusBlinky));
 
-  @Logged private final Climber climber = new Climber(new TalonFX(kClimberId, kCanBusBlinky));
+  @Logged
+  private final Climber climber =
+      new Climber(new TalonFX(ClimberConstants.kClimberId, kCanBusBlinky));
 
   private SendableChooser<Command> autoChooser;
 
@@ -135,18 +134,16 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-    // intake.setDefaultCommand(intake.runIntakeControl());
-    // if (false) {
-    //   new Trigger(
-    //           () ->
-    //               isPoseInSquare(
-    //                   drivetrain.getState().Pose,
-    //
-    // Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
-    //
-    // Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
-    //       .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
-    // }
+    intake.setDefaultCommand(intake.runIntakeControl());
+    if (false) {
+      new Trigger(
+              () ->
+                  isPoseInSquare(
+                      drivetrain.getState().Pose,
+                      Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[0],
+                      Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
+          .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+    }
     if (true) {
       new Trigger(shooter::hasAStuckBall)
           .onTrue(
@@ -156,9 +153,9 @@ public class RobotContainer {
                   .andThen(waitSeconds(1)));
 
       configureBindings();
-    }
 
-    // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
+      // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
+    }
   }
 
   public Pose3d[] getGamePieces() {
@@ -201,7 +198,8 @@ public class RobotContainer {
                         getTrenchCornersVelocity(
                             getClosestTrench(drivetrain.getState().Pose),
                             drivetrain.getState().Speeds,
-                            drivetrain.getState().Pose)[1])) {
+                            drivetrain.getState().Pose)[1])
+                    && handleTrenchAlignment().isPresent()) {
                   return trenchAlign
                       .withTargetDirection(handleTrenchAlignment().get())
                       .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
@@ -310,7 +308,7 @@ public class RobotContainer {
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
       new SwerveRequest.FieldCentricFacingAngle()
-          .withHeadingPID(8, 0, 0)
+          .withHeadingPID(6, 0, 0)
           .withDeadband(MaxSpeed * 0.15);
 
   private Command runShootingCommandsAutos() {
@@ -426,12 +424,19 @@ public class RobotContainer {
   }
 
   public Optional<Rotation2d> handleTrenchAlignment() {
-    if (-90 < drivetrain.getState().Pose.getRotation().getDegrees()
-        && drivetrain.getState().Pose.getRotation().getDegrees() < 90) {
-      return Optional.of(new Rotation2d(Degrees.of(0)));
-    } else {
-      return Optional.of(new Rotation2d(Degrees.of(180)));
+    if (isForward()) {
+      return Optional.of(new Rotation2d());
     }
+    if (!isForward()) {
+      return Optional.of(new Rotation2d(Degrees.of(180)));
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  @Logged
+  public boolean isForward() {
+    return (drivetrain.getPose().getRotation().getMeasure().isNear(Degrees.of(0), Degrees.of(90)));
   }
 
   public Command endInCorner() {
