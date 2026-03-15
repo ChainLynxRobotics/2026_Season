@@ -627,16 +627,20 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   public Angle calculateHoodAngle() {
     Trench closestTrench = getClosestTrench(drivetrainPose.get());
-    Pose2d[] trenchCorners = getTrenchCorners(closestTrench);
+    Pose2d[] trenchCorners =
+        getTrenchCornersVelocity(closestTrench, chassisSpeeds.get(), drivetrainPose.get());
 
     Angle setpoint = getCurrentSetpoint(getHubLocation2d()).rotation();
-    if (DriverStation.isAutonomous()) {
+    if (DriverStation.isAutonomous()
+        && hasVisionPose.getAsBoolean()
+        && !isPoseInSquare(drivetrainPose.get(), trenchCorners[0], trenchCorners[1])) {
       if (setpoint.gt(Degrees.of(45))) {
         return Degrees.of(45);
       }
       return setpoint;
     }
-    if (!driveController.get().rightTrigger().getAsBoolean()) {
+    if (!driveController.get().rightTrigger().getAsBoolean()
+        || isPoseInSquare(drivetrainPose.get(), trenchCorners[0], trenchCorners[1])) {
       return Degrees.of(5);
     }
     if (setpoint.gt(Degrees.of(45))) {
