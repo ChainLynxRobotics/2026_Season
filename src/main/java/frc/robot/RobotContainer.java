@@ -312,7 +312,29 @@ public class RobotContainer {
       new SwerveRequest.FieldCentricFacingAngle()
           .withHeadingPID(8, 0, 0)
           .withDeadband(MaxSpeed * 0.15);
-  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(0.25, 0.5));
+
+  private Command runShootingCommandsAutos() {
+    return run(
+        () ->
+            waitSeconds(0.75)
+                .andThen(
+                    indexer
+                        .spin()
+                        .alongWith(
+                            serializer
+                                .spin()
+                                .alongWith(
+                                    repeatingSequence(
+                                        waitSeconds(2)
+                                            .andThen(runOnce(() -> indexer.swapIndexerDir()))
+                                            .andThen(
+                                                waitSeconds(0.25)
+                                                    .andThen(
+                                                        runOnce(
+                                                            () -> indexer.swapIndexerDir()))))))));
+  }
+
+  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(0.4, 0.75));
 
   public void periodic() {}
 
@@ -366,6 +388,43 @@ public class RobotContainer {
                     .withVelocityY(-driveController.getLeftX() * MaxSpeed / kSlowMoveRate)));
   }
 
+  public Command autoAimShooterDriveBackwards() {
+
+    return parallel(
+        run(
+            () -> {
+              var turningRateFF =
+                  getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose()))
+                      .times(tunableHeadingFFMult.get());
+              lastState = profileState;
+              profileState =
+                  turningProfile.calculate(
+                      kDT.in(Second),
+                      lastState,
+                      new State(
+                          getAngleToTargetTOF()
+                              .minus(
+                                  getAlliance().equals(DriverStation.Alliance.Red)
+                                      ? new Rotation2d(Degrees.of(180))
+                                      : new Rotation2d())
+                              .getRotations() // We want our rotation to not be field centric
+                          // but we do want our driving to be so we
+                          // manually flip the rotation
+                          ,
+                          turningRateFF.in(RotationsPerSecond)));
+              var profileState = getProfile();
+            }),
+        drivetrain.applyRequest(
+            () ->
+                shooterAming
+                    .withTargetDirection(Rotation2d.fromRotations(profileState.position))
+                    .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
+                    .withHeadingPID(
+                        tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
+                    .withVelocityX(-0.25)
+                    .withVelocityY(0)));
+  }
+
   public Optional<Rotation2d> handleTrenchAlignment() {
     if (-90 < drivetrain.getState().Pose.getRotation().getDegrees()
         && drivetrain.getState().Pose.getRotation().getDegrees() < 90) {
@@ -373,6 +432,16 @@ public class RobotContainer {
     } else {
       return Optional.of(new Rotation2d(Degrees.of(180)));
     }
+  }
+
+  public Command endInCorner() {
+    return run(() -> {})
+        .until(
+            () ->
+                isPoseInSquare(
+                    drivetrain.getPose(),
+                    new Pose2d(Meters.of(1.225), Meters.of(6.432), new Rotation2d()),
+                    new Pose2d(Meters.of(0), Meters.of(8), new Rotation2d())));
   }
 
   @Logged
