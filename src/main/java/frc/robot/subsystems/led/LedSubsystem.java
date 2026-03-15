@@ -3,6 +3,7 @@ package frc.robot.subsystems.led;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.led.LedConstants.*;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 
+@Logged
 public class LedSubsystem {
   public AddressableLED led = new AddressableLED(kLEDPort);
   public AddressableLEDBuffer buffer = new AddressableLEDBuffer(kLeds);

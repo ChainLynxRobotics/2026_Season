@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.Constants.*;
 import static frc.robot.utils.PointingUtil.*;
 import static frc.robot.utils.RobotMath.*;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.led.LedSubsystem;
@@ -49,7 +51,6 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
-
   private final LedSubsystem ledSubsystem = new LedSubsystem();
 
   private final CommandXboxController driveController = new CommandXboxController(0);
@@ -239,7 +240,12 @@ public class RobotContainer {
 
     // driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
 
-    // testingController.a().whileTrue(runOnce(() -> this.ledSubsystem.setRainbow()));
+    testingController
+        .a()
+        .whileTrue(
+            runOnce(() -> this.ledSubsystem.setRainbow())
+                .alongWith(new PrintCommand("rainbow"))
+                .ignoringDisable(true));
 
     // // driveController.povRight().onTrue(runOnce(() ->
     // // climber.zeroClimber()).ignoringDisable(true));
