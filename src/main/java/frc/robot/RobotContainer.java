@@ -334,7 +334,7 @@ public class RobotContainer {
                                                             () -> indexer.swapIndexerDir()))))))));
   }
 
-  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(0.4, 0.75));
+  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(1, 0.75));
 
   public void periodic() {}
 
