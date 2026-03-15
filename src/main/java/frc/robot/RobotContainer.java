@@ -127,6 +127,9 @@ public class RobotContainer {
         "stopShoot", (indexer.stopSpin().alongWith(serializer.stopSpin())));
     NamedCommands.registerCommand("Scoop", new PrintCommand(""));
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand(""));
+    NamedCommands.registerCommand("Auto Aim", autoAimShooterDriveBackwards());
+    NamedCommands.registerCommand("endInCornerMirror", endInCorner());
+    NamedCommands.registerCommand("runShootingCommands", runShootingCommandsAutos());
     this.doDriving = true;
     this.doTrenchAlign = true;
     autoChooser = AutoBuilder.buildAutoChooser();
