@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 1.386517857142857,
-        "y": 7.452446428571428
+        "y": 7.356
       },
       "prevControl": null,
       "nextControl": {
         "x": 0.9168214285714282,
-        "y": 7.792571428571429
+        "y": 7.696125
       },
       "isLocked": false,
       "linkedName": null
@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 3.232910714285714,
-        "y": 3.824446428571429
+        "x": 2.6,
+        "y": 5.614
       },
       "prevControl": {
-        "x": 2.036756913247837,
-        "y": 3.8663701219236994
+        "x": 1.403846198962123,
+        "y": 5.65592369335227
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shoot end"
+      "linkedName": "Shoot end Mirror"
     }
   ],
   "rotationTargets": [
@@ -79,7 +79,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -89.81890228476803
+    "rotation": -135.0
   },
   "reversed": false,
   "folder": "Traversal",

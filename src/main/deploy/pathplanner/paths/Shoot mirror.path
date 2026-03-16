@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.581309121621622,
-        "y": 7.42004222972973
+        "x": 3.556839285714286,
+        "y": 7.356
       },
       "prevControl": null,
       "nextControl": {
-        "x": -0.18659451138330496,
-        "y": 7.565077944015444
+        "x": -0.21106434729064105,
+        "y": 7.501035714285714
       },
       "isLocked": false,
       "linkedName": "top facing alliance trench"
@@ -62,7 +62,7 @@
   "folder": "Shoot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -179.35536262043235
   },
   "useDefaultConstraints": false
 }

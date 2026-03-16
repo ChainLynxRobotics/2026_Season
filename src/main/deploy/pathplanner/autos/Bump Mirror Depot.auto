@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot to hide"
+            "pathName": "Shoot to hide mirror"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Normal",
+  "folder": "Mirror",
   "choreoAuto": false
 }

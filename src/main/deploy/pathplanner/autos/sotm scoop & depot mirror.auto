@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Scoop Balls mirror"
+            "pathName": "Scoop Balls Mirror sotm"
           }
         },
         {
@@ -76,7 +76,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot to hide"
+            "pathName": "Shoot to hide mirror"
           }
         },
         {
@@ -89,6 +89,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Mirror",
   "choreoAuto": false
 }
