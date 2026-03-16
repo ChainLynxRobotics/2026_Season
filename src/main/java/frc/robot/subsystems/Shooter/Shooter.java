@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
+import frc.robot.utils.SpikeDetector;
 import frc.robot.utils.TunableNumber;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -80,6 +81,12 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   protected TunableNumber tunableLUTMult;
 
   protected BooleanSupplier hasVisionPose;
+
+  public SpikeDetector flywheelSpikeDetector = new SpikeDetector(0.1, 0.04, 3, true);
+
+  public Timer flywheelSpikeTimer = new Timer();
+
+  private boolean spiking = false;
 
   protected Supplier<CommandXboxController> driveController;
 
@@ -322,6 +329,19 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   public LinearVelocity convertAngularVelocityToLinear(AngularVelocity velocity) {
     return MetersPerSecond.of(
         velocity.in(RotationsPerSecond) * (kFlywheelRadius.in(Meters) * 2 * Math.PI));
+  }
+
+  public Time timeSinceLastBall() {
+    flywheelSpikeTimer.start();
+    this.spiking = flywheelSpikeDetector.update(getFlywheelVelocityRps());
+    if (spiking) {
+      flywheelSpikeTimer.reset();
+    }
+    return Seconds.of(flywheelSpikeTimer.get());
+  }
+
+  public boolean isFlywheelSpiking() {
+    return spiking;
   }
 
   /**
