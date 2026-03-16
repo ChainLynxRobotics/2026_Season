@@ -17,12 +17,13 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.ironmaple.simulation.SimulatedArena;
 
 @Logged
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  private final RobotContainer m_robotContainer;
+  @Logged private final RobotContainer m_robotContainer;
   private final boolean enableLogging = true;
   private final boolean logToAdvantageScope = true;
 
@@ -74,6 +75,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    if (RobotBase.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
