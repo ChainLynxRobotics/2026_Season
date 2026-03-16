@@ -475,7 +475,7 @@ public class RobotContainer {
                     .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
                     .withHeadingPID(
                         tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
-                    .withVelocityX(-0.25)
+                    .withVelocityX(-0.5)
                     .withVelocityY(0)));
   }
 
