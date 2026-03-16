@@ -53,8 +53,7 @@ public class IndexerSubsystem extends SubsystemBase {
   private TunableNumber tunableIndexerS;
   private TunableNumber tunableIndexerV;
   private TunableNumber tunableIndexerVelocity;
-
-  private boolean isReverseIndexer;
+  @Logged public boolean isReverseIndexer;
 
   public IndexerSubsystem(TalonFX indexerMotor) {
     this.indexerMotor = indexerMotor;
@@ -152,13 +151,15 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public Command spin() {
-    return run(
-        () ->
-            indexerMotor.setControl(
-                indexerControl.withVelocity(
-                    isReverseIndexer
-                        ? RotationsPerSecond.of(tunableIndexerVelocity.get() * -1)
-                        : RotationsPerSecond.of(tunableIndexerVelocity.get()))));
+    return run(() -> spinInternal());
+  }
+
+  public void spinInternal() {
+    indexerMotor.setControl(
+        indexerControl.withVelocity(
+            isReverseIndexer
+                ? RotationsPerSecond.of(tunableIndexerVelocity.get() * -1)
+                : RotationsPerSecond.of(tunableIndexerVelocity.get())));
   }
 
   public Command spin10V() {
@@ -167,5 +168,9 @@ public class IndexerSubsystem extends SubsystemBase {
 
   public Command stopSpin() {
     return runOnce(() -> indexerMotor.setControl(new VoltageOut(Volts.of(0))));
+  }
+
+  public void stopSpinInternal() {
+    indexerMotor.setControl(new VoltageOut(Volts.of(0)));
   }
 }
