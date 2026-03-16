@@ -312,8 +312,26 @@ public class RobotContainer {
           .withDeadband(MaxSpeed * 0.15);
 
   private Command runShootingCommandsAutos() {
-    return run(
-        () ->
+    return waitSeconds(0.75)
+        .andThen(
+            indexer
+                .spin()
+                .alongWith(
+                    serializer
+                        .spin()
+                        .alongWith(
+                            repeatingSequence(
+                                waitSeconds(2)
+                                    .andThen(runOnce(() -> indexer.swapIndexerDir()))
+                                    .andThen(
+                                        waitSeconds(0.25)
+                                            .andThen(runOnce(() -> indexer.swapIndexerDir()))))))
+                .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOcilate())));
+  }
+
+  private Command runShootingCommands() {
+    return autoAimShooter()
+        .alongWith(
             waitSeconds(0.75)
                 .andThen(
                     indexer
@@ -328,8 +346,46 @@ public class RobotContainer {
                                             .andThen(
                                                 waitSeconds(0.25)
                                                     .andThen(
-                                                        runOnce(
-                                                            () -> indexer.swapIndexerDir()))))))));
+                                                        runOnce(() -> indexer.swapIndexerDir()))))))
+                        .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOcilate()))));
+  }
+
+  private Command runShootingComands() {
+
+    return autoAimShooter()
+        .alongWith(
+            run(
+                () -> {
+                  if (hubTrackingError().getDegrees() < 3
+                      && isWithinTolerance(
+                          shooter.getHoodPosition(),
+                          Degrees.of(shooter.getHoodClosedLoopReference()),
+                          Degrees.of(1.5))) {
+                    indexer.spinInternal();
+                    serializer.spinInternal();
+                  } else {
+                    indexer.stopSpinInternal();
+                    serializer.stopSpinInternal();
+                  }
+                }))
+        .alongWith(
+            run(
+                () -> {
+                  if (shooter.timeSinceLastBall().in(Seconds) > 0.5) {
+                    indexer.swapIndexerDir();
+                    shooter.flywheelSpikeTimer.reset();
+                  }
+                }))
+        .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOcilate()));
+  }
+
+  @Logged
+  public boolean shouldIndex() {
+    return (hubTrackingError().getDegrees() < 3
+        && isWithinTolerance(
+            shooter.getHoodPosition(),
+            Degrees.of(shooter.getHoodClosedLoopReference()),
+            Degrees.of(1.5)));
   }
 
   private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(1, 0.75));
