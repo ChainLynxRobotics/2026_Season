@@ -224,28 +224,14 @@ public class RobotContainer {
 
     driveController
         .rightTrigger()
+        .whileTrue(runShootingComands())
         .onTrue(
-            autoAimShooter()
-                .alongWith(
-                    waitSeconds(0.75)
-                        .andThen(
-                            indexer
-                                .spin()
-                                .alongWith(
-                                    serializer
-                                        .spin()
-                                        .alongWith(
-                                            repeatingSequence(
-                                                waitSeconds(2)
-                                                    .andThen(
-                                                        runOnce(() -> indexer.swapIndexerDir()))
-                                                    .andThen(
-                                                        waitSeconds(0.25)
-                                                            .andThen(
-                                                                runOnce(
-                                                                    () ->
-                                                                        indexer
-                                                                            .swapIndexerDir())))))))))
+            runOnce(
+                () -> {
+                  indexer.isReverseIndexer = false;
+                  shooter.flywheelSpikeTimer.reset();
+                  shooter.flywheelSpikeTimer.start();
+                }))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
     // driveController
