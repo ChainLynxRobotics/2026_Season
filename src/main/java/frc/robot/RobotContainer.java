@@ -510,6 +510,9 @@ public class RobotContainer {
 
   @Logged
   public Rotation2d hubTrackingError() {
+    if (getTOFRotationalVelocityReal().gte(RotationsPerSecond.of(0.05))) {
+      return hubTOFTrackingError();
+    }
     return getAngleToHub().minus(drivetrain.getPose().getRotation());
   }
 
