@@ -336,31 +336,30 @@ public class RobotContainer {
 
   private Command runShootingComands() {
 
-    return autoAimShooter()
-        .alongWith(
-            run(
-                () -> {
-                  if (hubTrackingError().getDegrees() < 3
-                      && isWithinTolerance(
-                          shooter.getHoodPosition(),
-                          Degrees.of(shooter.getHoodClosedLoopReference()),
-                          Degrees.of(1.5))) {
-                    indexer.spinInternal();
-                    serializer.spinInternal();
-                  } else {
-                    indexer.stopSpinInternal();
-                    serializer.stopSpinInternal();
-                  }
-                }))
-        .alongWith(
-            run(
-                () -> {
-                  if (shooter.timeSinceLastBall().in(Seconds) > 0.5) {
-                    indexer.swapIndexerDir();
-                    shooter.flywheelSpikeTimer.reset();
-                  }
-                }))
-        .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOcilate()));
+    return parallel(
+        autoAimShooter(),
+        run(
+            () -> {
+              if (hubTrackingError().getDegrees() < 3
+                  && isWithinTolerance(
+                      shooter.getHoodPosition(),
+                      Degrees.of(shooter.getHoodClosedLoopReference()),
+                      Degrees.of(1.5))) {
+                indexer.spinInternal();
+                serializer.spinInternal();
+              } else {
+                indexer.stopSpinInternal();
+                serializer.stopSpinInternal();
+              }
+            }),
+        run(
+            () -> {
+              if (shooter.timeSinceLastBall().in(Seconds) > 0.5) {
+                indexer.swapIndexerDir();
+                shooter.flywheelSpikeTimer.reset();
+              }
+            }),
+        waitSeconds(1).andThen(intake.raiseIntakeOcilate()));
   }
 
   @Logged
