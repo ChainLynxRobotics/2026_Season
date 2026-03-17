@@ -32,13 +32,13 @@ public class ShooterConstants {
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
   public static final int kFlywheelFollowerCANId = 24;
-  public static final double kFlywheelS = 0;
+  public static final double kFlywheelS = 0.18;
   public static final double kFlywheelA = 0;
-  public static final double kFlywheelV = 0;
-  public static final double kFlywheelP = 0;
+  public static final double kFlywheelV = 0.05584;
+  public static final double kFlywheelP = 0.25;
   public static final double kFlywheelI = 0;
   public static final double kFlywheelD = 0;
-  public static final double kFlywheelGearRatio = 0.5;
+  public static final double kFlywheelGearRatio = 0.41666;
 
   protected static TalonFXConfiguration generateFlywheelConfig(
       double kS, double kA, double kV, double kP, double kI, double kD) {
@@ -87,8 +87,8 @@ public class ShooterConstants {
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     var config = new TalonFXConfiguration().withSlot0(gains);
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotionMagic.MotionMagicCruiseVelocity = 1;
-    config.MotionMagic.MotionMagicAcceleration = 1;
+    config.MotionMagic.MotionMagicCruiseVelocity = 2.5;
+    config.MotionMagic.MotionMagicAcceleration = 2.5;
     // config.MotionMagic.MotionMagicExpo_kV = kV * kHoodGearRatio * 1.5;
     // config.MotionMagic.MotionMagicExpo_kA = kA * kHoodGearRatio * 1.5;
     config.Feedback.SensorToMechanismRatio = kHoodGearRatio;
@@ -112,14 +112,14 @@ public class ShooterConstants {
   public static final MomentOfInertia kHoodMOI = KilogramSquareMeters.of(0.023948);
   public static final DCMotor kHoodMotor = DCMotor.getKrakenX44Foc(1);
   public static final int kHoodLimitSwitchId = 0;
-  protected static final double kHoodG = 0.3225;
-  protected static final double kHoodS = 0.25;
-  protected static final double kHoodA = 0.01;
-  protected static final double kHoodV = 1.25;
+  protected static final double kHoodG = 0.098;
+  protected static final double kHoodS = 0.282;
+  protected static final double kHoodA = 0.0;
+  protected static final double kHoodV = 0.44;
   protected static final double kHoodP = 50;
   protected static final double kHoodI = 10;
   protected static final double kHoodD = 0;
-  protected static final double kHoodGearRatio = 34;
+  protected static final double kHoodGearRatio = 480 / 20.25;
   public static final TalonFXConfiguration kHoodConfig =
       generateHoodConfig(kHoodG, kHoodS, kHoodA, kHoodV, kHoodP, kHoodI, kHoodD, -0.15);
 }
