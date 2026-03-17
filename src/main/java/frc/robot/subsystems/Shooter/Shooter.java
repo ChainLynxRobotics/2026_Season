@@ -82,7 +82,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   protected BooleanSupplier hasVisionPose;
 
-  public SpikeDetector flywheelSpikeDetector = new SpikeDetector(0.1, 0.04, 3, true);
+  public SpikeDetector flywheelSpikeDetector = new SpikeDetector(0.1, 0.0, 1.5, true);
 
   public Timer flywheelSpikeTimer = new Timer();
 
