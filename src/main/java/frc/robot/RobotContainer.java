@@ -134,7 +134,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-    intake.setDefaultCommand(intake.runIntakeControl());
+    // intake.setDefaultCommand(intake.runIntakeControl());
     if (false) {
       new Trigger(
               () ->
@@ -309,8 +309,8 @@ public class RobotContainer {
                                     .andThen(runOnce(() -> indexer.swapIndexerDir()))
                                     .andThen(
                                         waitSeconds(0.25)
-                                            .andThen(runOnce(() -> indexer.swapIndexerDir()))))))
-                .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOscillate())));
+                                            .andThen(runOnce(() -> indexer.swapIndexerDir())))))));
+    // .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOscillate())));
   }
 
   private Command runShootingCommandsOld() {
@@ -362,8 +362,7 @@ public class RobotContainer {
                 indexer.isReverseIndexer = true;
                 shooter.flywheelSpikeTimer.reset();
               }
-            }),
-        waitSeconds(1).andThen(intake.raiseIntakeOscillate()));
+            }));
   }
 
   @Logged
