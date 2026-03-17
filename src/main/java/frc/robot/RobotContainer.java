@@ -395,6 +395,10 @@ public class RobotContainer {
   public Command autoAimShooter() {
 
     return parallel(
+        runOnce(() -> {
+          profileState = new State(drivetrain.getPose().getRotation().getRotations(), drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
+          lastState = profileState;
+        }),
         run(
             () -> {
               var turningRateFF =
