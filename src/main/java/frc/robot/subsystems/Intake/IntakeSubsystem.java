@@ -320,7 +320,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
         .withName("raiseIntake");
   }
 
-  public Command raiseIntakeOcilate() {
+  public Command raiseIntakeOscillate() {
     return run(
         () -> {
           heightMotor.setControl(heightControl.withPosition(Degrees.of(45)));

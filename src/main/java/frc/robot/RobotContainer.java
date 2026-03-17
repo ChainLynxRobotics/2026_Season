@@ -224,7 +224,7 @@ public class RobotContainer {
 
     driveController
         .rightTrigger()
-        .whileTrue(runShootingComands())
+        .whileTrue(runShootingCommands())
         .onTrue(
             runOnce(
                 () -> {
@@ -269,7 +269,7 @@ public class RobotContainer {
     // driveController.povRight().onTrue(runOnce(() ->
     // climber.zeroClimber()).ignoringDisable(true));
 
-    driveController.povRight().whileTrue(intake.raiseIntakeOcilate());
+    driveController.povRight().whileTrue(intake.raiseIntakeOscillate());
 
     driveController
         .a()
@@ -310,10 +310,10 @@ public class RobotContainer {
                                     .andThen(
                                         waitSeconds(0.25)
                                             .andThen(runOnce(() -> indexer.swapIndexerDir()))))))
-                .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOcilate())));
+                .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOscillate())));
   }
 
-  private Command runShootingCommands() {
+  private Command runShootingCommandsOld() {
     return autoAimShooter()
         .alongWith(
             waitSeconds(0.75)
@@ -331,10 +331,10 @@ public class RobotContainer {
                                                 waitSeconds(0.25)
                                                     .andThen(
                                                         runOnce(() -> indexer.swapIndexerDir()))))))
-                        .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOcilate()))));
+                        .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOscillate()))));
   }
 
-  private Command runShootingComands() {
+  private Command runShootingCommands() {
 
     return parallel(
         autoAimShooter(),
@@ -359,7 +359,7 @@ public class RobotContainer {
                 shooter.flywheelSpikeTimer.reset();
               }
             }),
-        waitSeconds(1).andThen(intake.raiseIntakeOcilate()));
+        waitSeconds(1).andThen(intake.raiseIntakeOscillate()));
   }
 
   @Logged
