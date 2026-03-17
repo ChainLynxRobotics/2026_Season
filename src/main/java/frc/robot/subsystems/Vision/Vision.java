@@ -53,15 +53,15 @@ public class Vision extends SubsystemBase {
     this.updateDrivetrain = updateDrivetrain;
     this.getSimPose = getSimPose;
 
+    // cameras.add(
+    //     new CamAndEstimator(
+    //         new PhotonPoseEstimator(kTagLayout, kCameraOffsets.get(0)),
+    //         new PhotonCamera("aprilOne")));
+
     cameras.add(
         new CamAndEstimator(
             new PhotonPoseEstimator(kTagLayout, kCameraOffsets.get(0)),
-            new PhotonCamera("aprilOne")));
-
-    // cameras.add(
-    //     new CamAndEstimator(
-    //         new PhotonPoseEstimator(kTagLayout, kCameraOffsets.get(1)),
-    //         new PhotonCamera("aprilTwo")));
+            new PhotonCamera("aprilTwo")));
 
     if (!RobotBase.isReal()) {
       visionSim = new VisionSystemSim("main");
