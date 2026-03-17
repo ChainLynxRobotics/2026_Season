@@ -126,7 +126,7 @@ public class RobotContainer {
     //               .withName("Unjam ball")
     //               .andThen(waitSeconds(1)));
 
-    //   configureBindings();
+    configureBindings();
     // }
 
     // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
