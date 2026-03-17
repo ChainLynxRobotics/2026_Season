@@ -446,15 +446,18 @@ public class RobotContainer {
                       kDT.in(Second),
                       lastState,
                       new State(
-                          getAngleToTargetTOF()
-                              .minus(
-                                  getAlliance().equals(DriverStation.Alliance.Red)
-                                      ? new Rotation2d(Degrees.of(180))
-                                      : new Rotation2d())
-                              .getRotations() // We want our rotation to not be field centric
-                          // but we do want our driving to be so we
-                          // manually flip the rotation
-                          ,
+                          PointingUtil.optimiseRotation(
+                                  drivetrain.getPose().getRotation(),
+                                  getAngleToTargetTOF()
+                                      .minus(
+                                          getAlliance().equals(DriverStation.Alliance.Red)
+                                              ? new Rotation2d(Degrees.of(180))
+                                              : new Rotation2d())
+                                  // We want our rotation to not be field centric
+                                  // but we do want our driving to be so we
+                                  // manually flip the rotation
+                                  )
+                              .getRotations(),
                           turningRateFF.in(RotationsPerSecond)));
               var profileState = getProfile();
             }),
