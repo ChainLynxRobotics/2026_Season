@@ -151,7 +151,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableHeightD = new TunableNumber("tunablekHeightD", kHeightD);
     this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 70);
     this.tunableHeightGravOffset = new TunableNumber("gravoffset", 126.95);
-    heightMotor.setPosition(Degrees.of(0));
+    heightMotor.setPosition(Degrees.of(-14));
   }
 
   public void runHeightSysId() {
