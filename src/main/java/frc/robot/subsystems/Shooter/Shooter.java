@@ -130,6 +130,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.flywheelFollower = flywheelFollower;
     this.flywheelFollower.setControl(new Follower(kFlywheelCANId, MotorAlignmentValue.Opposed));
     this.flywheelMotor.getConfigurator().apply(kFlyWheelConfig);
+    this.flywheelFollower.getConfigurator().apply(kFlyWheelConfig);
     flywheelVelocityRequest = new VelocityVoltage(RotationsPerSecond.zero()).withEnableFOC(true);
 
     this.hoodMotor = hoodMotor;
@@ -584,6 +585,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         || tunableFlywheelI.hasChanged()
         || tunableFlywheelD.hasChanged()) {
       this.flywheelMotor.getConfigurator().apply(generateTunableFlywheelConfig());
+      this.flywheelFollower.getConfigurator().apply(generateTunableFlywheelConfig());
     }
   }
 
