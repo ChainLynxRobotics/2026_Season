@@ -138,7 +138,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
     this.hasVisionPose = hasVisionPose;
 
-    hoodMotor.setPosition(Degrees.of(5));
+    hoodMotor.setPosition(Degrees.of(8));
 
     if (RobotBase.isReal()) return;
 
@@ -245,7 +245,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         rotatedShooter.getRotation());
   }
 
-  ShooterSetpoint lastShooterSetpoint = new ShooterSetpoint(MetersPerSecond.zero(), Degrees.of(5));
+  ShooterSetpoint lastShooterSetpoint = new ShooterSetpoint(MetersPerSecond.zero(), Degrees.of(8));
   /**
    * @return The speed and position of the shooter to shoot into the hub.
    */
@@ -663,7 +663,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     }
     if (!driveController.get().rightTrigger().getAsBoolean()
         || isPoseInSquare(drivetrainPose.get(), trenchCorners[0], trenchCorners[1])) {
-      return Degrees.of(5);
+      return Degrees.of(8);
     }
     if (setpoint.gt(Degrees.of(45))) {
       return Degrees.of(45);
