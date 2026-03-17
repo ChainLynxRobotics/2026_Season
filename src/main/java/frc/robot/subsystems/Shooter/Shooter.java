@@ -298,7 +298,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public AngularVelocity sinFlywheelMath() {
-    return RotationsPerSecond.of(Math.sin(Timer.getTimestamp()) * 20 + 40);
+    return RotationsPerSecond.of(Math.sin(Timer.getTimestamp()) * 15 + 30);
   }
 
   public static Pose2d getRelativeHubLocation(Pose2d robotPose) {
