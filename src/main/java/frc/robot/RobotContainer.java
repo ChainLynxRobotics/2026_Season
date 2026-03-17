@@ -46,6 +46,7 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
+import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import java.util.Optional;
@@ -76,7 +77,9 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandXboxController driveController = new CommandXboxController(0);
-  // private final CommandXboxController sysidController = new CommandXboxController(1);
+
+  private final CommandXboxController testingController = new CommandXboxController(1);
+  
   @Logged public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   @Logged
@@ -96,6 +99,10 @@ public class RobotContainer {
   @Logged
   private final Climber climber =
       new Climber(new TalonFX(ClimberConstants.kClimberId, kCanBusBlinky));
+
+  @Logged
+  private final LedSubsystem ledSubsystem = 
+      new LedSubsystem();
 
   private SendableChooser<Command> autoChooser;
 
@@ -280,6 +287,13 @@ public class RobotContainer {
     // climber.setStateSetpoint(ClimberState.BOTTOM)));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    testingController
+        .a()
+        .whileTrue(
+            runOnce(() -> this.ledSubsystem.setRainbow())
+                .alongWith(new PrintCommand("rainbow"))
+                .ignoringDisable(true));
 
     if (RobotBase.isReal()) return;
   }
