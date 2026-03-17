@@ -144,18 +144,15 @@ public class RobotContainer {
                       Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
           .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     }
-    if (true) {
+    if (false) {
       new Trigger(shooter::hasAStuckBall)
           .onTrue(
               shooter
                   .setFlywheelVelocity(RotationsPerSecond.of(-60))
                   .withName("Unjam ball")
                   .andThen(waitSeconds(1)));
-
-      configureBindings();
-
-      // if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
     }
+    configureBindings();
   }
 
   public Pose3d[] getGamePieces() {
