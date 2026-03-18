@@ -8,7 +8,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -77,7 +76,7 @@ public class IntakeConstants {
     var config = new TalonFXConfiguration().withSlot0(gains);
     // Joe: This sets Coast, but the constructor in IntakeSubsystem sets Brake — could the arm
     // backdrive under gravity after a tunable change?
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotionMagic.MotionMagicCruiseVelocity = kIntakeHeightMaxVelocity.in(RotationsPerSecond);
     config.MotionMagic.MotionMagicAcceleration =
         kIntakeHeightMaxAcceleration.in(RotationsPerSecondPerSecond);

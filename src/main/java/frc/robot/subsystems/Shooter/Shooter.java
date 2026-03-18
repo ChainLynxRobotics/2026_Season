@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.Trench;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
 import frc.robot.utils.SpikeDetector;
 import frc.robot.utils.TunableNumber;
@@ -387,6 +388,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
           setHoodAngleInternal(calculateHoodAngle());
         })
         .withName("Shooter control");
+  }
+
+  public Command raiseIntakeOscillate() {
+    return repeatingSequence(
+        runOnce(() -> hoodMotor.setControl(request.withPosition(Degrees.of(45)))),
+        waitSeconds(1),
+        runOnce(() -> hoodMotor.setControl(request.withPosition(Degrees.of(70)))),
+        waitSeconds(1));
   }
 
   /**
