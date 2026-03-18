@@ -25,7 +25,7 @@ public class IntakeConstants {
   public static double kT = 0.02;
   public static double kIntakeLengthFromPivot = 0.3347841158;
 
-  public static AngularVelocity kIntakeHeightMaxVelocity = RotationsPerSecond.of(0.083);
+  public static AngularVelocity kIntakeHeightMaxVelocity = RotationsPerSecond.of(0.123);
   public static AngularAcceleration kIntakeHeightMaxAcceleration =
       RotationsPerSecondPerSecond.of(0.5);
 
@@ -73,8 +73,7 @@ public class IntakeConstants {
             .withKG(kHeightG)
             .withKS(kHeightS)
             .withGravityType(GravityTypeValue.Arm_Cosine)
-            .withGravityArmPositionOffset(Degrees.of(gravOffset))
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+            .withGravityArmPositionOffset(Degrees.of(gravOffset));
     var config = new TalonFXConfiguration().withSlot0(gains);
     // Joe: This sets Coast, but the constructor in IntakeSubsystem sets Brake — could the arm
     // backdrive under gravity after a tunable change?
@@ -93,7 +92,7 @@ public class IntakeConstants {
     return config;
   }
 
-  public static final Voltage kSpinVoltage = Volts.of(5);
+  public static final Voltage kSpinVoltage = Volts.of(7);
 
   public static double kSpinP = 1;
   // Joe: I-gain of 3.0 seems pretty high — what happens to the integral if a game piece stalls
