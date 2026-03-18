@@ -382,7 +382,8 @@ public class RobotContainer {
                 indexer.isReverseIndexer = false;
                 shooter.flywheelSpikeTimer.reset();
               }
-            }));
+            }),
+        waitSeconds(1).andThen(intake.raiseIntakeOscillate()));
   }
 
   @Logged
