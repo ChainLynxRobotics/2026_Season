@@ -84,15 +84,15 @@ public class ShooterLUT {
     if (RobotBase.isReal()) {
       // Joe: These values are supposed to be flywheel surface speed in m/s, but 60-80 seems really
       // high for m/s — are these actually RPS from the old shooter? Might need retuning.
-      map.put(1.041, 42.0);
-      map.put(1.92, 65.0);
-      map.put(2.31, 65.0);
-      map.put(3.25, 72.0);
-      map.put(4.17, 78.0);
-      map.put(5.71, 92.0);
-      map.put(7.37, 103.0);
-      map.put(12.2, 220.0);
-
+      map.put(1.01, 52.0);
+      map.put(1.9050, 50.0);
+      map.put(2.7178, 57.0);
+      map.put(3.511, 62.0);
+      map.put(4.21, 72.0);
+      map.put(5.2400, 80.0);
+      map.put(6.114, 84.5);
+      map.put(7.27, 93.0);
+      map.put(11.938, 140.0);
       // map.put(1.041, 60.0);
       // map.put(1.92, 65.0);
       // map.put(2.31, 65.0);
@@ -120,13 +120,15 @@ public class ShooterLUT {
   private static InterpolatingDoubleTreeMap generateAngleMap() {
     var map = new InterpolatingDoubleTreeMap();
     if (RobotBase.isReal()) {
-      map.put(1.041, 18.0);
-      map.put(1.92, 23.0);
-      map.put(2.31, 24.0);
-      map.put(3.25, 27.5);
-      map.put(4.17, 29.0);
-      map.put(5.71, 32.0);
-      map.put(7.37, 43.0);
+      map.put(1.01, 10.0);
+      map.put(1.9050, 18.0);
+      map.put(2.7178, 20.0);
+      map.put(3.511, 22.0);
+      map.put(4.21, 23.0);
+      map.put(5.2400, 24.0);
+      map.put(6.114, 26.0);
+      map.put(7.27, 27.0);
+      map.put(11.938, 35.0);
     } else {
       map.put(1.5, 8.56);
       map.put(2.0, 11.32);
@@ -145,13 +147,16 @@ public class ShooterLUT {
   private static InterpolatingDoubleTreeMap generateTOFMap() {
     var map = new InterpolatingDoubleTreeMap();
     if (RobotBase.isReal()) {
-      map.put(1.041, 1.516);
-      map.put(1.92, 1.651);
-      map.put(2.31, 1.996);
-      map.put(3.25, 1.991);
-      map.put(4.17, 1.486);
-      map.put(5.71, 1.64);
-      map.put(7.37, 1.59);
+      map.put(1.01, 1.349);
+      // TODO: fix please! this video was not posted last night and needs to be adjusted with the acvtual data
+      map.put(1.9050, 1.15);
+      map.put(2.7178, 1.05875);
+      map.put(3.511, 1.22);
+      map.put(4.21, 1.417);
+      map.put(5.2400, 1.5355);
+      map.put(6.114, 1.599);
+      map.put(7.27, 1.786);
+      map.put(11.938, 2.0695);
     } else {
       map.put(1.5, 1.1833);
       map.put(2.0, 1.16);
