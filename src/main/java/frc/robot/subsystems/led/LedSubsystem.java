@@ -27,7 +27,7 @@ public class LedSubsystem {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    setRainbow();
+    // setRainbow();
   }
 
   public double getLedPower() {
