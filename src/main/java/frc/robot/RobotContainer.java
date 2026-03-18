@@ -237,40 +237,11 @@ public class RobotContainer {
                 }))
         .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
 
-    // driveController
-    //     .rightTrigger()
-    //     .whileTrue(
-    //         autoAimShooter()
-    //             .alongWith(
-    //                 run(
-    //                     () -> {
-    //                       if (hubTrackingError().getDegrees() < 3
-    //                           && isWithinTolerance(
-    //                               shooter.getHoodPosition(),
-    //                               Degrees.of(shooter.getHoodClosedLoopReference()),
-    //                               Degrees.of(3))) {
-    //                         indexer.spin().alongWith(serializer.spin());
-    //                       } else {
-    //                         indexer.stopSpin().alongWith(serializer.stopSpin());
-    //                       }
-    //                     })));
-
-    /*.onlyWhile(
-    () ->
-        (hubTrackingError().getDegrees() > 3
-            && !isWithinTolerance(
-                shooter.getHoodPosition(),
-                Degrees.of(shooter.getHoodClosedLoopReference()),
-                Degrees.of(1)))));*/
-
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
 
     driveController.y().whileTrue(intake.raiseIntake());
 
     driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
-
-    // driveController.povRight().onTrue(runOnce(() ->
-    // climber.zeroClimber()).ignoringDisable(true));
 
     driveController.povRight().whileTrue(intake.raiseIntakeOscillate());
 
