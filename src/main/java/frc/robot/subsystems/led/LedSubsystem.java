@@ -1,7 +1,10 @@
 package frc.robot.subsystems.led;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.led.LedConstants.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static frc.robot.subsystems.led.LedConstants.kBrownOut;
+import static frc.robot.subsystems.led.LedConstants.kLEDPort;
+import static frc.robot.subsystems.led.LedConstants.kLedSpacing;
+import static frc.robot.subsystems.led.LedConstants.kLeds;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -24,7 +27,7 @@ public class LedSubsystem {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    setAllLED(Color.kRed);
+    setRainbow();
   }
 
   public double getLedPower() {
