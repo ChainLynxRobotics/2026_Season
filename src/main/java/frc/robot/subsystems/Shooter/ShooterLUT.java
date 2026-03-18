@@ -148,9 +148,7 @@ public class ShooterLUT {
     var map = new InterpolatingDoubleTreeMap();
     if (RobotBase.isReal()) {
       map.put(1.01, 1.349);
-      // TODO: fix please! this video was not posted last night and needs to be adjusted with the
-      // acvtual data
-      map.put(1.9050, 1.15);
+      map.put(1.9050, 0.9825);
       map.put(2.7178, 1.05875);
       map.put(3.511, 1.22);
       map.put(4.21, 1.417);
