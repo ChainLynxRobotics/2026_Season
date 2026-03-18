@@ -133,7 +133,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand(""));
     NamedCommands.registerCommand("Auto Aim", autoAimShooterDriveBackwards());
     NamedCommands.registerCommand("endInCornerMirror", endInCorner());
-    NamedCommands.registerCommand("runShootingCommands", runShootingCommandsAutos());
+    NamedCommands.registerCommand("runSOTMCommandsNoAutoAlign", runShootingCommandsAutosSOTM());
+    NamedCommands.registerCommand("runShootingCommands", runShootingCommands());
     this.doDriving = true;
     this.doTrenchAlign = true;
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -304,22 +305,33 @@ public class RobotContainer {
           .withHeadingPID(6, 0, 0)
           .withDeadband(MaxSpeed * 0.15);
 
-  private Command runShootingCommandsAutos() {
-    return waitSeconds(0.75)
-        .andThen(
-            indexer
-                .spin()
-                .alongWith(
-                    serializer
-                        .spin()
-                        .alongWith(
-                            repeatingSequence(
-                                waitSeconds(2)
-                                    .andThen(runOnce(() -> indexer.swapIndexerDir()))
-                                    .andThen(
-                                        waitSeconds(0.25)
-                                            .andThen(runOnce(() -> indexer.swapIndexerDir())))))));
-    // .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOscillate())));
+  private Command runShootingCommandsAutosSOTM() {
+    return parallel(
+        run(
+            () -> {
+              if (Math.abs(hubTOFTrackingError().getDegrees()) < 3
+                  && isWithinTolerance(
+                      shooter.getHoodPosition(),
+                      Degrees.of(shooter.getHoodClosedLoopReference()),
+                      Degrees.of(1.5))) {
+                indexer.spinInternal();
+                serializer.spinInternal();
+              } else {
+                indexer.stopSpinInternal();
+                serializer.stopSpinInternal();
+              }
+            }),
+        run(
+            () -> {
+              if (shooter.timeSinceLastBall().in(Seconds) > 1.5 && !indexer.isReverseIndexer) {
+                indexer.isReverseIndexer = true;
+                shooter.flywheelSpikeTimer.reset();
+              } else if (shooter.timeSinceLastBall().in(Seconds) > 1 && indexer.isReverseIndexer) {
+                indexer.isReverseIndexer = false;
+                shooter.flywheelSpikeTimer.reset();
+              }
+            }),
+        waitSeconds(1).andThen(intake.raiseIntakeOscillate()));
   }
 
   private Command runShootingCommandsOld() {
