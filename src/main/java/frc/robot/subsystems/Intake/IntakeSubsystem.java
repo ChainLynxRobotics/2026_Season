@@ -58,6 +58,9 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   private TunableNumber tunableIntakeSpinI;
   private TunableNumber tunableIntakeSpinD;
   private TunableNumber tunableIntakeSpinVelocity;
+  private TunableNumber tunableIntakeSpinS;
+  private TunableNumber tunableIntakeSpinA;
+  private TunableNumber tunableIntakeSpinV;
 
   protected TunableNumber tunableHeightG;
   protected TunableNumber tunableHeightS;
@@ -140,6 +143,9 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableIntakeSpinP = new TunableNumber("IntakeSpinP", kSpinP);
     this.tunableIntakeSpinI = new TunableNumber("IntakeSpinI", kSpinI);
     this.tunableIntakeSpinD = new TunableNumber("IntakeSpinD", kSpinD);
+    this.tunableIntakeSpinS = new TunableNumber("IntakeSpinS", kSpinS);
+    this.tunableIntakeSpinA = new TunableNumber("IntakeSpinA", kSpinA);
+    this.tunableIntakeSpinV = new TunableNumber("IntakeSpinV", kSpinV);
     this.tunableIntakeSpinVelocity =
         new TunableNumber("IntakeSpinVelocity", kGoalIntakeSpinVelocity.in(RotationsPerSecond));
     this.tunableHeightG = new TunableNumber("tunableHeightG", kHeightG);
@@ -279,7 +285,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     return run(() -> {
           heightMotor.setControl(
               positionRequest.withPosition(Degrees.of(tunableHeightHeight.get())));
-          spinMotor.setControl(new VoltageOut(intakeBackward ? -5 : 5));
+          spinMotor.setControl(
+              new VoltageOut(intakeBackward ? -kSpinVoltage.in(Volts) : kSpinVoltage.in(Volts)));
         })
         .withName("runIntakeControl");
   }
@@ -393,6 +400,16 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
         tunableHeightGravOffset.get());
   }
 
+  private TalonFXConfiguration generateTunableSpinConfig() {
+    return IntakeConstants.generateSpinConfig(
+        tunableIntakeSpinS.get(),
+        tunableIntakeSpinA.get(),
+        tunableIntakeSpinV.get(),
+        tunableIntakeSpinP.get(),
+        tunableIntakeSpinI.get(),
+        tunableIntakeSpinD.get());
+  }
+
   public void detectTunableHeightChanges() {
     if (tunableHeightG.hasChanged()
         || tunableHeightS.hasChanged()
@@ -402,7 +419,6 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
         || tunableHeightI.hasChanged()
         || tunableHeightD.hasChanged()
         || tunableHeightGravOffset.hasChanged()) {
-      System.out.println("Height tuned");
       this.heightMotor.getConfigurator().apply(generateTunableHeightConfig());
     }
   }
@@ -410,8 +426,11 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public void detectTunableIntakeSpinChanges() {
     if (tunableIntakeSpinP.hasChanged()
         || tunableIntakeSpinI.hasChanged()
-        || tunableIntakeSpinD.hasChanged()) {
-      this.spinMotor.getConfigurator().apply(generateTunableIntakeSpinConfig());
+        || tunableIntakeSpinD.hasChanged()
+        || tunableIntakeSpinS.hasChanged()
+        || tunableIntakeSpinA.hasChanged()
+        || tunableIntakeSpinV.hasChanged()) {
+      this.spinMotor.getConfigurator().apply(generateTunableSpinConfig());
     }
   }
 

@@ -19,7 +19,7 @@ public class IntakeConstants {
   public static final double kIntakeHeightId = 16;
   public static Angle kIntakeHighAngle = Degree.of(0);
   public static Angle kIntakeLowAngle = Degree.of(124);
-  public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(10);
+  public static AngularVelocity kGoalIntakeSpinVelocity = RotationsPerSecond.of(15);
   public static double kInputToOutputSpinGearRatio = 3;
   public static double kInputToOutputHeightGearRatio = 37.5;
   public static double kT = 0.02;
@@ -92,13 +92,35 @@ public class IntakeConstants {
     return config;
   }
 
+  public static TalonFXConfiguration generateSpinConfig(
+      double kS, double kA, double kV, double kP, double kI, double kD) {
+    var gains =
+        new Slot0Configs()
+            .withKP(kSpinP)
+            .withKI(kSpinI)
+            .withKD(kSpinD)
+            .withKV(kSpinV)
+            .withKA(kSpinA)
+            .withKS(kSpinS);
+    var config = new TalonFXConfiguration().withSlot0(gains);
+
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.Feedback.SensorToMechanismRatio = kInputToOutputSpinGearRatio;
+
+    config.CurrentLimits.StatorCurrentLimit = 25;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    return config;
+  }
+
   public static final Voltage kSpinVoltage = Volts.of(7);
 
   public static double kSpinP = 1;
-  // Joe: I-gain of 3.0 seems pretty high — what happens to the integral if a game piece stalls
-  // the roller?
-  public static double kSpinI = 3;
-  public static double kSpinD = 1.5;
+  public static double kSpinI = 0.5;
+  public static double kSpinD = 0;
+  public static double kSpinV = 1 / 3;
+  public static double kSpinA = 0;
+  public static double kSpinS = 0.25;
 
   public static Slot0Configs kIntakeSpinSlot0Config =
       new Slot0Configs().withKP(kSpinP).withKI(kSpinI).withKD(kSpinD);
