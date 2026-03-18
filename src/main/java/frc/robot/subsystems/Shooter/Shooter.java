@@ -118,7 +118,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.tunableHoodI = new TunableNumber("tunablekHoodI", kHoodI);
     this.tunableHoodD = new TunableNumber("tunablekHoodD", kHoodD);
 
-    this.tunableLUTMult = new TunableNumber("tunableLUTMult", 0.7);
+    this.tunableLUTMult = new TunableNumber("tunableLUTMult", 1);
     this.tunableHoodGravOffset = new TunableNumber("gravoffset", -05);
 
     this.tunableHoodAngle = new TunableNumber("Hood angle", 5);
@@ -227,6 +227,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    */
   public ControlModeValue getFlywheelControlMode() {
     return flywheelMotor.getControlMode().getValue();
+  }
+
+  public double getFlywheelStator() {
+    return flywheelMotor.getStatorCurrent().getValueAsDouble();
+  }
+
+  public double getFlywheelFollowerStator() {
+    return flywheelFollower.getStatorCurrent().getValueAsDouble();
   }
 
   /**
