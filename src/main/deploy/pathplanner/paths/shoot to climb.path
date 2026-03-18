@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.232910714285714,
-        "y": 3.824446428571429
+        "x": 2.3789263531499554,
+        "y": 2.864028393966281
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6849059065934078,
-        "y": 3.9552637362637357
+        "x": 0.8309215454576491,
+        "y": 2.9948457016585883
       },
       "isLocked": false,
       "linkedName": "shoot end"
@@ -53,7 +53,7 @@
   "folder": "Possibly Retired",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -89.81890228476803
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

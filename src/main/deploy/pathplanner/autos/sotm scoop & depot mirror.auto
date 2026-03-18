@@ -33,7 +33,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "runShootingCommands"
+                        "name": "runSOTMCommandsNoAutoAlign"
                       }
                     }
                   ]
@@ -67,22 +67,22 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "shootBalls"
+                  "name": "runShootingCommands"
                 }
               }
             ]
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot to hide mirror"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "stopShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot to hide mirror"
           }
         }
       ]
