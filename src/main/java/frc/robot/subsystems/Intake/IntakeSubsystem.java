@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 import static frc.robot.utils.RobotMath.isWithinTolerance;
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Intake.IntakeConstants.IntakeHeightState;
@@ -149,7 +149,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     this.tunableHeightP = new TunableNumber("tunablekHeightP", kHeightP);
     this.tunableHeightI = new TunableNumber("tunablekHeightI", kHeightI);
     this.tunableHeightD = new TunableNumber("tunablekHeightD", kHeightD);
-    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 70);
+    this.tunableHeightHeight = new TunableNumber("tunableHeightHeight", 105);
     this.tunableHeightGravOffset = new TunableNumber("gravoffset", 126.95);
     heightMotor.setPosition(Degrees.of(-14));
   }
@@ -321,12 +321,10 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command raiseIntakeOscillate() {
-    return run(
-        () -> {
-          heightMotor.setControl(heightControl.withPosition(Degrees.of(45)));
-          new WaitCommand(Seconds.of(0.5));
-          heightMotor.setControl(heightControl.withPosition(Degrees.of(80)));
-        });
+    return repeatingSequence(
+        runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(45)))),
+        waitSeconds(1),
+        runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))));
   }
 
   public void swapIntake() {
