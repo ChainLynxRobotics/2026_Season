@@ -331,7 +331,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     return repeatingSequence(
         runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(45)))),
         waitSeconds(1),
-        runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))));
+        runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))),
+        waitSeconds(1));
   }
 
   public void swapIntake() {
@@ -372,20 +373,6 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public void close() {
     spinMotor.close();
     heightMotor.close();
-  }
-
-  private TalonFXConfiguration generateTunableIntakeSpinConfig() {
-    TalonFXConfiguration config =
-        new TalonFXConfiguration()
-            .withSlot0(
-                new Slot0Configs()
-                    .withKP(tunableIntakeSpinP.get())
-                    .withKI(tunableIntakeSpinI.get())
-                    .withKD(tunableIntakeSpinD.get()));
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.Feedback.SensorToMechanismRatio = kInputToOutputSpinGearRatio;
-    return config;
   }
 
   private TalonFXConfiguration generateTunableHeightConfig() {
