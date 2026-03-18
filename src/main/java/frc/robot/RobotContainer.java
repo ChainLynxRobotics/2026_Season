@@ -100,9 +100,7 @@ public class RobotContainer {
   private final Climber climber =
       new Climber(new TalonFX(ClimberConstants.kClimberId, kCanBusBlinky));
 
-  @Logged
-  private final LedSubsystem ledSubsystem = 
-      new LedSubsystem();
+  @Logged private final LedSubsystem ledSubsystem = new LedSubsystem();
 
   private SendableChooser<Command> autoChooser;
 
@@ -384,7 +382,7 @@ public class RobotContainer {
             Degrees.of(1.5)));
   }
 
-  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(1.5, 1.5));
+  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(1.5, 1.15));
 
   public void periodic() {}
 
