@@ -16,7 +16,7 @@ import edu.wpi.first.units.measure.*;
 @Logged
 public class ShooterConstants {
   public static final Pose2d kShooterLocation =
-      new Pose2d(Inches.of(-8.5), Inches.of(-8.5), new Rotation2d(Degrees.of(90).in(Radians)));
+      new Pose2d(Inches.of(-8.375), Inches.of(-3.75), new Rotation2d(Degrees.of(90).in(Radians)));
   public static final Pose2d kMapleSimShooterLocationNotJankAtAll =
       kShooterLocation.rotateBy(new Rotation2d(Degrees.of(90)));
   public static final Rotation2d kMapleSimSHooterRotationAlsoNotJank =
@@ -25,7 +25,7 @@ public class ShooterConstants {
   public static final Pose2d kFunnlingLocation =
       new Pose2d(Inches.of(90), Inches.of(90), new Rotation2d());
 
-  public static final Distance kShooterHeight = Inches.of(18.442849);
+  public static final Distance kShooterHeight = Inches.of(15.5);
 
   public static final Distance kFlywheelRadius = Inches.of(2);
   public static final MomentOfInertia kFlywheelMOI = KilogramSquareMeters.of(0.00063);
