@@ -302,7 +302,7 @@ public class RobotContainer {
                 shooter.flywheelSpikeTimer.reset();
               }
             }),
-        waitSeconds(1).andThen(intake.raiseIntakeOscillate()));
+        intake.raiseIntakeOscillate());
   }
 
   private Command runShootingCommandsOld() {
@@ -346,7 +346,7 @@ public class RobotContainer {
             }),
         run(
             () -> {
-              if (shooter.timeSinceLastBall().in(Seconds) > 1.5 && !indexer.isReverseIndexer) {
+              if (shooter.timeSinceLastBall().in(Seconds) > 2.5 && !indexer.isReverseIndexer) {
                 indexer.isReverseIndexer = true;
                 shooter.flywheelSpikeTimer.reset();
               } else if (shooter.timeSinceLastBall().in(Seconds) > 1 && indexer.isReverseIndexer) {
@@ -354,7 +354,7 @@ public class RobotContainer {
                 shooter.flywheelSpikeTimer.reset();
               }
             }),
-        waitSeconds(1).andThen(intake.raiseIntakeOscillate()));
+        intake.raiseIntakeOscillate());
   }
 
   @Logged
@@ -431,6 +431,14 @@ public class RobotContainer {
   public Command autoAimShooterDriveBackwards() {
 
     return parallel(
+        runOnce(
+            () -> {
+              profileState =
+                  new State(
+                      drivetrain.getPose().getRotation().getRotations(),
+                      drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
+              lastState = profileState;
+            }),
         run(
             () -> {
               var turningRateFF =
@@ -442,18 +450,15 @@ public class RobotContainer {
                       kDT.in(Second),
                       lastState,
                       new State(
-                          PointingUtil.optimiseRotation(
-                                  drivetrain.getPose().getRotation(),
                                   getAngleToTargetTOF()
                                       .minus(
                                           getAlliance().equals(DriverStation.Alliance.Red)
                                               ? new Rotation2d(Degrees.of(180))
                                               : new Rotation2d())
-                                  // We want our rotation to not be field centric
+                              .getRotations() // We want our rotation to not be field centric
                                   // but we do want our driving to be so we
                                   // manually flip the rotation
-                                  )
-                              .getRotations(),
+                          ,
                           turningRateFF.in(RotationsPerSecond)));
               var profileState = getProfile();
             }),
