@@ -11,32 +11,25 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "race",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "endInCornerMirror"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Auto Aim"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "runSOTMCommandsNoAutoAlign"
-                      }
-                    }
-                  ]
+                  "name": "endInCornerMirror"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Aim"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "runSOTMCommandsNoAutoAlign"
                 }
               }
             ]
