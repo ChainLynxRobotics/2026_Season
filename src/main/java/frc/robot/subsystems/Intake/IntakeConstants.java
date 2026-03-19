@@ -76,13 +76,13 @@ public class IntakeConstants {
     var config = new TalonFXConfiguration().withSlot0(gains);
     // Joe: This sets Coast, but the constructor in IntakeSubsystem sets Brake — could the arm
     // backdrive under gravity after a tunable change?
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotionMagic.MotionMagicCruiseVelocity = kIntakeHeightMaxVelocity.in(RotationsPerSecond);
     config.MotionMagic.MotionMagicAcceleration =
         kIntakeHeightMaxAcceleration.in(RotationsPerSecondPerSecond);
     config.Feedback.SensorToMechanismRatio = kInputToOutputHeightGearRatio;
 
-    config.CurrentLimits.StatorCurrentLimit = 25;
+    config.CurrentLimits.StatorCurrentLimit = 100;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Joe: The constructor doesn't set an inversion but this does — what happens to the arm if the
@@ -106,7 +106,7 @@ public class IntakeConstants {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = kInputToOutputSpinGearRatio;
 
-    config.CurrentLimits.StatorCurrentLimit = 25;
+    config.CurrentLimits.StatorCurrentLimit = 50;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     return config;
@@ -117,7 +117,7 @@ public class IntakeConstants {
   public static double kSpinP = 1;
   public static double kSpinI = 0.5;
   public static double kSpinD = 0;
-  public static double kSpinV = 1 / 3;
+  public static double kSpinV = 0.28;
   public static double kSpinA = 0;
   public static double kSpinS = 0.25;
 

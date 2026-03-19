@@ -285,22 +285,26 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
           heightMotor.setControl(
               positionRequest.withPosition(Degrees.of(tunableHeightHeight.get())));
           spinMotor.setControl(
-              new VoltageOut(intakeBackward ? -kSpinVoltage.in(Volts) : kSpinVoltage.in(Volts)));
+              new VoltageOut(intakeBackward ? kSpinVoltage.in(Volts) : -kSpinVoltage.in(Volts)));
         })
         .withName("runIntakeControl");
+  }
+
+  public double getHeightCurrent() {
+    return heightMotor.getStatorCurrent().getValueAsDouble();
   }
 
   public Command deployIntake() {
     return run(() ->
             heightMotor.setControl(
                 positionRequest.withPosition(Degrees.of(tunableHeightHeight.get()))))
-        .alongWith(run(() -> spinMotor.setControl(new VoltageOut(intakeBackward ? -5 : 5))))
+        .alongWith(run(() -> spinMotor.setControl(new VoltageOut(intakeBackward ? 5 : -5))))
         .until(
             () ->
                 isWithinTolerance(
                     Rotations.of(getHeightPosition()),
                     Degrees.of(tunableHeightHeight.get()),
-                    Degrees.of(1)))
+                    Degrees.of(3)))
         .andThen(() -> intakeBackward = false)
         .withName("deployIntake");
   }
@@ -328,10 +332,11 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
 
   public Command raiseIntakeOscillate() {
     return repeatingSequence(
+        runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(0)))),
+        waitSeconds(2),
         runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(45)))),
-        waitSeconds(1),
-        runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))),
-        waitSeconds(1));
+        waitSeconds(2),
+        runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))));
   }
 
   public void swapIntake() {
