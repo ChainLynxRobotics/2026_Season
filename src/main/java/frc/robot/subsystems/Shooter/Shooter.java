@@ -678,8 +678,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
       }
       return setpoint;
     }
-    if (!driveController.get().rightTrigger().getAsBoolean()
-        || isPoseInSquare(drivetrainPose.get(), trenchCorners[0], trenchCorners[1])) {
+    if (!driveController.get().rightTrigger().getAsBoolean()) {
       return Degrees.of(8);
     }
     if (setpoint.gt(Degrees.of(45))) {
