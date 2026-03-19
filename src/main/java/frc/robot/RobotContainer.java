@@ -78,7 +78,7 @@ public class RobotContainer {
 
   private final CommandXboxController driveController = new CommandXboxController(0);
 
-  private final CommandXboxController testingController = new CommandXboxController(1);
+  // private final CommandXboxController testingController = new CommandXboxController(1);
 
   @Logged public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -258,12 +258,12 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    testingController
-        .a()
-        .whileTrue(
-            runOnce(() -> this.ledSubsystem.setRainbow())
-                .alongWith(new PrintCommand("rainbow"))
-                .ignoringDisable(true));
+    // testingController
+    //     .a()
+    //     .whileTrue(
+    //         runOnce(() -> this.ledSubsystem.setRainbow())
+    //             .alongWith(new PrintCommand("rainbow"))
+    //             .ignoringDisable(true));
 
     if (RobotBase.isReal()) return;
   }
