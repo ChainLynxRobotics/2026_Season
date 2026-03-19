@@ -134,6 +134,7 @@ public class RobotContainer {
     // NamedCommands.registerCommand("Auto Aim", autoAimShooterDriveBackwards());
     // NamedCommands.registerCommand("endInCornerMirror", endInCorner());
     // NamedCommands.registerCommand("runSOTMCommandsNoAutoAlign", runShootingCommandsAuto());
+    NamedCommands.registerCommand("deployIntake", intake.deployIntake());
     NamedCommands.registerCommand("runShootingCommands", runShootingCommands());
     this.doDriving = true;
     this.doTrenchAlign = true;
