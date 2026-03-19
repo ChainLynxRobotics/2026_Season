@@ -151,7 +151,7 @@ public class RobotContainer {
                       Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
           .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     }
-    if (false) {
+    if (true) {
       new Trigger(shooter::hasAStuckBall)
           .onTrue(
               shooter
