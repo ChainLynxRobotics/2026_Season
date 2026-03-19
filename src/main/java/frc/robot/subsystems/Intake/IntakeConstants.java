@@ -112,7 +112,7 @@ public class IntakeConstants {
     return config;
   }
 
-  public static final Voltage kSpinVoltage = Volts.of(7);
+  public static final Voltage kSpinVoltage = Volts.of(5);
 
   public static double kSpinP = 1;
   public static double kSpinI = 0.5;
