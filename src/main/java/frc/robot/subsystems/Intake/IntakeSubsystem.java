@@ -295,10 +295,12 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command deployIntake() {
-    return run(() ->
-            heightMotor.setControl(
-                positionRequest.withPosition(Degrees.of(tunableHeightHeight.get()))))
-        .alongWith(run(() -> spinMotor.setControl(new VoltageOut(intakeBackward ? kSpinVoltage.in(Volts) : -kSpinVoltage.in(Volts)))))
+    return run(() -> {
+          heightMotor.setControl(
+              positionRequest.withPosition(Degrees.of(tunableHeightHeight.get())));
+          spinMotor.setControl(
+              new VoltageOut(intakeBackward ? kSpinVoltage.in(Volts) : -kSpinVoltage.in(Volts)));
+        })
         .until(
             () ->
                 isWithinTolerance(
