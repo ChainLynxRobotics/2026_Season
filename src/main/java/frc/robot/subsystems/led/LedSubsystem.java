@@ -6,6 +6,7 @@ import static frc.robot.Constants.*;
 import static frc.robot.subsystems.led.LedConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.Map;
 
 @Logged
 public class LedSubsystem extends SubsystemBase {
@@ -30,7 +30,10 @@ public class LedSubsystem extends SubsystemBase {
     pDH.setSwitchableChannel(true);
 
     setDefaultCommand(solidPattern(LEDPattern.solid(getAllianceColor())).withName("Team Color"));
-    //setDefaultCommand(runRainbow());
+    /*setDefaultCommand(
+        blinkPattern(LEDPattern.solid(getAllianceColor()), Milliseconds.of(100))
+            .withName("Team Color Blink"));*/
+    //setDefaultCommand(rainbowPattern().withName("Rainbow"));
   }
 
   public Command solidPattern(LEDPattern pattern) {
@@ -46,6 +49,11 @@ public class LedSubsystem extends SubsystemBase {
   public Command progressPattern(double progress, double maximum) {
     LEDPattern pattern = LEDPattern.progressMaskLayer(() -> progress / maximum);
     return run(() -> pattern.applyTo(buffer));
+  }
+
+  public Command blinkPattern(LEDPattern pattern, Time time) {
+    LEDPattern blinkPattern = pattern.blink(time);
+    return run(() -> blinkPattern.applyTo(buffer));
   }
 
   @Override
