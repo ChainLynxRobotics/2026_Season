@@ -347,10 +347,12 @@ public class RobotContainer {
             }),
         run(
             () -> {
-              if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerUnjamTime() && !indexer.isReverseIndexer) {
+              if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerUnjamTime()
+                  && !indexer.isReverseIndexer) {
                 indexer.isReverseIndexer = true;
                 shooter.flywheelSpikeTimer.reset();
-              } else if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerRestartTime() && indexer.isReverseIndexer) {
+              } else if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerRestartTime()
+                  && indexer.isReverseIndexer) {
                 indexer.isReverseIndexer = false;
                 shooter.flywheelSpikeTimer.reset();
               }
