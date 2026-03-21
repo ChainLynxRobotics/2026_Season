@@ -13,6 +13,7 @@ import static frc.robot.utils.RobotMath.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.epilogue.Logged;
@@ -177,6 +178,13 @@ public class RobotContainer {
           drivetrain.applyRequest(
               () -> {
                 if (driveController.rightBumper().getAsBoolean()) {
+                  if (shouldIndex()
+                      && Math.abs(driveController.getLeftX()) < (0.15 * MaxSpeed / kSlowMoveRate)
+                      && Math.abs(driveController.getLeftY()) < (0.15 * MaxSpeed / kSlowMoveRate)
+                      && Math.abs(drivetrain.getState().Speeds.omegaRadiansPerSecond) < 0.1
+                      && kShouldUseXBrakeWhenShooting) {
+                    return new SwerveDriveBrake();
+                  }
                   return drive
                       .withVelocityX(
                           -driveController.getLeftY()
