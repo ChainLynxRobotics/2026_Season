@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Map;
 
 @Logged
 public class LedSubsystem extends SubsystemBase {
@@ -28,17 +29,23 @@ public class LedSubsystem extends SubsystemBase {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    setDefaultCommand(runPattern(LEDPattern.solid(getAllianceColor())).withName("Rainbow"));
+    setDefaultCommand(solidPattern(LEDPattern.solid(getAllianceColor())).withName("Team Color"));
+    //setDefaultCommand(runRainbow());
   }
 
-  public Command runPattern(LEDPattern pattern) {
+  public Command solidPattern(LEDPattern pattern) {
     return run(() -> pattern.applyTo(buffer));
   }
 
-  public Command runRainbow() {
+  public Command rainbowPattern() {
     LEDPattern rainbow = LEDPattern.rainbow(255, 128);
     LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(2), kLedSpacing);
     return run(() -> scrollingRainbow.applyTo(buffer));
+  }
+
+  public Command progressPattern(double progress, double maximum) {
+    LEDPattern pattern = LEDPattern.progressMaskLayer(() -> progress / maximum);
+    return run(() -> pattern.applyTo(buffer));
   }
 
   @Override
