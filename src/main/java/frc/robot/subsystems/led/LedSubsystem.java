@@ -1,6 +1,7 @@
 package frc.robot.subsystems.led;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static frc.robot.subsystems.led.LedConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
@@ -9,11 +10,11 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
-public class LedSubsystem {
+public class LedSubsystem extends SubsystemBase {
   public AddressableLED led = new AddressableLED(kLEDPort);
   public AddressableLEDBuffer buffer = new AddressableLEDBuffer(kLeds);
   public PowerDistribution pDH = new PowerDistribution(1, ModuleType.kRev);
@@ -24,43 +25,28 @@ public class LedSubsystem {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    setAllLED(Color.kRed);
+    LEDPattern m_rainbow = LEDPattern.rainbow(255, 128);
+    LEDPattern m_scrollingRainbow =
+        m_rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(2), kLedSpacing);
+
+    setDefaultCommand(runPattern(m_scrollingRainbow).withName("Rainbow"));
   }
 
-  public double getLedPower() {
-    return pDH.getCurrent(23);
+  public Command runPattern(LEDPattern pattern) {
+    return run(() -> pattern.applyTo(buffer));
   }
 
-  public void setAllLED(Color color) {
-    LEDPattern alliedColor = LEDPattern.solid(color);
-    alliedColor.applyTo(buffer);
-    led.setData(buffer);
-  }
-
-  public void setRainbow() {
-    LEDPattern rainbow = LEDPattern.rainbow(255, 128);
-    final LEDPattern scrollingRainbow =
-        rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), kLedSpacing);
-    scrollingRainbow.applyTo(buffer);
-    led.setData(buffer);
-  }
-
-  public void setProgressBar(Color color, double time) {
-    double startTime = Timer.getFPGATimestamp();
-
-    LEDPattern base = LEDPattern.solid(color);
-    if ((Timer.getFPGATimestamp() - startTime) / time <= 1) {
-      LEDPattern mask =
-          LEDPattern.progressMaskLayer(() -> (Timer.getFPGATimestamp() - startTime) / time);
-      LEDPattern progress = base.mask(mask);
-      progress.applyTo(buffer);
-    }
-    led.setData(buffer);
-  }
-
+  @Override
   public void periodic() {
     if (pDH.getVoltage() < kBrownOut) {
       pDH.setSwitchableChannel(false);
     }
+    ;
+
+    led.setData(buffer);
+  }
+
+  public double getLedPower() {
+    return pDH.getCurrent(23);
   }
 }

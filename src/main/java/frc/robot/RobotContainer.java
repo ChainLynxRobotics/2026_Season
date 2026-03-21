@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.led.LedSubsystem;
@@ -239,13 +238,6 @@ public class RobotContainer {
     // driveController.y().whileTrue(intake.raiseIntake());
 
     // driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
-
-    testingController
-        .a()
-        .whileTrue(
-            runOnce(() -> this.ledSubsystem.setRainbow())
-                .alongWith(new PrintCommand("rainbow"))
-                .ignoringDisable(true));
 
     // // driveController.povRight().onTrue(runOnce(() ->
     // // climber.zeroClimber()).ignoringDisable(true));
