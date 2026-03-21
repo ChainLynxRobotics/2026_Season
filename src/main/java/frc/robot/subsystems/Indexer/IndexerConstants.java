@@ -18,6 +18,9 @@ public class IndexerConstants {
   public static double kIndexerV = 0.0;
   public static double kIndexerS = 0.55;
 
+  public static double kIndexerUnjamTime = 2.5;
+  public static double kIndexerRestartTime = 1;
+
   public static Slot0Configs kIntakeIndexerSlot0Config =
       new Slot0Configs()
           .withKP(kIndexerP)

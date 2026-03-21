@@ -347,10 +347,10 @@ public class RobotContainer {
             }),
         run(
             () -> {
-              if (shooter.timeSinceLastBall().in(Seconds) > 2.5 && !indexer.isReverseIndexer) {
+              if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerUnjamTime() && !indexer.isReverseIndexer) {
                 indexer.isReverseIndexer = true;
                 shooter.flywheelSpikeTimer.reset();
-              } else if (shooter.timeSinceLastBall().in(Seconds) > 1 && indexer.isReverseIndexer) {
+              } else if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerRestartTime() && indexer.isReverseIndexer) {
                 indexer.isReverseIndexer = false;
                 shooter.flywheelSpikeTimer.reset();
               }
@@ -451,14 +451,14 @@ public class RobotContainer {
                       kDT.in(Second),
                       lastState,
                       new State(
-                                  getAngleToTargetTOF()
-                                      .minus(
-                                          getAlliance().equals(DriverStation.Alliance.Red)
-                                              ? new Rotation2d(Degrees.of(180))
-                                              : new Rotation2d())
+                          getAngleToTargetTOF()
+                              .minus(
+                                  getAlliance().equals(DriverStation.Alliance.Red)
+                                      ? new Rotation2d(Degrees.of(180))
+                                      : new Rotation2d())
                               .getRotations() // We want our rotation to not be field centric
-                                  // but we do want our driving to be so we
-                                  // manually flip the rotation
+                          // but we do want our driving to be so we
+                          // manually flip the rotation
                           ,
                           turningRateFF.in(RotationsPerSecond)));
               var profileState = getProfile();
