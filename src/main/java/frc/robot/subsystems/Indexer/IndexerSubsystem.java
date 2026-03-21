@@ -53,6 +53,10 @@ public class IndexerSubsystem extends SubsystemBase {
   private TunableNumber tunableIndexerS;
   private TunableNumber tunableIndexerV;
   private TunableNumber tunableIndexerVelocity;
+  private TunableNumber tunableIndexerUnjamTime =
+      new TunableNumber("indexerUnjamTime", kIndexerUnjamTime);
+  private TunableNumber tunableIndexerRestartTime =
+      new TunableNumber("indexerRestartTime", kIndexerRestartTime);
   @Logged public boolean isReverseIndexer;
 
   public IndexerSubsystem(TalonFX indexerMotor) {
@@ -140,6 +144,14 @@ public class IndexerSubsystem extends SubsystemBase {
   @Logged
   public double getSimIndexerVelocity() {
     return indexerSim.getAngularVelocityRPM() / 60.0;
+  }
+
+  public double getIndexerUnjamTime() {
+    return tunableIndexerUnjamTime.get();
+  }
+
+  public double getIndexerRestartTime() {
+    return tunableIndexerRestartTime.get();
   }
 
   public void swapIndexerDir() {
