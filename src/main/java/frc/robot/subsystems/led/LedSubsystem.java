@@ -2,14 +2,17 @@ package frc.robot.subsystems.led;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.led.LedConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -25,15 +28,17 @@ public class LedSubsystem extends SubsystemBase {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    LEDPattern m_rainbow = LEDPattern.rainbow(255, 128);
-    LEDPattern m_scrollingRainbow =
-        m_rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(2), kLedSpacing);
-
-    setDefaultCommand(runPattern(m_scrollingRainbow).withName("Rainbow"));
+    setDefaultCommand(runPattern(LEDPattern.solid(getAllianceColor())).withName("Rainbow"));
   }
 
   public Command runPattern(LEDPattern pattern) {
     return run(() -> pattern.applyTo(buffer));
+  }
+
+  public Command runRainbow() {
+    LEDPattern rainbow = LEDPattern.rainbow(255, 128);
+    LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(2), kLedSpacing);
+    return run(() -> scrollingRainbow.applyTo(buffer));
   }
 
   @Override
@@ -44,6 +49,14 @@ public class LedSubsystem extends SubsystemBase {
     ;
 
     led.setData(buffer);
+  }
+
+  public Color getAllianceColor() {
+    if (getAlliance().equals(DriverStation.Alliance.Blue)) {
+      return Color.kBlue;
+    } else {
+      return Color.kRed;
+    }
   }
 
   public double getLedPower() {
