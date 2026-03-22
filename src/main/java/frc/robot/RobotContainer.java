@@ -177,6 +177,24 @@ public class RobotContainer {
 
           drivetrain.applyRequest(
               () -> {
+                if (doTrenchAlign
+                    && driveController.leftTrigger().getAsBoolean()
+                    && isPoseInSquare(
+                        drivetrain.getState().Pose,
+                        getTrenchCornersVelocity(
+                            getClosestTrench(drivetrain.getState().Pose),
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose)[0],
+                        getTrenchCornersVelocity(
+                            getClosestTrench(drivetrain.getState().Pose),
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose)[1])
+                    && handleTrenchAlignment().isPresent()) {
+                  return trenchAlign
+                      .withTargetDirection(handleTrenchAlignment().get())
+                      .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
+                      .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
+                }
                 if (driveController.rightBumper().getAsBoolean()
                     || isPoseInSquare(
                         drivetrain.getPose(),
@@ -208,24 +226,6 @@ public class RobotContainer {
                           -driveController.getRightX() * MaxAngularRate / kSlowMoveRate)
                       .withDeadband(0.15 * MaxSpeed / kSlowMoveRate)
                       .withRotationalDeadband(0.15 * MaxAngularRate / kSlowMoveRate);
-                } // Drive counterclockwise with negative X (left)
-                if (doTrenchAlign
-                    && driveController.leftTrigger().getAsBoolean()
-                    && isPoseInSquare(
-                        drivetrain.getState().Pose,
-                        getTrenchCornersVelocity(
-                            getClosestTrench(drivetrain.getState().Pose),
-                            drivetrain.getState().Speeds,
-                            drivetrain.getState().Pose)[0],
-                        getTrenchCornersVelocity(
-                            getClosestTrench(drivetrain.getState().Pose),
-                            drivetrain.getState().Speeds,
-                            drivetrain.getState().Pose)[1])
-                    && handleTrenchAlignment().isPresent()) {
-                  return trenchAlign
-                      .withTargetDirection(handleTrenchAlignment().get())
-                      .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
-                      .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
                 } else {
                   return drive
                       .withVelocityX(
@@ -234,7 +234,8 @@ public class RobotContainer {
                       .withVelocityY(
                           -driveController.getLeftX() * MaxSpeed) // Drive left with negative X
                       .withRotationalRate(-driveController.getRightX() * MaxAngularRate);
-                } // Drive counterclockwise with negative X (left)
+                } // Drive counterclockwise with negative X (left) // Drive counterclockwise with
+                // negative X (left)
               }));
     }
 
