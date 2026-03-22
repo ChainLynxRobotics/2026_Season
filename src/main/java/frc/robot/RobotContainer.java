@@ -498,11 +498,12 @@ public class RobotContainer {
   public ChassisSpeeds calculateTrenchAlignSpeeds() {
     double kP = 6;
     double centerOfTrenchY = getTrenchCenter(getClosestTrench(drivetrain.getPose())).getY();
-    double ySpeed = kP * (centerOfTrenchY - drivetrain.getState().Pose.getY());
+    // double ySpeed = kP * (centerOfTrenchY - drivetrain.getState().Pose.getY());
     double xSpeed =
         ((centerOfTrenchY - drivetrain.getState().Pose.getY()) > 1.5)
             ? -drivetrain.getState().Speeds.vxMetersPerSecond
             : -driveController.getLeftY() * MaxSpeed / 2;
+    double ySpeed = -driveController.getLeftX() * MaxSpeed / 2;
     return new ChassisSpeeds(xSpeed, ySpeed, 0);
   }
 
