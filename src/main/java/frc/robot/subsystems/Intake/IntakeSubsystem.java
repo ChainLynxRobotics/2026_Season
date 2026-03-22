@@ -335,9 +335,9 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public Command raiseIntakeOscillate() {
     return repeatingSequence(
         runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(0)))),
-        waitSeconds(4),
+        waitSeconds(kTimeBeforeOccilation.in(Seconds)),
         runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(45)))),
-        waitSeconds(1),
+        waitSeconds(kOccilationTime.in(Seconds)),
         runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))));
   }
 

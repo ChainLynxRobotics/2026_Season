@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
+import edu.wpi.first.units.measure.*;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -23,6 +24,9 @@ public class IntakeConstants {
   public static double kInputToOutputHeightGearRatio = 37.5;
   public static double kT = 0.02;
   public static double kIntakeLengthFromPivot = 0.3347841158;
+
+  public static Time kTimeBeforeOccilation = Seconds.of(4);
+  public static Time kOccilationTime = Seconds.of(1);
 
   public static AngularVelocity kIntakeHeightMaxVelocity = RotationsPerSecond.of(0.5);
   public static AngularAcceleration kIntakeHeightMaxAcceleration =
