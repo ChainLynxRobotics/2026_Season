@@ -278,13 +278,6 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    // testingController
-    //     .a()
-    //     .whileTrue(
-    //         runOnce(() -> this.ledSubsystem.setRainbow())
-    //             .alongWith(new PrintCommand("rainbow"))
-    //             .ignoringDisable(true));
-
     if (RobotBase.isReal()) return;
   }
 

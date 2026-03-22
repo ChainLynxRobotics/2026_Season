@@ -1,22 +1,24 @@
 package frc.robot.subsystems.led;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static frc.robot.subsystems.led.LedConstants.kBrownOut;
-import static frc.robot.subsystems.led.LedConstants.kLEDPort;
-import static frc.robot.subsystems.led.LedConstants.kLedSpacing;
-import static frc.robot.subsystems.led.LedConstants.kLeds;
+import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static frc.robot.Constants.*;
+import static frc.robot.subsystems.led.LedConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
-public class LedSubsystem {
+public class LedSubsystem extends SubsystemBase {
   public AddressableLED led = new AddressableLED(kLEDPort);
   public AddressableLEDBuffer buffer = new AddressableLEDBuffer(kLeds);
   public PowerDistribution pDH = new PowerDistribution(1, ModuleType.kRev);
@@ -27,43 +29,63 @@ public class LedSubsystem {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    // setRainbow();
+    // setDefaultCommand(solidPattern(getAllianceColor()).withName("Team Color"));
   }
 
-  public double getLedPower() {
-    return pDH.getCurrent(23);
+  public Command solidPattern(Color color) {
+    LEDPattern pattern = LEDPattern.solid(color);
+    return run(() -> pattern.applyTo(buffer));
   }
 
-  public void setAllLED(Color color) {
-    LEDPattern alliedColor = LEDPattern.solid(color);
-    alliedColor.applyTo(buffer);
-    led.setData(buffer);
-  }
-
-  public void setRainbow() {
+  public Command rainbowScrollPattern() {
     LEDPattern rainbow = LEDPattern.rainbow(255, 128);
-    final LEDPattern scrollingRainbow =
-        rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), kLedSpacing);
-    scrollingRainbow.applyTo(buffer);
-    led.setData(buffer);
+    LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(2), kLedSpacing);
+    return run(() -> scrollingRainbow.applyTo(buffer));
   }
 
-  public void setProgressBar(Color color, double time) {
-    double startTime = Timer.getFPGATimestamp();
-
-    LEDPattern base = LEDPattern.solid(color);
-    if ((Timer.getFPGATimestamp() - startTime) / time <= 1) {
-      LEDPattern mask =
-          LEDPattern.progressMaskLayer(() -> (Timer.getFPGATimestamp() - startTime) / time);
-      LEDPattern progress = base.mask(mask);
-      progress.applyTo(buffer);
-    }
-    led.setData(buffer);
+  public Command progressPattern(double progress, double maximum) {
+    LEDPattern pattern = LEDPattern.progressMaskLayer(() -> progress / maximum);
+    return run(() -> pattern.applyTo(buffer));
   }
 
+  public Command blinkPattern(Color color, Time time) {
+    LEDPattern pattern = LEDPattern.solid(color);
+    LEDPattern blinkPattern = pattern.blink(time);
+    return run(() -> blinkPattern.applyTo(buffer));
+  }
+
+  public Command gradientScrollPattern(Color color1, Color color2, double scrollSpeed) {
+    LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
+    LEDPattern scrollingRainbow =
+        gradient.scrollAtAbsoluteSpeed(MetersPerSecond.of(scrollSpeed), kLedSpacing);
+    return run(() -> scrollingRainbow.applyTo(buffer));
+  }
+
+  public Command gradientPattern(Color color1, Color color2) {
+    LEDPattern gradient =
+        LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, color1, color2);
+    return run(() -> gradient.applyTo(buffer));
+  }
+
+  @Override
   public void periodic() {
     if (pDH.getVoltage() < kBrownOut) {
       pDH.setSwitchableChannel(false);
     }
+    ;
+
+    led.setData(buffer);
+  }
+
+  public Color getAllianceColor() {
+    if (getAlliance().equals(DriverStation.Alliance.Blue)) {
+      return Color.kBlue;
+    } else {
+      return Color.kRed;
+    }
+  }
+
+  public double getLedPower() {
+    return pDH.getCurrent(23);
   }
 }
