@@ -306,8 +306,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
                 isWithinTolerance(
                     Rotations.of(getHeightPosition()),
                     Degrees.of(tunableHeightHeight.get()),
-                    Degrees.of(3)))
-        .andThen(() -> intakeBackward = false)
+                    Degrees.of(8)))
+        .andThen(runOnce(() -> intakeSpinForwards()))
         .withName("deployIntake");
   }
 
@@ -335,9 +335,9 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public Command raiseIntakeOscillate() {
     return repeatingSequence(
         runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(0)))),
-        waitSeconds(2),
+        waitSeconds(4),
         runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(45)))),
-        waitSeconds(2),
+        waitSeconds(1),
         runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))));
   }
 
@@ -347,6 +347,10 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     } else {
       intakeBackward = true;
     }
+  }
+
+  public void intakeSpinForwards() {
+    intakeBackward = false;
   }
 
   public void swapIntakeHeight() {

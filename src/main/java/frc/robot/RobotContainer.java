@@ -177,7 +177,17 @@ public class RobotContainer {
 
           drivetrain.applyRequest(
               () -> {
-                if (driveController.rightBumper().getAsBoolean()) {
+                if (driveController.rightBumper().getAsBoolean()
+                    || isPoseInSquare(
+                        drivetrain.getPose(),
+                        getTrenchCornersVelocity(
+                            getClosestTrench(drivetrain.getPose()),
+                            drivetrain.getState().Speeds,
+                            drivetrain.getPose())[0],
+                        getTrenchCornersVelocity(
+                            getClosestTrench(drivetrain.getPose()),
+                            drivetrain.getState().Speeds,
+                            drivetrain.getPose())[1])) {
                   if (shouldIndex()
                       && Math.abs(driveController.getLeftX()) < (0.15 * MaxSpeed / kSlowMoveRate)
                       && Math.abs(driveController.getLeftY()) < (0.15 * MaxSpeed / kSlowMoveRate)
@@ -250,7 +260,7 @@ public class RobotContainer {
 
     driveController.y().whileTrue(intake.raiseIntake());
 
-    driveController.b().onTrue((runOnce(() -> indexer.swapIndexerDir())));
+    driveController.b().onTrue((runOnce(() -> {})));
 
     driveController.povRight().whileTrue(intake.raiseIntakeOscillate());
 
@@ -377,7 +387,7 @@ public class RobotContainer {
             Degrees.of(1.5)));
   }
 
-  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(1.5, 1.15));
+  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(1, 0.75));
 
   public void periodic() {}
 
@@ -395,48 +405,21 @@ public class RobotContainer {
   }
 
   public Command autoAimShooter() {
-
-    return parallel(
-        runOnce(
-            () -> {
-              profileState =
-                  new State(
-                      drivetrain.getPose().getRotation().getRotations(),
-                      drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
-              lastState = profileState;
-            }),
-        run(
-            () -> {
-              var turningRateFF =
-                  getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose()))
-                      .times(tunableHeadingFFMult.get());
-              lastState = profileState;
-              profileState =
-                  turningProfile.calculate(
-                      kDT.in(Second),
-                      lastState,
-                      new State(
-                          getAngleToTargetTOF()
-                              .minus(
-                                  getAlliance().equals(DriverStation.Alliance.Red)
-                                      ? new Rotation2d(Degrees.of(180))
-                                      : new Rotation2d())
-                              .getRotations() // We want our rotation to not be field centric
-                          // but we do want our driving to be so we
-                          // manually flip the rotation
-                          ,
-                          turningRateFF.in(RotationsPerSecond)));
-              var profileState = getProfile();
-            }),
-        drivetrain.applyRequest(
-            () ->
-                shooterAming
-                    .withTargetDirection(Rotation2d.fromRotations(profileState.position))
-                    .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
-                    .withHeadingPID(
-                        tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
-                    .withVelocityX(-driveController.getLeftY() * MaxSpeed / kSlowMoveRate)
-                    .withVelocityY(-driveController.getLeftX() * MaxSpeed / kSlowMoveRate)));
+    return drivetrain.applyRequest(
+        () ->
+            shooterAming
+                .withTargetDirection(
+                    getAngleToTargetTOF()
+                        .minus(
+                            getAlliance().equals(DriverStation.Alliance.Red)
+                                ? new Rotation2d(Degrees.of(180))
+                                : new Rotation2d())) // We want our rotation to not be field centric
+                // but we do want our driving to be so we
+                // manually flip the rotation
+                .withTargetRateFeedforward(0)
+                .withHeadingPID(tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
+                .withVelocityX(-driveController.getLeftY() * MaxSpeed)
+                .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
 
   public Command autoAimShooterDriveBackwards() {

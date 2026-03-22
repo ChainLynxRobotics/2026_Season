@@ -20,8 +20,8 @@ public class Constants {
   public static final boolean tuningMode = true;
   public static final CANBus kCanBusBlinky = new CANBus("blinky");
   public static final CANBus kCanBusRio = new CANBus("rio");
-  public static final double kSlowMoveRate = 4;
-  public static final boolean kShouldUseXBrakeWhenShooting = true;
+  public static final double kSlowMoveRate = 2;
+  public static final boolean kShouldUseXBrakeWhenShooting = false;
   // dont ask its the answer to everything
   private static final Pose3d kBlueHubPose =
       new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
@@ -105,8 +105,8 @@ public class Constants {
     Pose2d[] corners = getTrenchCorners(trench);
     ChassisSpeeds speeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, drivePose.getRotation()).div(2);
-    double xMult = 1;
-    double YMult = 1;
+    double xMult = 1.3;
+    double YMult = 2;
     if (drivePose.getX() > getTrenchCenter(trench).getX()) {
       xMult = -xMult;
     }

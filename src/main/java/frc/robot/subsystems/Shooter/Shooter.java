@@ -122,7 +122,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.tunableLUTMult = new TunableNumber("tunableLUTMult", 1);
     this.tunableHoodGravOffset = new TunableNumber("gravoffset", -05);
 
-    this.tunableHoodAngle = new TunableNumber("Hood angle", 5);
+    this.tunableHoodAngle = new TunableNumber("Hood angle", 8);
     this.tunableShooterSpeed = new TunableNumber("Flywheel speed", 0);
 
     this.hoodLimitSwitch = new DigitalInput(kHoodLimitSwitchId);

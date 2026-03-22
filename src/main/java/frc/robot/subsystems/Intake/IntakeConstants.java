@@ -33,7 +33,7 @@ public class IntakeConstants {
           .withMotionMagicCruiseVelocity(kIntakeHeightMaxVelocity)
           .withMotionMagicAcceleration(kIntakeHeightMaxAcceleration);
 
-  public static double kHeightP = 8;
+  public static double kHeightP = 20;
   public static double kHeightI = 1;
   public static double kHeightD = 0;
   public static double kHeightV = 0.1;
