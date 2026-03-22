@@ -29,18 +29,15 @@ public class LedSubsystem extends SubsystemBase {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    setDefaultCommand(solidPattern(LEDPattern.solid(getAllianceColor())).withName("Team Color"));
-    /*setDefaultCommand(
-        blinkPattern(LEDPattern.solid(getAllianceColor()), Milliseconds.of(100))
-            .withName("Team Color Blink"));*/
-    //setDefaultCommand(rainbowPattern().withName("Rainbow"));
+    setDefaultCommand(solidPattern(getAllianceColor()).withName("Team Color"));
   }
 
-  public Command solidPattern(LEDPattern pattern) {
+  public Command solidPattern(Color color) {
+    LEDPattern pattern = LEDPattern.solid(color);
     return run(() -> pattern.applyTo(buffer));
   }
 
-  public Command rainbowPattern() {
+  public Command rainbowScrollPattern() {
     LEDPattern rainbow = LEDPattern.rainbow(255, 128);
     LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(2), kLedSpacing);
     return run(() -> scrollingRainbow.applyTo(buffer));
@@ -51,9 +48,23 @@ public class LedSubsystem extends SubsystemBase {
     return run(() -> pattern.applyTo(buffer));
   }
 
-  public Command blinkPattern(LEDPattern pattern, Time time) {
+  public Command blinkPattern(Color color, Time time) {
+    LEDPattern pattern = LEDPattern.solid(color);
     LEDPattern blinkPattern = pattern.blink(time);
     return run(() -> blinkPattern.applyTo(buffer));
+  }
+
+  public Command gradientScrollPattern(Color color1, Color color2, double scrollSpeed) {
+    LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
+    LEDPattern scrollingRainbow =
+        gradient.scrollAtAbsoluteSpeed(MetersPerSecond.of(scrollSpeed), kLedSpacing);
+    return run(() -> scrollingRainbow.applyTo(buffer));
+  }
+
+  public Command gradientPattern(Color color1, Color color2) {
+    LEDPattern gradient =
+        LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, color1, color2);
+    return run(() -> gradient.applyTo(buffer));
   }
 
   @Override
