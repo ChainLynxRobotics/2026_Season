@@ -2,6 +2,7 @@ package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 import static frc.robot.utils.RobotMath.isWithinTolerance;
@@ -333,12 +334,14 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command raiseIntakeOscillate() {
-    return repeatingSequence(
+    return sequence(
         runOnce(() -> spinMotor.setControl(new VoltageOut(Volts.of(0)))),
         waitSeconds(kTimeBeforeOccilation.in(Seconds)),
-        runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(45)))),
-        waitSeconds(kOccilationTime.in(Seconds)),
-        runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))));
+        repeatingSequence(
+            runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(45)))),
+            waitSeconds(kOccilationTime.in(Seconds)),
+            runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(70)))),
+            waitSeconds(kOccilationTime.in(Seconds))));
   }
 
   public void swapIntake() {
