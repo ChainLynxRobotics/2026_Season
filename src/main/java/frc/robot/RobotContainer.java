@@ -293,7 +293,7 @@ public class RobotContainer {
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
       new SwerveRequest.FieldCentricFacingAngle()
-          .withHeadingPID(6, 0, 0)
+          .withHeadingPID(8, 0, 0)
           .withDeadband(MaxSpeed * 0.15);
 
   private Command runShootingCommandsAutosSOTM() {
