@@ -29,42 +29,47 @@ public class LedSubsystem extends SubsystemBase {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    setDefaultCommand(solidPattern(getAllianceColor()).withName("Team Color"));
+    setDefaultCommand(teamColorPattern());
   }
 
   public Command solidPattern(Color color) {
     LEDPattern pattern = LEDPattern.solid(color);
-    return run(() -> pattern.applyTo(buffer));
+    return run(() -> pattern.applyTo(buffer)).withName("Solid Color");
+  }
+
+  public Command teamColorPattern() {
+    LEDPattern pattern = LEDPattern.solid(getAllianceColor());
+    return run(() -> pattern.applyTo(buffer)).withName("Alliance Color");
   }
 
   public Command rainbowScrollPattern() {
     LEDPattern rainbow = LEDPattern.rainbow(255, 128);
     LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(2), kLedSpacing);
-    return run(() -> scrollingRainbow.applyTo(buffer));
+    return run(() -> scrollingRainbow.applyTo(buffer)).withName("Rainbow Scroll");
   }
 
   public Command progressPattern(double progress, double maximum) {
     LEDPattern pattern = LEDPattern.progressMaskLayer(() -> progress / maximum);
-    return run(() -> pattern.applyTo(buffer));
+    return run(() -> pattern.applyTo(buffer)).withName("Progress Bar");
   }
 
   public Command blinkPattern(Color color, Time time) {
     LEDPattern pattern = LEDPattern.solid(color);
     LEDPattern blinkPattern = pattern.blink(time);
-    return run(() -> blinkPattern.applyTo(buffer));
+    return run(() -> blinkPattern.applyTo(buffer)).withName("Blink Color");
   }
 
   public Command gradientScrollPattern(Color color1, Color color2, double scrollSpeed) {
     LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
     LEDPattern scrollingRainbow =
         gradient.scrollAtAbsoluteSpeed(MetersPerSecond.of(scrollSpeed), kLedSpacing);
-    return run(() -> scrollingRainbow.applyTo(buffer));
+    return run(() -> scrollingRainbow.applyTo(buffer)).withName("Gradient Scroll");
   }
 
   public Command gradientPattern(Color color1, Color color2) {
     LEDPattern gradient =
         LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, color1, color2);
-    return run(() -> gradient.applyTo(buffer));
+    return run(() -> gradient.applyTo(buffer)).withName("Gradient Pattern");
   }
 
   @Override
