@@ -299,7 +299,7 @@ public class RobotContainer {
     return parallel(
         run(
             () -> {
-              if (Math.abs(hubTOFTrackingError().getDegrees()) < 3
+              if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
                   && isWithinTolerance(
                       shooter.getHoodPosition(),
                       Degrees.of(shooter.getHoodClosedLoopReference()),
@@ -351,7 +351,7 @@ public class RobotContainer {
         autoAimShooterSOTM(),
         run(
             () -> {
-              if (Math.abs(hubTOFTrackingError().getDegrees()) < 3
+              if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
                   && isWithinTolerance(
                       shooter.getHoodPosition(),
                       Degrees.of(shooter.getHoodClosedLoopReference()),
@@ -380,7 +380,7 @@ public class RobotContainer {
 
   @Logged
   public boolean shouldIndex() {
-    return (Math.abs(hubTOFTrackingError().getDegrees()) < 3
+    return (Math.abs(targetTOFTrackingError().getDegrees()) < 3
         && isWithinTolerance(
             shooter.getHoodPosition(),
             Degrees.of(shooter.getHoodClosedLoopReference()),
@@ -601,14 +601,14 @@ public class RobotContainer {
   @Logged
   public Rotation2d hubTrackingError() {
     if (getTOFRotationalVelocityReal().abs(RotationsPerSecond) > 0.01) {
-      return hubTOFTrackingError();
+      return targetTOFTrackingError();
     }
     return getAngleToHub().minus(drivetrain.getPose().getRotation());
   }
 
   @Logged
-  public Rotation2d hubTOFTrackingError() {
-    return getAngleToHubTOF().minus(drivetrain.getPose().getRotation());
+  public Rotation2d targetTOFTrackingError() {
+    return getAngleToTargetTOF().minus(drivetrain.getPose().getRotation());
   }
 
   @Logged
