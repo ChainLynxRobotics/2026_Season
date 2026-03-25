@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5353499406880196,
-        "y": 1.6948754448398575
+        "x": 2.3789263531499554,
+        "y": 2.864028393966281
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.202295645321225,
-        "y": 0.7795506378900505
+        "x": 2.0458720577831606,
+        "y": 1.9487035870164742
       },
       "isLocked": false,
       "linkedName": "shoot end"
@@ -48,7 +48,7 @@
   "folder": "Traversal",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -35.13419305691557
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

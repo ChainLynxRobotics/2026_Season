@@ -16,6 +16,10 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -265,6 +269,8 @@ public class RobotContainer {
 
     driveController.povRight().whileTrue(intake.raiseIntakeOscillate());
 
+    driveController.povLeft().whileTrue(drivetrain.followPathCommand(getPathToCorner()));
+
     driveController
         .a()
         .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
@@ -396,6 +402,19 @@ public class RobotContainer {
   @Logged
   public State getLastProfileState() {
     return lastState;
+  }
+
+  public Pose2d getDrivePoseWithDOT(Rotation2d angle) {
+    var drivetrainPose = drivetrain.getPose();
+    return new Pose2d(drivetrainPose.getX(), drivetrainPose.getY(), angle);
+  }
+
+  public PathPlannerPath getPathToCorner() {
+    return new PathPlannerPath(
+        PathPlannerPath.waypointsFromPoses(new Pose2d(0.674, 0.941, new Rotation2d(180))),
+        new PathConstraints(1.5, 1.5, Math.PI, Math.PI),
+        new IdealStartingState(1.5, new Rotation2d(-30)),
+        new GoalEndState(0, new Rotation2d(-57)));
   }
 
   public Command autoAimShooter() {

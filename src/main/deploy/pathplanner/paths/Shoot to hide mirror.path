@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3739620403321475,
-        "y": 6.020071174377224
+        "x": 2.6,
+        "y": 5.614
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6445642570809165,
-        "y": 6.035150607874761
+        "x": 1.870602216748769,
+        "y": 5.6290794334975365
       },
       "isLocked": false,
       "linkedName": "Shoot end Mirror"
