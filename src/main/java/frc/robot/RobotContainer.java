@@ -265,7 +265,7 @@ public class RobotContainer {
 
     driveController.y().whileTrue(intake.raiseIntake());
 
-    driveController.b().onTrue((runOnce(() -> {})));
+    driveController.b().whileTrue(drivetrain.followPathCommand(getPathThroughTrench1()));
 
     driveController.povRight().whileTrue(intake.raiseIntakeOscillate());
 
@@ -571,13 +571,14 @@ public class RobotContainer {
 
   @Logged
   public ChassisSpeeds calculateTrenchAlignSpeeds() {
-    double kP = 2;
-    double centerOfTrenchY = getTrenchCenter(getClosestTrench(drivetrain.getPose())).getY();
-    double ySpeed = kP * (centerOfTrenchY - drivetrain.getState().Pose.getY());
+    double kP = 6 ;
+    Pose2d centerOfTrench = getTrenchCenter(getClosestTrench(drivetrain.getPose()));
+    double ySpeed = kP * (centerOfTrench.getY() - drivetrain.getState().Pose.getY());
     double xSpeed =
-        ((Math.abs(centerOfTrenchY - drivetrain.getState().Pose.getY())) > 0.25)
-            ? calculateSafeTrenchXVelocity()
-            : -driveController.getLeftY() * MaxSpeed * 0.75;
+        ((Math.abs(centerOfTrench.getY() - drivetrain.getState().Pose.getY())) > 0.25
+                && Math.abs(centerOfTrench.getX() - drivetrain.getState().Pose.getX()) < 1.75)
+            ? 0
+            : -driveController.getLeftY() * MaxSpeed;
     // double ySpeed = -driveController.getLeftX() * MaxSpeed / 2;
     return new ChassisSpeeds(xSpeed, ySpeed, 0);
   }
@@ -586,9 +587,9 @@ public class RobotContainer {
   public double calculateSafeTrenchXVelocity() {
     if (getTrenchCenter(getClosestTrench(drivetrain.getPose())).getX()
         > drivetrain.getPose().getX()) {
-      return -0.5;
+      return -0.2;
     } else {
-      return 0.5;
+      return 0.2;
     }
   }
 
