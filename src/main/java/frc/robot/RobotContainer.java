@@ -275,7 +275,7 @@ public class RobotContainer {
         .a()
         .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
 
-    driveController.leftBumper().toggleOnTrue(autoAimShooter());
+    driveController.leftBumper().toggleOnTrue(autoAimShooterSOTM());
 
     // driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
 
@@ -348,7 +348,7 @@ public class RobotContainer {
   private Command runShootingCommands() {
 
     return parallel(
-        autoAimShooter(),
+        autoAimShooterSOTM(),
         run(
             () -> {
               if (Math.abs(hubTOFTrackingError().getDegrees()) < 3
@@ -446,6 +446,56 @@ public class RobotContainer {
                 .withHeadingPID(tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
+  }
+
+  public Command autoAimShooterSOTM() {
+    return parallel(
+        runOnce(
+            () -> {
+              profileState =
+                  new State(
+                      drivetrain.getPose().getRotation().getRotations(),
+                      drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
+              lastState = profileState;
+            }),
+        run(
+            () -> {
+              var turningRateFF =
+                  getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose()))
+                      .times(tunableHeadingFFMult.get());
+              lastState = profileState;
+              profileState =
+                  turningProfile.calculate(
+                      kDT.in(Second),
+                      lastState,
+                      new State(
+                          PointingUtil.optimiseRotation(
+                                  drivetrain.getPose().getRotation(),
+                                  getAngleToTargetTOF()
+                                      .minus(
+                                          getAlliance().equals(DriverStation.Alliance.Red)
+                                              ? new Rotation2d(Degrees.of(180))
+                                              : new Rotation2d())
+                                  // We want our rotation to not be field centric
+                                  // but we do want our driving to be so we
+                                  // manually flip the rotation
+                                  )
+                              .getRotations() // We want our rotation to not be field centric
+                          // but we do want our driving to be so we
+                          // manually flip the rotation
+                          ,
+                          turningRateFF.in(RotationsPerSecond)));
+              var profileState = getProfile();
+            }),
+        drivetrain.applyRequest(
+            () ->
+                shooterAming
+                    .withTargetDirection(Rotation2d.fromRotations(profileState.position))
+                    .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
+                    .withHeadingPID(
+                        tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
+                    .withVelocityX(-driveController.getLeftY() * MaxSpeed / kSlowMoveRate / 2)
+                    .withVelocityY(-driveController.getLeftX() * MaxSpeed / kSlowMoveRate / 2)));
   }
 
   public Command autoAimShooterDriveBackwards() {
