@@ -411,10 +411,23 @@ public class RobotContainer {
 
   public PathPlannerPath getPathToCorner() {
     return new PathPlannerPath(
-        PathPlannerPath.waypointsFromPoses(new Pose2d(0.674, 0.941, new Rotation2d(180))),
-        new PathConstraints(1.5, 1.5, Math.PI, Math.PI),
+        PathPlannerPath.waypointsFromPoses(
+            new Pose2d(1.196, 1.077, new Rotation2d(-135)),
+            new Pose2d(0.674, 0.941, new Rotation2d(180))),
+        new PathConstraints(2.5, 2.5, Math.PI, Math.PI),
         new IdealStartingState(1.5, new Rotation2d(-30)),
         new GoalEndState(0, new Rotation2d(-57)));
+  }
+
+  public PathPlannerPath getPathThroughTrench1() {
+    return new PathPlannerPath(
+        PathPlannerPath.waypointsFromPoses(
+            new Pose2d(2.573, 1.105, new Rotation2d(-58.2)),
+            new Pose2d(4.447, 0.618, new Rotation2d(-3.27)),
+            new Pose2d(7.058, 1.667, new Rotation2d(51.885))),
+        new PathConstraints(4, 4, 2 * Math.PI, 3 * Math.PI),
+        new IdealStartingState(1.5, new Rotation2d(-44.4)),
+        new GoalEndState(1.75, new Rotation2d(48.62)));
   }
 
   public Command autoAimShooter() {
@@ -508,15 +521,25 @@ public class RobotContainer {
 
   @Logged
   public ChassisSpeeds calculateTrenchAlignSpeeds() {
-    double kP = 6;
+    double kP = 2;
     double centerOfTrenchY = getTrenchCenter(getClosestTrench(drivetrain.getPose())).getY();
-    // double ySpeed = kP * (centerOfTrenchY - drivetrain.getState().Pose.getY());
+    double ySpeed = kP * (centerOfTrenchY - drivetrain.getState().Pose.getY());
     double xSpeed =
-        ((centerOfTrenchY - drivetrain.getState().Pose.getY()) > 1.5)
-            ? -drivetrain.getState().Speeds.vxMetersPerSecond
-            : -driveController.getLeftY() * MaxSpeed / 2;
-    double ySpeed = -driveController.getLeftX() * MaxSpeed / 2;
+        ((Math.abs(centerOfTrenchY - drivetrain.getState().Pose.getY())) > 0.25)
+            ? calculateSafeTrenchXVelocity()
+            : -driveController.getLeftY() * MaxSpeed * 0.75;
+    // double ySpeed = -driveController.getLeftX() * MaxSpeed / 2;
     return new ChassisSpeeds(xSpeed, ySpeed, 0);
+  }
+
+  @Logged
+  public double calculateSafeTrenchXVelocity() {
+    if (getTrenchCenter(getClosestTrench(drivetrain.getPose())).getX()
+        > drivetrain.getPose().getX()) {
+      return -0.5;
+    } else {
+      return 0.5;
+    }
   }
 
   public Command goToHub(Supplier<ChassisSpeeds> Speed) {
