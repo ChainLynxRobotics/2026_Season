@@ -15,7 +15,40 @@
         0,
         0.04
     ],
-    "cameras": [],
+    "cameras": [
+        {
+            "name": "aprilOne",
+            "fov": 70,
+            "resolution": [1280, 800],
+            "position": [0.2164588, 0.3168142, 0.276352],
+            "rotations": [
+                {
+                    "axis": "y",
+                    "degrees": -20
+                },
+                {
+                    "axis": "z",
+                    "degrees": 90
+                }
+            ]
+        },
+        {
+            "name": "aprilTwo",
+            "fov": 70,
+            "resolution": [1280, 800],
+            "position": [-0.31877, -0.2278126, 0.2480564],
+            "rotations": [
+                {
+                    "axis": "y",
+                    "degrees": -30
+                },
+                {
+                    "axis": "z",
+                    "degrees": 210
+                }
+            ]
+        }
+    ],
     "components": [
         {
             "zeroedRotations": [
@@ -48,7 +81,7 @@
             "zeroedPosition": [
                 0,
                 0,
-                0.03
+                0
             ]
         },
         {
