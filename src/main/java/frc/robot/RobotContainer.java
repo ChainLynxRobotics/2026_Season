@@ -302,56 +302,6 @@ public class RobotContainer {
           .withHeadingPID(8, 0, 0)
           .withDeadband(MaxSpeed * 0.15);
 
-  private Command runShootingCommandsAutosSOTM() {
-    return parallel(
-        run(
-            () -> {
-              if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
-                  && isWithinTolerance(
-                      shooter.getHoodPosition(),
-                      Degrees.of(shooter.getHoodClosedLoopReference()),
-                      Degrees.of(1.5))) {
-                indexer.spinInternal();
-                serializer.spinInternal();
-              } else {
-                indexer.stopSpinInternal();
-                serializer.stopSpinInternal();
-              }
-            }),
-        run(
-            () -> {
-              if (shooter.timeSinceLastBall().in(Seconds) > 1.5 && !indexer.isReverseIndexer) {
-                indexer.isReverseIndexer = true;
-                shooter.flywheelSpikeTimer.reset();
-              } else if (shooter.timeSinceLastBall().in(Seconds) > 1 && indexer.isReverseIndexer) {
-                indexer.isReverseIndexer = false;
-                shooter.flywheelSpikeTimer.reset();
-              }
-            }),
-        intake.raiseIntakeOscillate());
-  }
-
-  private Command runShootingCommandsOld() {
-    return autoAimShooter()
-        .alongWith(
-            waitSeconds(0.75)
-                .andThen(
-                    indexer
-                        .spin()
-                        .alongWith(
-                            serializer
-                                .spin()
-                                .alongWith(
-                                    repeatingSequence(
-                                        waitSeconds(2)
-                                            .andThen(runOnce(() -> indexer.swapIndexerDir()))
-                                            .andThen(
-                                                waitSeconds(0.25)
-                                                    .andThen(
-                                                        runOnce(() -> indexer.swapIndexerDir()))))))
-                        .alongWith(waitSeconds(1).andThen(intake.raiseIntakeOscillate()))));
-  }
-
   private Command runShootingCommands() {
 
     return parallel(
@@ -495,7 +445,6 @@ public class RobotContainer {
                           // manually flip the rotation
                           ,
                           turningRateFF.in(RotationsPerSecond)));
-              var profileState = getProfile();
             }),
         drivetrain.applyRequest(
             () ->
@@ -506,51 +455,6 @@ public class RobotContainer {
                         tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
                     .withVelocityX(-driveController.getLeftY() * MaxSpeed / kSlowMoveRate / 2)
                     .withVelocityY(-driveController.getLeftX() * MaxSpeed / kSlowMoveRate / 2)));
-  }
-
-  public Command autoAimShooterDriveBackwards() {
-
-    return parallel(
-        runOnce(
-            () -> {
-              profileState =
-                  new State(
-                      drivetrain.getPose().getRotation().getRotations(),
-                      drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
-              lastState = profileState;
-            }),
-        run(
-            () -> {
-              var turningRateFF =
-                  getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose()))
-                      .times(tunableHeadingFFMult.get());
-              lastState = profileState;
-              profileState =
-                  turningProfile.calculate(
-                      kDT.in(Second),
-                      lastState,
-                      new State(
-                          getAngleToTargetTOF()
-                              .minus(
-                                  getAlliance().equals(DriverStation.Alliance.Red)
-                                      ? new Rotation2d(Degrees.of(180))
-                                      : new Rotation2d())
-                              .getRotations() // We want our rotation to not be field centric
-                          // but we do want our driving to be so we
-                          // manually flip the rotation
-                          ,
-                          turningRateFF.in(RotationsPerSecond)));
-              var profileState = getProfile();
-            }),
-        drivetrain.applyRequest(
-            () ->
-                shooterAming
-                    .withTargetDirection(Rotation2d.fromRotations(profileState.position))
-                    .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
-                    .withHeadingPID(
-                        tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
-                    .withVelocityX(-0.75)
-                    .withVelocityY(0)));
   }
 
   public Optional<Rotation2d> handleTrenchAlignment() {
