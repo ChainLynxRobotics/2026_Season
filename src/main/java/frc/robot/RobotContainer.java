@@ -282,7 +282,7 @@ public class RobotContainer {
         .a()
         .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
 
-    driveController.leftBumper().toggleOnTrue(autoAimShooterSOTM());
+    driveController.leftBumper().toggleOnTrue(autoAimShooterMotionProfile());
 
     // driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
 
@@ -305,7 +305,7 @@ public class RobotContainer {
   private Command runShootingCommands() {
 
     return parallel(
-        autoAimShooterSOTM(),
+        autoAimShooterMotionProfile(),
         run(
             () -> {
               if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
@@ -390,7 +390,7 @@ public class RobotContainer {
         new GoalEndState(1.75, new Rotation2d(48.62)));
   }
 
-  public Command autoAimShooter() {
+  public Command autoAimShooterPID() {
     return drivetrain.applyRequest(
         () ->
             shooterAming
@@ -408,7 +408,7 @@ public class RobotContainer {
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
   }
 
-  public Command autoAimShooterSOTM() {
+  public Command autoAimShooterMotionProfile() {
     return parallel(
         runOnce(
             () -> {
