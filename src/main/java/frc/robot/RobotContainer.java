@@ -439,10 +439,7 @@ public class RobotContainer {
                                   // but we do want our driving to be so we
                                   // manually flip the rotation
                                   )
-                              .getRotations() // We want our rotation to not be field centric
-                          // but we do want our driving to be so we
-                          // manually flip the rotation
-                          ,
+                              .in(Rotations),
                           turningRateFF.in(RotationsPerSecond)));
             }),
         drivetrain.applyRequest(
