@@ -17,6 +17,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
@@ -310,6 +312,14 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
                     Degrees.of(8)))
         .andThen(runOnce(() -> intakeSpinForwards()))
         .withName("deployIntake");
+  }
+
+  public Pose3d getHeightPose() {
+    return new Pose3d(
+        0.302,
+        0,
+        0.195,
+        new Rotation3d(Degrees.of(0), Degrees.of((getHeightPosition() * 360) - 14), Degrees.of(0)));
   }
 
   // public Command raiseIntake() {

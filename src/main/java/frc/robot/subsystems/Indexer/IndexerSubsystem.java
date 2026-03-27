@@ -11,6 +11,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Voltage;
@@ -160,6 +162,14 @@ public class IndexerSubsystem extends SubsystemBase {
     } else {
       isReverseIndexer = true;
     }
+  }
+
+  public Pose3d getIndexerPose() {
+    return new Pose3d(
+        0,
+        0,
+        0.02,
+        new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(getIndexerPosition() * 360)));
   }
 
   public Command spin() {

@@ -19,6 +19,9 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.*;
@@ -323,6 +326,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return getRelativeHubLocation(drivetrainPose.get());
   }
 
+  public Pose3d getHoodPose() {
+    return new Pose3d(
+        -0.2,
+        -0.096,
+        0.435,
+        new Rotation3d(Degrees.of(8 - getHoodPositionDegrees()), Degrees.of(0), Degrees.of(0)));
+  }
+
   /**
    * @param velocity Flywheel surface velocity
    * @return Flywheel angular velocity
@@ -570,8 +581,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     };
   }
 
-  private int timeLastBall = 0;
-
   private TalonFXConfiguration generateTunableFlywheelConfig() {
     return generateFlywheelConfig(
         tunableFlywheelS.get(),
@@ -634,13 +643,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
       hoodMotor.setPosition(Degrees.of(90));
     }
 
-    // var controller = new CommandXboxController(0);
-    // if (timeLastBall >= 15 && controller.rightBumper().getAsBoolean()) {
-    //   this.shootSimulatedProjectile();
-    //   timeLastBall = 0;
-    // } else {
-    //   timeLastBall += 1;
-    // }
     detectTunableFlywheelChanges();
     detectTunableHoodChanges();
     ballStuck = ballStuckDebouncer.calculate(hasAStuckBallInternal());
@@ -718,7 +720,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
         .addGamePieceProjectile(
             new RebuiltFuelOnFly(
                 simPose.get().getTranslation(),
-                kMapleSimShooterLocationNotJankAtAll.getTranslation(),
+                new Translation2d(0.213, -0.213),
                 ChassisSpeeds.fromRobotRelativeSpeeds(
                     chassisSpeeds.get(), drivetrainPose.get().getRotation()),
                 kMapleSimSHooterRotationAlsoNotJank.plus(simPose.get().getRotation()),

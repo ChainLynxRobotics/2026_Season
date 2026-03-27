@@ -38,6 +38,7 @@ import frc.robot.subsystems.Vision.Vision.VisionPose;
 import frc.robot.utils.simulation.MapleSimSwerveDrivetrain;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -438,6 +439,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   @Logged
   public Pose2d getPose() {
     return getState().Pose;
+  }
+
+  public SwerveDriveSimulation getSwerveDriveSimulation() {
+    return mapleSimSwerveDrivetrain.mapleSimDrive;
   }
 
   @Override

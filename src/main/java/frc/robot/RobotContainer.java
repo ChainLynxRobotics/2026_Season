@@ -54,6 +54,7 @@ import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
+import frc.robot.utils.simulation.IntakeSim;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
@@ -78,8 +79,6 @@ public class RobotContainer {
               DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
-  private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final CommandXboxController driveController = new CommandXboxController(0);
 
@@ -126,6 +125,13 @@ public class RobotContainer {
           () -> (vision.getVisionPose() != null),
           () -> driveController);
 
+  private final Telemetry logger =
+      new Telemetry(MaxSpeed, shooter::getHoodPose, indexer::getIndexerPose, intake::getHeightPose);
+
+  @Logged
+  public final IntakeSim intakeSim =
+      new IntakeSim(drivetrain.getSwerveDriveSimulation(), shooter::shootSimulatedProjectile);
+
   public RobotContainer() {
     NamedCommands.registerCommand(
         "goToHub", new PrintCommand("use pathplanner point at not commands"));
@@ -147,6 +153,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
     // intake.setDefaultCommand(intake.runIntakeControl());
+
     if (false) {
       new Trigger(
               () ->
@@ -358,6 +365,9 @@ public class RobotContainer {
                       Degrees.of(1.5))) {
                 indexer.spinInternal();
                 serializer.spinInternal();
+                if (!RobotBase.isReal()) {
+                  intakeSim.shootGamePiece();
+                }
               } else {
                 indexer.stopSpinInternal();
                 serializer.stopSpinInternal();
@@ -571,7 +581,7 @@ public class RobotContainer {
 
   @Logged
   public ChassisSpeeds calculateTrenchAlignSpeeds() {
-    double kP = 6 ;
+    double kP = 6;
     Pose2d centerOfTrench = getTrenchCenter(getClosestTrench(drivetrain.getPose()));
     double ySpeed = kP * (centerOfTrench.getY() - drivetrain.getState().Pose.getY());
     double xSpeed =

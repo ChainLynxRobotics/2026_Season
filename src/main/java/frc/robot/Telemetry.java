@@ -3,6 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -18,16 +19,27 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import java.util.function.Supplier;
+import org.ironmaple.simulation.SimulatedArena;
 
 public class Telemetry {
   private final double MaxSpeed;
-
+  public Supplier<Pose3d> getHoodPosition;
+  public Supplier<Pose3d> getIndexerPosition;
+  public Supplier<Pose3d> getIntakeHeight;
   /**
    * Construct a telemetry object, with the specified max speed of the robot
    *
    * @param maxSpeed Maximum speed in meters per second
    */
-  public Telemetry(double maxSpeed) {
+  public Telemetry(
+      double maxSpeed,
+      Supplier<Pose3d> getHoodPosition,
+      Supplier<Pose3d> getIndexerPosition,
+      Supplier<Pose3d> getIntakeHeight) {
+    this.getHoodPosition = getHoodPosition;
+    this.getIndexerPosition = getIndexerPosition;
+    this.getIntakeHeight = getIntakeHeight;
     MaxSpeed = maxSpeed;
     // SignalLogger.start();
 
@@ -56,6 +68,15 @@ public class Telemetry {
       driveStateTable.getDoubleTopic("Timestamp").publish();
   private final DoublePublisher driveOdometryFrequency =
       driveStateTable.getDoubleTopic("OdometryFrequency").publish();
+
+  private final StructPublisher<Pose3d> hoodPose =
+      driveStateTable.getStructTopic("HoodPose", Pose3d.struct).publish();
+  private final StructPublisher<Pose3d> indexerPose =
+      driveStateTable.getStructTopic("IndexerPose", Pose3d.struct).publish();
+  private final StructPublisher<Pose3d> intakeHeightPose =
+      driveStateTable.getStructTopic("IntakeHeightPose", Pose3d.struct).publish();
+  private final StructArrayPublisher<Pose3d> simFuel =
+      driveStateTable.getStructArrayTopic("SimFuel", Pose3d.struct).publish();
 
   /* Robot pose for field positioning */
   private final NetworkTable table = inst.getTable("Pose");
@@ -112,6 +133,11 @@ public class Telemetry {
     driveModulePositions.set(state.ModulePositions);
     driveTimestamp.set(state.Timestamp);
     driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
+
+    indexerPose.set(getIndexerPosition.get());
+    hoodPose.set(getHoodPosition.get());
+    intakeHeightPose.set(getIntakeHeight.get());
+    simFuel.set(SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
 
     /* Also write to log file */
     SignalLogger.writeStruct("DriveState/Pose", Pose2d.struct, state.Pose);
