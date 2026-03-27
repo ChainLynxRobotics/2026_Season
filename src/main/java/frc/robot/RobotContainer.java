@@ -56,7 +56,6 @@ import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import frc.robot.utils.simulation.IntakeSim;
 import java.util.Optional;
-import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 
 public class RobotContainer {
@@ -507,35 +506,9 @@ public class RobotContainer {
     }
   }
 
-  public Command goToHub(Supplier<ChassisSpeeds> Speed) {
-    return run(() -> CommandSwerveDrivetrain.pathplannerPointAtHub(getAngleToHub()))
-        .finallyDo(() -> CommandSwerveDrivetrain.pathplannerClearOverride());
-  }
-
-  @Logged
-  public Rotation2d hubTrackingError() {
-    if (getTOFRotationalVelocityReal().abs(RotationsPerSecond) > 0.01) {
-      return targetTOFTrackingError();
-    }
-    return getAngleToHub().minus(drivetrain.getPose().getRotation());
-  }
-
   @Logged
   public Rotation2d targetTOFTrackingError() {
     return getAngleToTargetTOF().minus(drivetrain.getPose().getRotation());
-  }
-
-  @Logged
-  public Rotation2d getAngleToHub() {
-    return PointingUtil.getAngleToHub(drivetrain.getPose());
-  }
-
-  @Logged
-  public Rotation2d getAngleToHubTOF() {
-    return PointingUtil.getAngleToHubTOF(
-        drivetrain.getPose(),
-        ChassisSpeeds.fromRobotRelativeSpeeds(
-            drivetrain.getState().Speeds, drivetrain.getPose().getRotation()));
   }
 
   @Logged
@@ -558,15 +531,6 @@ public class RobotContainer {
   @Logged
   public AngularVelocity getTOFRotationalVelocityReal() {
     return getTOFRotationalVelocityToTarget(PointingUtil.getShootingTarget(drivetrain.getPose()));
-  }
-
-  @Logged
-  public AngularVelocity getRotationalVelocityToHub() {
-    var drivetrainFieldRelitiveSpeeds =
-        ChassisSpeeds.fromRobotRelativeSpeeds(
-            drivetrain.getState().Speeds, drivetrain.getPose().getRotation());
-    return PointingUtil.getRotationalVelocityToHub(
-        drivetrain.getPose(), drivetrainFieldRelitiveSpeeds);
   }
 
   Pose2d lastTOFPose = new Pose2d();

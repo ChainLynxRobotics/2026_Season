@@ -49,10 +49,6 @@ public class PointingUtil {
         : funnlingPoint2;
   }
 
-  public static Rotation2d getAngleToHub(Pose2d robotPose) {
-    return getAngleToPose(robotPose, getHubLocation2d());
-  }
-
   public static Rotation2d getAngleToPose(Pose2d robotPose, Pose2d targetPose) {
     return Shooter.getShooterPose(robotPose)
         .getTranslation()
@@ -62,10 +58,6 @@ public class PointingUtil {
   }
 
   private static Rotation2d lastRotation = new Rotation2d();
-
-  public static Rotation2d getAngleToHubTOF(Pose2d robotPose, ChassisSpeeds robotSpeeds) {
-    return getAngleToPoseTOF(robotPose, robotSpeeds, getHubLocation2d());
-  }
 
   public static Rotation2d getAngleToPoseTOF(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Pose2d targetPose) {
@@ -90,23 +82,6 @@ public class PointingUtil {
         getAngleToPoseTOF(poseInDt, robotSpeeds, targetPose)
                 .getMeasure()
                 .minus(getAngleToPoseTOF(robotPose, robotSpeeds, targetPose).getMeasure())
-                .in(Rotations)
-            / dt);
-  }
-
-  public static AngularVelocity getRotationalVelocityToHub(
-      Pose2d robotPose, ChassisSpeeds robotSpeeds) {
-    var dt = 0.01;
-    var poseInDt =
-        new Pose2d(
-            robotPose.getX() + robotSpeeds.vxMetersPerSecond * dt,
-            robotPose.getY() + robotSpeeds.vyMetersPerSecond * dt,
-            new Rotation2d(
-                robotPose.getRotation().getRadians() + robotSpeeds.omegaRadiansPerSecond * dt));
-    return RotationsPerSecond.of(
-        getAngleToHub(poseInDt)
-                .getMeasure()
-                .minus(getAngleToHub(robotPose).getMeasure())
                 .in(Rotations)
             / dt);
   }
