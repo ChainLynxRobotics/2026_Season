@@ -307,7 +307,7 @@ public class RobotContainer {
         autoAimShooterMotionProfile(),
         run(
             () -> {
-              if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
+              if (Math.abs(targetTOFTrackingError().in(Degrees)) < 3
                   && isWithinTolerance(
                       shooter.getHoodPosition(),
                       Degrees.of(shooter.getHoodClosedLoopReference()),
@@ -339,7 +339,7 @@ public class RobotContainer {
 
   @Logged
   public boolean shouldIndex() {
-    return (Math.abs(targetTOFTrackingError().getDegrees()) < 3
+    return (Math.abs(targetTOFTrackingError().in(Degrees)) < 3
         && isWithinTolerance(
             shooter.getHoodPosition(),
             Degrees.of(shooter.getHoodClosedLoopReference()),
@@ -394,11 +394,13 @@ public class RobotContainer {
         () ->
             shooterAming
                 .withTargetDirection(
-                    getAngleToTargetTOF()
-                        .minus(
-                            getAlliance().equals(DriverStation.Alliance.Red)
-                                ? new Rotation2d(Degrees.of(180))
-                                : new Rotation2d())) // We want our rotation to not be field centric
+                    new Rotation2d(
+                        getAngleToTargetTOF()
+                            .minus(
+                                getAlliance().equals(DriverStation.Alliance.Red)
+                                    ? Degrees.of(180)
+                                    : Degrees
+                                        .zero()))) // We want our rotation to not be field centric
                 // but we do want our driving to be so we
                 // manually flip the rotation
                 .withTargetRateFeedforward(0)
@@ -428,24 +430,21 @@ public class RobotContainer {
                       kDT.in(Second),
                       lastState,
                       new State(
-                          PointingUtil.optimiseRotation(
-                                  drivetrain.getPose().getRotation(),
-                                  getAngleToTargetTOF()
-                                      .minus(
-                                          getAlliance().equals(DriverStation.Alliance.Red)
-                                              ? new Rotation2d(Degrees.of(180))
-                                              : new Rotation2d())
-                                  // We want our rotation to not be field centric
-                                  // but we do want our driving to be so we
-                                  // manually flip the rotation
-                                  )
+                          getAngleToTargetTOF()
+
+                              // We want our rotation to not be field centric
+                              // but we do want our driving to be so we
+                              // manually flip the rotation
                               .in(Rotations),
                           turningRateFF.in(RotationsPerSecond)));
             }),
         drivetrain.applyRequest(
             () ->
                 shooterAming
-                    .withTargetDirection(Rotation2d.fromRotations(profileState.position))
+                    .withTargetDirection(
+                        Rotation2d.fromRotations(
+                            profileState.position
+                                - (getAlliance().equals(DriverStation.Alliance.Red) ? 180 : 0)))
                     .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
                     .withHeadingPID(
                         tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
@@ -504,12 +503,12 @@ public class RobotContainer {
   }
 
   @Logged
-  public Rotation2d targetTOFTrackingError() {
-    return getAngleToTargetTOF().minus(drivetrain.getPose().getRotation());
+  public Angle targetTOFTrackingError() {
+    return getAngleToTargetTOF().minus(drivetrain.getPose().getRotation().getMeasure());
   }
 
   @Logged
-  public Rotation2d getAngleToTargetTOF() {
+  public Angle getAngleToTargetTOF() {
     return PointingUtil.getAngleToPoseTOF(
         drivetrain.getPose(),
         ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -544,7 +543,8 @@ public class RobotContainer {
       return lastTOFPose;
     }
     var pose = setpoint.get().iteratedPose();
-    lastTOFPose = new Pose2d(pose.getX(), pose.getY(), setpoint.get().robotRotation());
+    lastTOFPose =
+        new Pose2d(pose.getX(), pose.getY(), new Rotation2d(setpoint.get().robotRotation()));
     return lastTOFPose;
   }
 

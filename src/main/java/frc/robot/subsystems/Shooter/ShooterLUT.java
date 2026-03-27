@@ -15,7 +15,7 @@ public class ShooterLUT {
   public record ShooterSetpoint(LinearVelocity flywheelSurfaceSpeed, Angle rotation) {}
 
   public record SOTMSetpoint(
-      ShooterSetpoint shooterSetpoint, Rotation2d robotRotation, Pose2d iteratedPose) {}
+      ShooterSetpoint shooterSetpoint, Angle robotRotation, Pose2d iteratedPose) {}
 
   public static ShooterSetpoint getSpeedAndRotation(Distance distance) {
     return new ShooterSetpoint(
@@ -60,7 +60,9 @@ public class ShooterLUT {
             Optional.of(
                 new SOTMSetpoint(
                     getSpeedAndRotation(distance),
-                    PointingUtil.getAngleToPose(iteratedPose, targetPose),
+                    PointingUtil.optimiseRotation(
+                        robotPose.getRotation(),
+                        PointingUtil.getAngleToPose(iteratedPose, targetPose)),
                     iteratedPose));
         cachedSetpoint = setpoint;
         cachedRobotPose = robotPose;
