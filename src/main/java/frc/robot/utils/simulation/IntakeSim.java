@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.RobotBase;
-
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
@@ -16,7 +15,7 @@ public class IntakeSim {
 
   public IntakeSim(SwerveDriveSimulation driveTrain, Runnable shootFuel) {
     if (RobotBase.isReal()) return;
-    
+
     this.intakeSimulation =
         IntakeSimulation.OverTheBumperIntake(
             "Fuel",
