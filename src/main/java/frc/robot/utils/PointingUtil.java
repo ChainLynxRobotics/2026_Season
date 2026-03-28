@@ -9,7 +9,6 @@ import static frc.robot.subsystems.Vision.VisionConstants.kFieldWidth;
 import static frc.robot.utils.RobotMath.getDistanceBetweenPoses;
 import static frc.robot.utils.RobotMath.isPoseInSquare;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -87,16 +86,11 @@ public class PointingUtil {
             / dt);
   }
 
-  public static Angle optimiseRotation(Rotation2d currentAngle, Rotation2d targetAngle) {
-    var delta =
-        MathUtil.angleModulus(targetAngle.getRadians())
-            - MathUtil.angleModulus(currentAngle.getRadians());
-    if (delta < -Math.PI) {
-      return Radians.of(delta + 2 * Math.PI);
-    } else if (delta > Math.PI) {
-      return Radians.of(delta - 2 * Math.PI);
-    } else {
-      return Radians.of(delta);
+  public static Rotation2d optimiseRotation(Rotation2d currentAngle, Rotation2d targetAngle) {
+    var delta = targetAngle.minus(currentAngle);
+    if (Math.abs(delta.getDegrees()) > 90.0) {
+      return targetAngle.rotateBy(Rotation2d.kPi);
     }
+    return targetAngle;
   }
 }
