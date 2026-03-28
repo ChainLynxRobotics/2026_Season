@@ -6,7 +6,6 @@ import static frc.robot.Constants.*;
 import static frc.robot.subsystems.led.LedConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,6 +21,7 @@ public class LedSubsystem extends SubsystemBase {
   public AddressableLED led = new AddressableLED(kLEDPort);
   public AddressableLEDBuffer buffer = new AddressableLEDBuffer(kLeds);
   public PowerDistribution pDH = new PowerDistribution(1, ModuleType.kRev);
+  public boolean didYouWinAuto = true;
 
   public LedSubsystem() {
     led.setLength(buffer.getLength());
@@ -53,9 +53,9 @@ public class LedSubsystem extends SubsystemBase {
     return run(() -> pattern.applyTo(buffer)).withName("Progress Bar");
   }
 
-  public Command blinkPattern(Color color, Time time) {
+  public Command blinkPattern(Color color, double time) {
     LEDPattern pattern = LEDPattern.solid(color);
-    LEDPattern blinkPattern = pattern.blink(time);
+    LEDPattern blinkPattern = pattern.blink(Milliseconds.of(time));
     return run(() -> blinkPattern.applyTo(buffer)).withName("Blink Color");
   }
 
@@ -90,7 +90,63 @@ public class LedSubsystem extends SubsystemBase {
     }
   }
 
+  public void calculateShifts() {
+    if (DriverStation.getGameSpecificMessage().equals("B")
+        && getAlliance().equals(DriverStation.Alliance.Blue)) {
+      didYouWinAuto = true;
+    } else if (DriverStation.getGameSpecificMessage().equals("R")
+        && getAlliance().equals(DriverStation.Alliance.Red)) {
+      didYouWinAuto = true;
+    } else {
+      didYouWinAuto = false;
+    }
+  }
+
   public double getLedPower() {
     return pDH.getCurrent(23);
+  }
+
+  public double getMatchTime() {
+    return DriverStation.getMatchTime();
+  }
+
+  public Command activePhasePattern() {
+    return rainbowScrollPattern();
+  }
+  ;
+
+  public Command defendingPhasePattern() {
+    return gradientPattern(Color.kGreen, Color.kWhite);
+  }
+  ;
+
+  public Command autonomousPattern() {
+    return gradientScrollPattern(getAllianceColor(), Color.kWhite, 2);
+  }
+  ;
+
+  public Command hubShiftPattern() {
+    return blinkPattern(Color.kPurple, 100);
+  }
+  ;
+
+  // public Command endGamePattern() {};
+
+  public boolean isActivePhase() {
+    double time = getMatchTime();
+    if ((time > 110 && time < 130) || (time > 60 && time < 80)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean isInnactivePhase() {
+    double time = getMatchTime();
+    if ((time > 135) || (time > 85 && time < 105) || (time > 35 && time < 55)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
