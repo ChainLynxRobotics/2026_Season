@@ -58,9 +58,9 @@ public class PointingUtil {
         .plus(kShooterLocation.getRotation());
   }
 
-  private static Angle lastRotation = Rotations.zero();
+  private static Rotation2d lastRotation = new Rotation2d();
 
-  public static Angle getAngleToPoseTOF(
+  public static Rotation2d getAngleToPoseTOF(
       Pose2d robotPose, ChassisSpeeds robotSpeeds, Pose2d targetPose) {
     var setpoint = ShooterLUT.generateShootOnTheMoveSetpoint(robotPose, robotSpeeds, targetPose);
     if (setpoint.isEmpty()) {
@@ -81,7 +81,8 @@ public class PointingUtil {
                 robotPose.getRotation().getRadians() + robotSpeeds.omegaRadiansPerSecond * dt));
     return RotationsPerSecond.of(
         getAngleToPoseTOF(poseInDt, robotSpeeds, targetPose)
-                .minus(getAngleToPoseTOF(robotPose, robotSpeeds, targetPose))
+                .getMeasure()
+                .minus(getAngleToPoseTOF(robotPose, robotSpeeds, targetPose).getMeasure())
                 .in(Rotations)
             / dt);
   }
