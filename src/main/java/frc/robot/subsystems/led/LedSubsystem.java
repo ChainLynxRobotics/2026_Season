@@ -21,7 +21,7 @@ public class LedSubsystem extends SubsystemBase {
   public AddressableLED led = new AddressableLED(kLEDPort);
   public AddressableLEDBuffer buffer = new AddressableLEDBuffer(kLeds);
   public PowerDistribution pDH = new PowerDistribution(1, ModuleType.kRev);
-  public boolean didYouWinAuto = true;
+  public boolean didYouWinAuto;
 
   public LedSubsystem() {
     led.setLength(buffer.getLength());
@@ -126,14 +126,17 @@ public class LedSubsystem extends SubsystemBase {
   ;
 
   public Command hubShiftPattern() {
-    return blinkPattern(Color.kPurple, 100);
+    return blinkPattern(Color.kPurple, 200);
   }
   ;
 
-  // public Command endGamePattern() {};
+  public Command endGamePattern() {
+    return solidPattern(Color.kOrange);
+  }
+  ;
 
-  public boolean isActivePhase() {
-    double time = getMatchTime();
+  public boolean isPhaseA() {
+    double time = DriverStation.getMatchTime();
     if ((time > 110 && time < 130) || (time > 60 && time < 80)) {
       return true;
     } else {
@@ -141,12 +144,28 @@ public class LedSubsystem extends SubsystemBase {
     }
   }
 
-  public boolean isInnactivePhase() {
-    double time = getMatchTime();
-    if ((time > 135) || (time > 85 && time < 105) || (time > 35 && time < 55)) {
+  public boolean isPhaseB() {
+    double time = DriverStation.getMatchTime();
+    if ((time > 85 && time < 105) || (time > 35 && time < 55)) {
       return true;
     } else {
       return false;
+    }
+  }
+
+  public Command phaseAPattern() {
+    if (didYouWinAuto) {
+      return defendingPhasePattern();
+    } else {
+      return activePhasePattern();
+    }
+  }
+
+  public Command phaseBPattern() {
+    if (didYouWinAuto) {
+      return activePhasePattern();
+    } else {
+      return defendingPhasePattern();
     }
   }
 }

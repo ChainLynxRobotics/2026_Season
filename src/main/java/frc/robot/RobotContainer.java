@@ -150,15 +150,17 @@ public class RobotContainer {
 
     if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
 
-    new Trigger(DriverStation::isAutonomousEnabled).onTrue(ledSubsystem.autonomousPattern());
+    new Trigger(DriverStation::isAutonomousEnabled).whileTrue(ledSubsystem.autonomousPattern());
     new Trigger(DriverStation::isTeleopEnabled)
         .onTrue(runOnce(() -> ledSubsystem.calculateShifts()));
     new Trigger(this::isScoringPhaseSoon).whileTrue(ledSubsystem.hubShiftPattern());
-    ;
-    new Trigger(() -> ledSubsystem.isActivePhase() && DriverStation.isTeleopEnabled())
+    new Trigger(() -> DriverStation.getMatchTime() > 135)
         .whileTrue(ledSubsystem.activePhasePattern());
-    new Trigger(() -> ledSubsystem.isInnactivePhase() && DriverStation.isTeleopEnabled())
-        .whileTrue(ledSubsystem.defendingPhasePattern());
+    new Trigger(() -> DriverStation.getMatchTime() < 30 && DriverStation.isTeleopEnabled())
+        .whileTrue(ledSubsystem.endGamePattern());
+
+    new Trigger(ledSubsystem::isPhaseA).whileTrue(ledSubsystem.phaseAPattern());
+    new Trigger(ledSubsystem::isPhaseB).whileTrue(ledSubsystem.phaseBPattern());
   }
 
   public Pose3d[] getGamePieces() {
