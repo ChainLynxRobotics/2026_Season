@@ -135,12 +135,44 @@ public class LedSubsystem extends SubsystemBase {
   }
   ;
 
-  public boolean isPhaseA() {
+  public enum Phase {
+    AUTO,
+    ACTIVE,
+    INACTIVE,
+    SHIFTCHANGE,
+    ENDGAME,
+    DISABLED
+  }
+
+  public Phase getMatchPhase() {
+    if (DriverStation.isAutonomousEnabled()) return Phase.AUTO;
+
     double time = DriverStation.getMatchTime();
+
+    if (time < 30) return Phase.ENDGAME;
+
+    if (time > 135) return Phase.ACTIVE;
+
     if ((time > 110 && time < 130) || (time > 60 && time < 80)) {
-      return true;
+      if (didYouWinAuto) {
+        return Phase.INACTIVE;
+      } else {
+        return Phase.ACTIVE;
+      }
+    } else if ((time > 85 && time < 105) || (time > 35 && time < 55)) {
+      if (didYouWinAuto) {
+        return Phase.ACTIVE;
+      } else {
+        return Phase.INACTIVE;
+      }
+    } else if ((time > 130 && time < 135)
+        || (time > 105 && time < 110)
+        || (time > 80 && time < 85)
+        || (time > 55 && time < 60)
+        || (time > 30 && time < 35)) {
+      return Phase.SHIFTCHANGE;
     } else {
-      return false;
+      return Phase.DISABLED;
     }
   }
 

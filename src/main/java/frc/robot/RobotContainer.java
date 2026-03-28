@@ -44,6 +44,7 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.subsystems.led.LedSubsystem;
+import frc.robot.subsystems.led.LedSubsystem.Phase;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import java.util.Optional;
@@ -150,23 +151,18 @@ public class RobotContainer {
 
     if (Robot.isSimulation()) SimulatedArena.getInstance().resetFieldForAuto();
 
-    new Trigger(DriverStation::isAutonomousEnabled).whileTrue(ledSubsystem.autonomousPattern());
     new Trigger(DriverStation::isTeleopEnabled)
         .onTrue(runOnce(() -> ledSubsystem.calculateShifts()));
-    new Trigger(this::isScoringPhaseSoon).whileTrue(ledSubsystem.hubShiftPattern());
-    new Trigger(() -> DriverStation.getMatchTime() > 135)
+    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.AUTO)
+        .whileTrue(ledSubsystem.autonomousPattern());
+    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.SHIFTCHANGE)
+        .whileTrue(ledSubsystem.hubShiftPattern());
+    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.INACTIVE)
+        .whileTrue(ledSubsystem.defendingPhasePattern());
+    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.ACTIVE)
         .whileTrue(ledSubsystem.activePhasePattern());
-    new Trigger(() -> DriverStation.getMatchTime() < 30 && DriverStation.isTeleopEnabled())
+    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.ENDGAME)
         .whileTrue(ledSubsystem.endGamePattern());
-
-    new Trigger(() -> ledSubsystem.didYouWinAuto && ledSubsystem.isPhaseA())
-        .whileTrue(ledSubsystem.defendingPhasePattern());
-    new Trigger(() -> !ledSubsystem.didYouWinAuto && ledSubsystem.isPhaseA())
-        .whileTrue(ledSubsystem.activePhasePattern());
-    new Trigger(() -> ledSubsystem.didYouWinAuto && ledSubsystem.isPhaseB())
-        .whileTrue(ledSubsystem.activePhasePattern());
-    new Trigger(() -> !ledSubsystem.didYouWinAuto && ledSubsystem.isPhaseB())
-        .whileTrue(ledSubsystem.defendingPhasePattern());
   }
 
   public Pose3d[] getGamePieces() {
