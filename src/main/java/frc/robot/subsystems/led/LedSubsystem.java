@@ -152,20 +152,4 @@ public class LedSubsystem extends SubsystemBase {
       return false;
     }
   }
-
-  public Command phaseAPattern() {
-    if (didYouWinAuto) {
-      return defendingPhasePattern();
-    } else {
-      return activePhasePattern();
-    }
-  }
-
-  public Command phaseBPattern() {
-    if (didYouWinAuto) {
-      return activePhasePattern();
-    } else {
-      return defendingPhasePattern();
-    }
-  }
 }

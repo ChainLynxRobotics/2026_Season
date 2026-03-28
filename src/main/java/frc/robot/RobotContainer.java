@@ -159,8 +159,14 @@ public class RobotContainer {
     new Trigger(() -> DriverStation.getMatchTime() < 30 && DriverStation.isTeleopEnabled())
         .whileTrue(ledSubsystem.endGamePattern());
 
-    new Trigger(ledSubsystem::isPhaseA).whileTrue(ledSubsystem.phaseAPattern());
-    new Trigger(ledSubsystem::isPhaseB).whileTrue(ledSubsystem.phaseBPattern());
+    new Trigger(() -> ledSubsystem.didYouWinAuto && ledSubsystem.isPhaseA())
+        .whileTrue(ledSubsystem.defendingPhasePattern());
+    new Trigger(() -> !ledSubsystem.didYouWinAuto && ledSubsystem.isPhaseA())
+        .whileTrue(ledSubsystem.activePhasePattern());
+    new Trigger(() -> ledSubsystem.didYouWinAuto && ledSubsystem.isPhaseB())
+        .whileTrue(ledSubsystem.activePhasePattern());
+    new Trigger(() -> !ledSubsystem.didYouWinAuto && ledSubsystem.isPhaseB())
+        .whileTrue(ledSubsystem.defendingPhasePattern());
   }
 
   public Pose3d[] getGamePieces() {
