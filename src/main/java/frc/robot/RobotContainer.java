@@ -127,9 +127,7 @@ public class RobotContainer {
   private final Telemetry logger =
       new Telemetry(MaxSpeed, shooter::getHoodPose, indexer::getIndexerPose, intake::getHeightPose);
 
-  @Logged
-  public final IntakeSim intakeSim =
-      new IntakeSim(drivetrain.getSwerveDriveSimulation(), shooter::shootSimulatedProjectile);
+  @Logged public IntakeSim intakeSim;
 
   public RobotContainer() {
     NamedCommands.registerCommand(
@@ -152,6 +150,11 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
     // intake.setDefaultCommand(intake.runIntakeControl());
+
+    if (RobotBase.isSimulation()) {
+      intakeSim =
+          new IntakeSim(drivetrain.getSwerveDriveSimulation(), shooter::shootSimulatedProjectile);
+    }
 
     if (false) {
       new Trigger(
@@ -314,7 +317,7 @@ public class RobotContainer {
                       Degrees.of(1.5))) {
                 indexer.spinInternal();
                 serializer.spinInternal();
-                if (!RobotBase.isReal()) {
+                if (RobotBase.isSimulation()) {
                   intakeSim.shootGamePiece();
                 }
               } else {
