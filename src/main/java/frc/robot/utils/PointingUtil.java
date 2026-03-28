@@ -87,10 +87,10 @@ public class PointingUtil {
   }
 
   public static Rotation2d optimiseRotation(Rotation2d currentAngle, Rotation2d targetAngle) {
-    var delta = targetAngle.minus(currentAngle);
-    if (Math.abs(delta.getDegrees()) > 90.0) {
-      return targetAngle.rotateBy(Rotation2d.kPi);
-    }
+    // var delta = targetAngle.minus(currentAngle);
+    // if (Math.abs(delta.getDegrees()) > 90.0) {
+    //   return targetAngle.rotateBy(Rotation2d.kPi);
+    // }
     return targetAngle;
   }
 }

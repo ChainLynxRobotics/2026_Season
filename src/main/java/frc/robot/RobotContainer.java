@@ -296,7 +296,7 @@ public class RobotContainer {
     if (RobotBase.isReal()) return;
   }
 
-  private SwerveRequest.FieldCentricFacingAngle shooterAming =
+  private SwerveRequest.FieldCentricFacingAngle shooterAiming =
       new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.15 / kSlowMoveRate);
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
@@ -355,6 +355,7 @@ public class RobotContainer {
 
   private State profileState = new State();
   private State lastState = new State();
+  private Angle SOTMOffset = Degrees.zero();
 
   @Logged
   public State getProfile() {
@@ -395,7 +396,7 @@ public class RobotContainer {
   public Command autoAimShooterPID() {
     return drivetrain.applyRequest(
         () ->
-            shooterAming
+            shooterAiming
                 .withTargetDirection(
                     getAngleToTargetTOF()
                         .minus(
@@ -414,10 +415,10 @@ public class RobotContainer {
     return parallel(
         runOnce(
             () -> {
+              SOTMOffset = drivetrain.getPose().getRotation().getMeasure();
               profileState =
                   new State(
-                      drivetrain.getPose().getRotation().getRotations(),
-                      drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
+                      0.0, drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
               lastState = profileState;
             }),
         run(
@@ -432,12 +433,16 @@ public class RobotContainer {
                       lastState,
                       new State(
                           PointingUtil.optimiseRotation(
-                                  drivetrain.getPose().getRotation(),
+                                  drivetrain
+                                      .getPose()
+                                      .getRotation()
+                                      .minus(new Rotation2d(SOTMOffset)),
                                   getAngleToTargetTOF()
                                       .minus(
                                           getAlliance().equals(DriverStation.Alliance.Red)
                                               ? new Rotation2d(Degrees.of(180))
                                               : new Rotation2d())
+                                      .minus(new Rotation2d(SOTMOffset))
                                   // We want our rotation to not be field centric
                                   // but we do want our driving to be so we
                                   // manually flip the rotation
@@ -450,8 +455,10 @@ public class RobotContainer {
             }),
         drivetrain.applyRequest(
             () ->
-                shooterAming
-                    .withTargetDirection(Rotation2d.fromRotations(profileState.position))
+                shooterAiming
+                    .withTargetDirection(
+                        Rotation2d.fromRotations(profileState.position)
+                            .plus(new Rotation2d(SOTMOffset)))
                     .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
                     .withHeadingPID(
                         tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
