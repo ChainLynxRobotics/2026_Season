@@ -276,7 +276,7 @@ public class RobotContainer {
 
     driveController
         .rightTrigger()
-        .whileTrue(runShootingCommands())
+        .whileTrue(runShootingCommandsSlow())
         .onTrue(
             runOnce(
                 () -> {
