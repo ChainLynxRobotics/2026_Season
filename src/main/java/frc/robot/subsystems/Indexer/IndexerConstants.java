@@ -12,8 +12,8 @@ public class IndexerConstants {
 
   public static double kIndexerGearRatio = 12;
 
-  public static double kIndexerP = 6.0;
-  public static double kIndexerI = 2.0;
+  public static double kIndexerP = 1;
+  public static double kIndexerI = 0.0;
   public static double kIndexerD = 0.0;
   public static double kIndexerV = 0.0;
   public static double kIndexerS = 0.55;

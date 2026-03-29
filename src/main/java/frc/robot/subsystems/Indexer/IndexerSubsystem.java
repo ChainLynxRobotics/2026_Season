@@ -55,10 +55,8 @@ public class IndexerSubsystem extends SubsystemBase {
   private TunableNumber tunableIndexerS;
   private TunableNumber tunableIndexerV;
   private TunableNumber tunableIndexerVelocity;
-  private TunableNumber tunableIndexerUnjamTime =
-      new TunableNumber("indexerUnjamTime", kIndexerUnjamTime);
-  private TunableNumber tunableIndexerRestartTime =
-      new TunableNumber("indexerRestartTime", kIndexerRestartTime);
+  private TunableNumber tunableIndexerUnjamTime;
+  private TunableNumber tunableIndexerRestartTime;
   @Logged public boolean isReverseIndexer;
 
   @Logged public boolean isSlowIndexer = false;
