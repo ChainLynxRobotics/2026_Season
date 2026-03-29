@@ -2,11 +2,9 @@ package frc.robot.utils.simulation;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.epilogue.Logged;
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
-@Logged
 public class IntakeSim {
   public IntakeSimulation intakeSimulation;
   private Runnable shootFuel;

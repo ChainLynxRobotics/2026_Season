@@ -128,7 +128,7 @@ public class RobotContainer {
   private final Telemetry logger =
       new Telemetry(MaxSpeed, shooter::getHoodPose, indexer::getIndexerPose, intake::getHeightPose);
 
-  @Logged public IntakeSim intakeSim;
+  public IntakeSim intakeSim;
 
   public RobotContainer() {
     NamedCommands.registerCommand(
