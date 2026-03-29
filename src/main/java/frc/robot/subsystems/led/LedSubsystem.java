@@ -29,6 +29,8 @@ public class LedSubsystem extends SubsystemBase {
     led.setData(buffer);
     led.start();
     pDH.setSwitchableChannel(true);
+
+    setDefaultCommand(teamColorPattern());
   }
 
   public Command solidPattern(Color color) {
