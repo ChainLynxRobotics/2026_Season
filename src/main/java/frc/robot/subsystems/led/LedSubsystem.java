@@ -1,7 +1,6 @@
 package frc.robot.subsystems.led;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.led.LedConstants.*;
 
@@ -15,6 +14,8 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import java.util.Map;
 
 @Logged
 public class LedSubsystem extends SubsystemBase {
@@ -28,8 +29,6 @@ public class LedSubsystem extends SubsystemBase {
     led.setData(buffer);
     led.start();
     pDH.setSwitchableChannel(true);
-
-    setDefaultCommand(teamColorPattern());
   }
 
   public Command solidPattern(Color color) {
@@ -72,6 +71,21 @@ public class LedSubsystem extends SubsystemBase {
     return run(() -> gradient.applyTo(buffer)).withName("Gradient Pattern");
   }
 
+  public Command maskScrollPattern(
+      Map<Double, Color> steps, LEDPattern base, double speed, boolean reversed) {
+    LEDPattern mask = LEDPattern.steps(steps).scrollAtRelativeSpeed(Percent.per(Second).of(speed));
+
+    LEDPattern pattern;
+
+    if (reversed) {
+      pattern = base.mask(mask).reversed();
+    } else {
+      pattern = base.mask(mask);
+    }
+
+    return run(() -> pattern.applyTo(buffer)).withName("Mask Scroll Pattern");
+  }
+
   @Override
   public void periodic() {
     if (pDH.getVoltage() < kBrownOut) {
@@ -111,7 +125,31 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   public Command activePhasePattern() {
-    return rainbowScrollPattern();
+    return maskScrollPattern(
+        Map.of(
+            0.0,
+            Color.kWhite,
+            0.1,
+            Color.kBlack,
+            0.2,
+            Color.kWhite,
+            0.3,
+            Color.kBlack,
+            0.4,
+            Color.kWhite,
+            0.5,
+            Color.kBlack,
+            0.6,
+            Color.kWhite,
+            0.7,
+            Color.kBlack,
+            0.8,
+            Color.kWhite,
+            0.9,
+            Color.kBlack),
+        LEDPattern.solid(getAllianceColor()),
+        8,
+        false);
   }
   ;
 
@@ -121,7 +159,7 @@ public class LedSubsystem extends SubsystemBase {
   ;
 
   public Command autonomousPattern() {
-    return gradientScrollPattern(getAllianceColor(), Color.kWhite, 2);
+    return gradientScrollPattern(getAllianceColor(), Color.kWhite, 5);
   }
   ;
 
@@ -131,57 +169,81 @@ public class LedSubsystem extends SubsystemBase {
   ;
 
   public Command endGamePattern() {
-    return solidPattern(Color.kOrange);
+    return gradientScrollPattern(Color.kOrange, Color.kYellow, 8);
   }
   ;
 
-  public enum Phase {
+  public Command shootPattern() {
+    return maskScrollPattern(
+        Map.of(
+            0.0,
+            Color.kWhite,
+            0.1,
+            Color.kBlack,
+            0.2,
+            Color.kWhite,
+            0.3,
+            Color.kBlack,
+            0.4,
+            Color.kWhite,
+            0.5,
+            Color.kBlack,
+            0.6,
+            Color.kWhite,
+            0.7,
+            Color.kBlack,
+            0.8,
+            Color.kWhite,
+            0.9,
+            Color.kBlack),
+        LEDPattern.solid(Color.kWhite),
+        16,
+        true);
+  }
+
+  public enum RobotState {
     AUTO,
     ACTIVE,
     INACTIVE,
     SHIFTCHANGE,
     ENDGAME,
-    DISABLED
+    DISABLED,
+    SHOOTING
   }
 
-  public Phase getMatchPhase() {
-    if (DriverStation.isAutonomousEnabled()) return Phase.AUTO;
+  private final CommandXboxController driveController = new CommandXboxController(0);
 
+  public RobotState getRobotState() {
     double time = DriverStation.getMatchTime();
 
-    if (time < 30) return Phase.ENDGAME;
-
-    if (time > 135) return Phase.ACTIVE;
-
-    if ((time > 110 && time < 130) || (time > 60 && time < 80)) {
-      if (didYouWinAuto) {
-        return Phase.INACTIVE;
-      } else {
-        return Phase.ACTIVE;
-      }
-    } else if ((time > 85 && time < 105) || (time > 35 && time < 55)) {
-      if (didYouWinAuto) {
-        return Phase.ACTIVE;
-      } else {
-        return Phase.INACTIVE;
-      }
-    } else if ((time > 130 && time < 135)
+    if ((time > 130 && time < 135)
         || (time > 105 && time < 110)
         || (time > 80 && time < 85)
         || (time > 55 && time < 60)
         || (time > 30 && time < 35)) {
-      return Phase.SHIFTCHANGE;
-    } else {
-      return Phase.DISABLED;
+      return RobotState.SHIFTCHANGE;
     }
-  }
+    if (DriverStation.isAutonomousEnabled()) return RobotState.AUTO;
+    if (driveController.getRightTriggerAxis() > 0.5) return RobotState.SHOOTING;
 
-  public boolean isPhaseB() {
-    double time = DriverStation.getMatchTime();
-    if ((time > 85 && time < 105) || (time > 35 && time < 55)) {
-      return true;
+    if (time > -1 && time < 30) return RobotState.ENDGAME;
+
+    if (time > 135) return RobotState.ACTIVE;
+
+    if ((time > 110 && time < 130) || (time > 60 && time < 80)) {
+      if (didYouWinAuto) {
+        return RobotState.INACTIVE;
+      } else {
+        return RobotState.ACTIVE;
+      }
+    } else if ((time > 85 && time < 105) || (time > 35 && time < 55)) {
+      if (didYouWinAuto) {
+        return RobotState.ACTIVE;
+      } else {
+        return RobotState.INACTIVE;
+      }
     } else {
-      return false;
+      return RobotState.DISABLED;
     }
   }
 }

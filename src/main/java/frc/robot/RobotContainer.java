@@ -44,7 +44,7 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.subsystems.led.LedSubsystem;
-import frc.robot.subsystems.led.LedSubsystem.Phase;
+import frc.robot.subsystems.led.LedSubsystem.RobotState;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.TunableNumber;
 import java.util.Optional;
@@ -153,16 +153,18 @@ public class RobotContainer {
 
     new Trigger(DriverStation::isTeleopEnabled)
         .onTrue(runOnce(() -> ledSubsystem.calculateShifts()));
-    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.AUTO)
+    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.AUTO)
         .whileTrue(ledSubsystem.autonomousPattern());
-    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.SHIFTCHANGE)
+    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.SHIFTCHANGE)
         .whileTrue(ledSubsystem.hubShiftPattern());
-    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.INACTIVE)
+    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.INACTIVE)
         .whileTrue(ledSubsystem.defendingPhasePattern());
-    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.ACTIVE)
+    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.ACTIVE)
         .whileTrue(ledSubsystem.activePhasePattern());
-    new Trigger(() -> ledSubsystem.getMatchPhase() == Phase.ENDGAME)
+    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.ENDGAME)
         .whileTrue(ledSubsystem.endGamePattern());
+    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.SHOOTING)
+        .whileTrue(ledSubsystem.shootPattern());
   }
 
   public Pose3d[] getGamePieces() {
