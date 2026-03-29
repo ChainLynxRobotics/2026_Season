@@ -61,9 +61,9 @@ public class IndexerSubsystem extends SubsystemBase {
 
   @Logged public boolean isSlowIndexer = false;
   private TunableNumber tunableIndexerSlowTime =
-      new TunableNumber("indexerUnjamTime", kIndexerSlowTime);
+      new TunableNumber("indexerSlowTime", kIndexerSlowTime);
   private TunableNumber tunableIndexerSpeedUpTime =
-      new TunableNumber("indexerRestartTime", kIndexerSpeedUpTime);
+      new TunableNumber("indexerSpeedUpTime", kIndexerSpeedUpTime);
   private TunableNumber tunableIndexerSlowSpeed =
       new TunableNumber("indexerSlowSpeed", kIndexerSlowSpeed.in(RotationsPerSecond));
 
