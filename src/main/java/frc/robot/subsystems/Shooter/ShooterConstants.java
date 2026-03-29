@@ -32,10 +32,10 @@ public class ShooterConstants {
   public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60Foc(1);
   public static final int kFlywheelCANId = 25;
   public static final int kFlywheelFollowerCANId = 24;
-  public static final double kFlywheelS = 0.18;
+  public static final double kFlywheelS = 0.2;
   public static final double kFlywheelA = 0;
-  public static final double kFlywheelV = 0.05584;
-  public static final double kFlywheelP = 0.125;
+  public static final double kFlywheelV = 0.049;
+  public static final double kFlywheelP = 0.1;
   public static final double kFlywheelI = 0;
   public static final double kFlywheelD = 0;
   public static final double kFlywheelGearRatio = 0.41666;
