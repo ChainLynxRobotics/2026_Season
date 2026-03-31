@@ -124,7 +124,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     this.tunableHoodI = new TunableNumber("tunablekHoodI", kHoodI);
     this.tunableHoodD = new TunableNumber("tunablekHoodD", kHoodD);
 
-    this.tunableLUTMult = new TunableNumber("tunableLUTMult", 1.09);
+    this.tunableLUTMult = new TunableNumber("tunableLUTMult", 1.03);
     this.tunableHoodGravOffset = new TunableNumber("gravoffset", -05);
 
     this.tunableHoodAngle = new TunableNumber("Hood angle", 8);
@@ -394,8 +394,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     return run(() -> {
           setFlywheelVelocityInternal(
               RotationsPerSecond.of(
-                      getCurrentSetpoint(getHubLocation2d())
-                          .flywheelSurfaceSpeed()
+                      calculateFlywheelVelocity(
+                              getCurrentSetpoint(getHubLocation2d()).flywheelSurfaceSpeed())
                           .in(MetersPerSecond))
                   .times(tunableLUTMult.get()));
           setHoodAngleInternal(calculateHoodAngle());
@@ -679,6 +679,14 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     }
 
     return setpoint;
+  }
+
+  public LinearVelocity calculateFlywheelVelocity(LinearVelocity speed) {
+    if (!driveController.get().rightTrigger().getAsBoolean() && !DriverStation.isAutonomous()) {
+      return MetersPerSecond.of(60);
+    } else {
+      return speed;
+    }
   }
 
   @Override
