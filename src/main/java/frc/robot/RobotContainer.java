@@ -280,11 +280,20 @@ public class RobotContainer {
         .onTrue(
             runOnce(
                 () -> {
+                  shooter.isShooting = true;
                   indexer.isReverseIndexer = false;
                   shooter.flywheelSpikeTimer.reset();
                   shooter.flywheelSpikeTimer.start();
                 }))
-        .onFalse(indexer.stopSpin().alongWith(serializer.stopSpin()));
+        .onFalse(
+            indexer
+                .stopSpin()
+                .alongWith(serializer.stopSpin())
+                .alongWith(
+                    runOnce(
+                        () -> {
+                          shooter.isShooting = false;
+                        })));
 
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
 
@@ -359,37 +368,46 @@ public class RobotContainer {
   private Command runShootingCommandsSlow() {
 
     return parallel(
-        autoAimShooterMotionProfile(),
-        run(
+            runOnce(
+                () -> {
+                  shooter.isShooting = true;
+                }),
+            autoAimShooterMotionProfile(),
+            run(
+                () -> {
+                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
+                      && isWithinTolerance(
+                          shooter.getHoodPosition(),
+                          Degrees.of(shooter.getHoodClosedLoopReference()),
+                          Degrees.of(1.5))) {
+                    indexer.spinInternal();
+                    serializer.spinInternal();
+                    if (RobotBase.isSimulation()) {
+                      intakeSim.shootGamePiece();
+                    }
+                  } else {
+                    indexer.stopSpinInternal();
+                    serializer.stopSpinInternal();
+                  }
+                }),
+            run(
+                () -> {
+                  if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerSlowTime()
+                      && !indexer.isSlowIndexer) {
+                    indexer.isSlowIndexer = true;
+                    shooter.flywheelSpikeTimer.reset();
+                  } else if (shooter.timeSinceLastBall().in(Seconds)
+                          > indexer.getIndexerSpeedUpTime()
+                      && indexer.isSlowIndexer) {
+                    indexer.isSlowIndexer = false;
+                    shooter.flywheelSpikeTimer.reset();
+                  }
+                }),
+            intake.raiseIntakeOscillate())
+        .finallyDo(
             () -> {
-              if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
-                  && isWithinTolerance(
-                      shooter.getHoodPosition(),
-                      Degrees.of(shooter.getHoodClosedLoopReference()),
-                      Degrees.of(1.5))) {
-                indexer.spinInternal();
-                serializer.spinInternal();
-                if (RobotBase.isSimulation()) {
-                  intakeSim.shootGamePiece();
-                }
-              } else {
-                indexer.stopSpinInternal();
-                serializer.stopSpinInternal();
-              }
-            }),
-        run(
-            () -> {
-              if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerSlowTime()
-                  && !indexer.isSlowIndexer) {
-                indexer.isSlowIndexer = true;
-                shooter.flywheelSpikeTimer.reset();
-              } else if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerSpeedUpTime()
-                  && indexer.isSlowIndexer) {
-                indexer.isSlowIndexer = false;
-                shooter.flywheelSpikeTimer.reset();
-              }
-            }),
-        intake.raiseIntakeOscillate());
+              shooter.isShooting = false;
+            });
   }
 
   @Logged
