@@ -47,6 +47,7 @@ import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterLUT;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Vision.FuelVision;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants;
@@ -59,6 +60,7 @@ import frc.robot.utils.simulation.IntakeSim;
 import java.util.Optional;
 import org.ironmaple.simulation.SimulatedArena;
 
+@Logged
 public class RobotContainer {
 
   private boolean doDriving;
@@ -88,6 +90,10 @@ public class RobotContainer {
 
   @Logged
   public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
+
+  // TODO: replace getSimPose with the real robot pose getter once the camera is mounted
+  // (e.g., () -> drivetrain.getState().Pose)
+  @Logged public final FuelVision fuelVision = new FuelVision(drivetrain::getSimPose);
 
   @Logged
   private final IntakeSubsystem intake =
