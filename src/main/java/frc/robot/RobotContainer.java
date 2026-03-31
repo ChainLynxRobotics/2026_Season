@@ -144,13 +144,13 @@ public class RobotContainer {
     // NamedCommands.registerCommand("endInCornerMirror", endInCorner());
     // NamedCommands.registerCommand("runSOTMCommandsNoAutoAlign", runShootingCommandsAuto());
     NamedCommands.registerCommand("deployIntake", intake.deployIntake());
-    NamedCommands.registerCommand("runShootingCommands", runShootingCommands());
+    NamedCommands.registerCommand("runShootingCommands", runShootingCommandsSlow());
     this.doDriving = true;
     this.doTrenchAlign = true;
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-    // intake.setDefaultCommand(intake.runIntakeControl());
+    intake.setDefaultCommand(intake.runIntakeControl());
 
     if (RobotBase.isSimulation()) {
       intakeSim =
@@ -313,10 +313,9 @@ public class RobotContainer {
 
     driveController.leftBumper().toggleOnTrue(autoAimShooterMotionProfile());
 
-    // driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
+    driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
 
-    // driveController.povDown().onTrue(runOnce(() ->
-    // climber.setStateSetpoint(ClimberState.BOTTOM)));
+    driveController.povDown().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
