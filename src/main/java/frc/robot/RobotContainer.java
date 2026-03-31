@@ -190,6 +190,8 @@ public class RobotContainer {
         .whileTrue(ledSubsystem.endGamePattern());
     new Trigger(() -> ledSubsystem.getRobotState() == RobotState.SHOOTING)
         .whileTrue(ledSubsystem.shootPattern());
+    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.DISABLED)
+        .whileTrue(ledSubsystem.teamColorPattern());
   }
 
   public Pose3d[] getGamePieces() {
