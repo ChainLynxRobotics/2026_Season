@@ -183,7 +183,6 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  @NotLogged
   public Pose3d getVisionPose() {
     return swervePose.pose;
   }
