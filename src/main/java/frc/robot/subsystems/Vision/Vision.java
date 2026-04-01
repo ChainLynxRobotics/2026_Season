@@ -16,6 +16,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.STDevCalculator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision extends SubsystemBase {
 
   private List<CamAndEstimator> cameras = new ArrayList<>();
+  private List<List<Double>> xSTDevData = new ArrayList<>();
+  private List<List<Double>> ySTDevData = new ArrayList<>();
+  private List<List<Double>> thetaSTDevData = new ArrayList<>();
 
   private Consumer<VisionPose> updateDrivetrain;
   private Supplier<Pose2d> getSimPose;
@@ -143,7 +147,7 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     for (var cameraRecord : cameras) {
-
+      var i = cameras.indexOf(cameraRecord);
       List<PhotonTrackedTarget> allTargets = new ArrayList<>();
 
       List<PhotonPipelineResult> data = cameraRecord.camera.getAllUnreadResults();
@@ -167,6 +171,11 @@ public class Vision extends SubsystemBase {
             || isMinAmbiguityTooHigh(poseResult)) {
           continue;
         }
+        if (kKeepTrackOfSTDevs) {
+          xSTDevData.get(i).add(poseResult.estimatedPose.getX());
+          ySTDevData.get(i).add(poseResult.estimatedPose.getX());
+          thetaSTDevData.get(i).add(poseResult.estimatedPose.getX());
+        }
 
         averageDistance = getAverageDistance(poseResult);
 
@@ -183,6 +192,39 @@ public class Vision extends SubsystemBase {
 
       populateLogs(allTargets);
     }
+  }
+
+  public void resetSTDevData() {
+    xSTDevData = new ArrayList<>();
+    ySTDevData = new ArrayList<>();
+    thetaSTDevData = new ArrayList<>();
+  }
+
+  public List<Double> getXSTDDevs() {
+    if (!kKeepTrackOfSTDevs) return List.of();
+    var list = new ArrayList<Double>();
+    for (var data : xSTDevData) {
+      list.add(STDevCalculator.calculateSTDevs(data));
+    }
+    return list;
+  }
+
+  public List<Double> getYSTDDevs() {
+    if (!kKeepTrackOfSTDevs) return List.of();
+    var list = new ArrayList<Double>();
+    for (var data : ySTDevData) {
+      list.add(STDevCalculator.calculateSTDevs(data));
+    }
+    return list;
+  }
+
+  public List<Double> getThetaSTDDevs() {
+    if (!kKeepTrackOfSTDevs) return List.of();
+    var list = new ArrayList<Double>();
+    for (var data : thetaSTDevData) {
+      list.add(STDevCalculator.calculateSTDevs(data));
+    }
+    return list;
   }
 
   Distance averageDistance = Units.Meters.of(0);

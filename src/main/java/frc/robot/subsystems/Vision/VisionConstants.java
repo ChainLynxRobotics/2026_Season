@@ -16,6 +16,8 @@ public class VisionConstants {
   public static final AprilTagFieldLayout kTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
+  public static final boolean kKeepTrackOfSTDevs = true;
+
   public static final double kAmbiguityTolerance = 15;
   public static final double kDistanceTolerance = 5;
   public static final double kMaxAngleTolerance = 70;
