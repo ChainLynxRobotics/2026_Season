@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5887162162162163,
-        "y": 0.6277364864864854
+        "x": 4.318473824312333,
+        "y": 0.6106122448979578
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9220759193357067,
-        "y": 1.1461565836298926
+        "x": 2.6518335274318234,
+        "y": 1.129032342041365
       },
       "isLocked": false,
       "linkedName": "Scoop End"
@@ -48,7 +48,7 @@
   "folder": "Shoot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 179.1512357284464
   },
   "useDefaultConstraints": false
 }

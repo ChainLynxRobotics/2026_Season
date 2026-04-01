@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5887162162162163,
-        "y": 0.6277364864864854
+        "x": 4.318473824312333,
+        "y": 0.6106122448979578
       },
       "prevControl": null,
       "nextControl": {
-        "x": -0.15461352516309468,
-        "y": 0.608189072693384
+        "x": 0.5751440829330221,
+        "y": 0.5910648311048564
       },
       "isLocked": false,
       "linkedName": "Scoop End"
@@ -67,7 +67,7 @@
   "folder": "Possibly Retired",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 179.1512357284464
   },
   "useDefaultConstraints": true
 }
