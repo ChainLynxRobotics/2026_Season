@@ -168,6 +168,8 @@ public class Vision extends SubsystemBase {
           continue;
         }
 
+        averageDistance = getAverageDistance(poseResult);
+
         Matrix<N3, N1> deviation =
             kBaseDeviation
                 .times(Math.pow(getAverageDistance(poseResult).in(Meters), 1.5))
@@ -182,6 +184,8 @@ public class Vision extends SubsystemBase {
       populateLogs(allTargets);
     }
   }
+
+  Distance averageDistance = Units.Meters.of(0);
 
   public Pose3d getVisionPose() {
     return swervePose.pose;
@@ -244,6 +248,10 @@ public class Vision extends SubsystemBase {
 
   public double getFurthestTagAmbiguity() {
     return furthestTagAmbiguity;
+  }
+
+  public Distance getAverageDistance() {
+    return averageDistance;
   }
 
   public void populateLogs(List<PhotonTrackedTarget> allTargets) {
