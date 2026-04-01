@@ -35,7 +35,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Constants.Trench;
 import frc.robot.subsystems.Shooter.ShooterLUT.ShooterSetpoint;
 import frc.robot.utils.SpikeDetector;
 import frc.robot.utils.TunableNumber;
@@ -670,7 +669,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   public Angle calculateHoodAngle() {
     Angle setpoint = getCurrentSetpoint(getHubLocation2d()).rotation();
-    
+
     if (!isShooting) {
       return Degrees.of(8);
     }
