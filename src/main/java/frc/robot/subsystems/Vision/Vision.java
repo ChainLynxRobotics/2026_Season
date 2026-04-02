@@ -72,7 +72,6 @@ public class Vision extends SubsystemBase {
       ySTDevData.add(new ArrayList<>());
       thetaSTDevData.add(new ArrayList<>());
     }
-    System.out.println(xSTDevData.size());
 
     if (!RobotBase.isReal()) {
       visionSim = new VisionSystemSim("main");
