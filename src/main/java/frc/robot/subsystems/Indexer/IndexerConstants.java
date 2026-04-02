@@ -21,9 +21,9 @@ public class IndexerConstants {
   public static double kIndexerUnjamTime = 1.5;
   public static double kIndexerRestartTime = 0.5;
 
-  public static double kIndexerSlowTime = 1.5;
-  public static double kIndexerSpeedUpTime = 1;
-  public static AngularVelocity kIndexerSlowSpeed = RotationsPerSecond.of(-15);
+  public static double kIndexerSlowTime = 0.75;
+  public static double kIndexerSpeedUpTime = 0.5;
+  public static AngularVelocity kIndexerSlowSpeed = RotationsPerSecond.of(-25);
 
   public static Slot0Configs kIntakeIndexerSlot0Config =
       new Slot0Configs()
