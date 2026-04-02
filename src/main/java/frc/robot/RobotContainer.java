@@ -234,7 +234,7 @@ public class RobotContainer {
                       .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
                       .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
                 }
-                if (driveController.rightBumper().getAsBoolean()
+                if (driveController.leftBumper().getAsBoolean()
                     || isPoseInSquare(
                         drivetrain.getPose(),
                         getTrenchCornersVelocity(
@@ -305,27 +305,43 @@ public class RobotContainer {
                           shooter.isShooting = false;
                         })));
 
+    driveController
+        .rightBumper()
+        .whileTrue(runShootingCommandsSlowNoIntake())
+        .onTrue(
+            runOnce(
+                () -> {
+                  shooter.isShooting = true;
+                  indexer.isReverseIndexer = false;
+                  shooter.flywheelSpikeTimer.reset();
+                  shooter.flywheelSpikeTimer.start();
+                }))
+        .onFalse(
+            indexer
+                .stopSpin()
+                .alongWith(serializer.stopSpin())
+                .alongWith(
+                    runOnce(
+                        () -> {
+                          shooter.isShooting = false;
+                        })));
+
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
 
-    driveController.y().whileTrue(intake.raiseIntake());
-
-    driveController.b().whileTrue(drivetrain.followPathCommand(getPathThroughTrench1()));
+    driveController.y().onTrue(intake.deployIntake());
 
     driveController.povRight().whileTrue(intake.raiseIntakeOscillate());
-
-    // driveController.povLeft().whileTrue(drivetrain.followPathCommand(getPathToCorner()));
 
     driveController
         .a()
         .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
 
-    driveController.leftBumper().toggleOnTrue(autoAimShooterMotionProfile());
 
     driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
 
     driveController.povDown().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
 
-    driveController.povLeft().onTrue(runOnce(() -> doInstantShoot = !doInstantShoot));
+    driveController.b().onTrue(runOnce(() -> doInstantShoot = !doInstantShoot));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -418,6 +434,52 @@ public class RobotContainer {
                   }
                 }),
             intake.raiseIntakeOscillate())
+        .finallyDo(
+            () -> {
+              shooter.isShooting = false;
+            });
+  }
+
+  private Command runShootingCommandsSlowNoIntake() {
+
+    return parallel(
+            runOnce(
+                () -> {
+                  shooter.isShooting = true;
+                }),
+            autoAimShooterMotionProfile(),
+            run(
+                () -> {
+                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
+                      && isWithinTolerance(
+                          shooter.getHoodPosition(),
+                          Degrees.of(shooter.getHoodClosedLoopReference()),
+                          Degrees.of(1.5))
+                      && getInstantShootActive()) {
+                    indexer.spinInternal();
+                    serializer.spinInternal();
+                    if (RobotBase.isSimulation()) {
+                      intakeSim.shootGamePiece();
+                    }
+                  } else {
+                    indexer.stopSpinInternal();
+                    serializer.stopSpinInternal();
+                  }
+                }),
+            run(
+                () -> {
+                  if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerSlowTime()
+                      && !indexer.isSlowIndexer) {
+                    indexer.isSlowIndexer = true;
+                    shooter.flywheelSpikeTimer.reset();
+                  } else if (shooter.timeSinceLastBall().in(Seconds)
+                          > indexer.getIndexerSpeedUpTime()
+                      && indexer.isSlowIndexer) {
+                    indexer.isSlowIndexer = false;
+                    shooter.flywheelSpikeTimer.reset();
+                  }
+                }))
+
         .finallyDo(
             () -> {
               shooter.isShooting = false;
