@@ -116,6 +116,8 @@ public class RobotContainer {
   private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 0);
   private TunableNumber tunableHeadingFFMult = new TunableNumber("tunableHeadingFFMult", 1.0);
 
+  private double[] lastDriveInput = {0.0, 0.0};
+
   private TunableBoolean tunableAllianceWonAuto =
       new TunableBoolean("tunableAllianceWonAuto", false);
 
@@ -174,6 +176,7 @@ public class RobotContainer {
                       Constants.getTrenchCorners(getClosestTrench(drivetrain.getState().Pose))[1]))
           .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     }
+
     if (true) {
       new Trigger(shooter::hasAStuckBall)
           .onTrue(
@@ -182,7 +185,6 @@ public class RobotContainer {
                   .withName("Unjam ball")
                   .andThen(waitSeconds(1)));
     }
-    configureBindings();
 
     new Trigger(DriverStation::isTeleopEnabled)
         .onTrue(runOnce(() -> ledSubsystem.calculateShifts()));
@@ -200,6 +202,8 @@ public class RobotContainer {
         .whileTrue(ledSubsystem.shootPattern());
     new Trigger(() -> ledSubsystem.getRobotState() == RobotState.DISABLED)
         .whileTrue(ledSubsystem.teamColorPattern());
+
+    configureBindings();
   }
 
   public Pose3d[] getGamePieces() {
@@ -228,9 +232,9 @@ public class RobotContainer {
                             getClosestTrench(drivetrain.getState().Pose),
                             drivetrain.getState().Speeds,
                             drivetrain.getState().Pose)[1])
-                    && handleTrenchAlignment().isPresent()) {
+                    && handleTrenchAlignmentAngle().isPresent()) {
                   return trenchAlign
-                      .withTargetDirection(handleTrenchAlignment().get())
+                      .withTargetDirection(handleTrenchAlignmentAngle().get())
                       .withVelocityX(calculateTrenchAlignSpeeds().vxMetersPerSecond)
                       .withVelocityY(calculateTrenchAlignSpeeds().vyMetersPerSecond);
                 }
@@ -335,7 +339,6 @@ public class RobotContainer {
     driveController
         .a()
         .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
-
 
     driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
 
@@ -479,7 +482,6 @@ public class RobotContainer {
                     shooter.flywheelSpikeTimer.reset();
                   }
                 }))
-
         .finallyDo(
             () -> {
               shooter.isShooting = false;
@@ -497,7 +499,22 @@ public class RobotContainer {
 
   private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(1, 0.75));
 
-  public void periodic() {}
+  public void periodic() {
+    double[] curInputs = {
+      Math.abs(driveController.getLeftX()), Math.abs(driveController.getLeftY())
+    };
+    if ((curInputs[0] > 0.15 && lastDriveInput[0] < 0.15 && curInputs[1] < 0.15)
+        && (curInputs[1] > 0.15 && lastDriveInput[1] < 0.15 && curInputs[0] < 0.15)) {
+      runOnce(
+          () -> {
+            SOTMOffset = drivetrain.getPose().getRotation().getMeasure();
+            profileState =
+                new State(0.0, drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
+            lastState = profileState;
+          });
+    }
+    lastDriveInput = curInputs;
+  }
 
   private State profileState = new State();
   private State lastState = new State();
@@ -602,17 +619,15 @@ public class RobotContainer {
         drivetrain.applyRequest(
             () ->
                 shooterAiming
-                    .withTargetDirection(
-                        Rotation2d.fromRotations(profileState.position)
-                            .plus(new Rotation2d(SOTMOffset)))
-                    .withTargetRateFeedforward(RotationsPerSecond.of(getProfile().velocity))
+                    .withTargetDirection(getAutoAimPositionFromJoystick())
+                    .withTargetRateFeedforward(getAutoAimVelocityFromJoystick())
                     .withHeadingPID(
                         tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
                     .withVelocityX(-driveController.getLeftY() * MaxSpeed / kSlowMoveRate / 2)
                     .withVelocityY(-driveController.getLeftX() * MaxSpeed / kSlowMoveRate / 2)));
   }
 
-  public Optional<Rotation2d> handleTrenchAlignment() {
+  public Optional<Rotation2d> handleTrenchAlignmentAngle() {
     if (isForward()) {
       return Optional.of(new Rotation2d());
     }
@@ -626,6 +641,28 @@ public class RobotContainer {
   @Logged
   public boolean isForward() {
     return (drivetrain.getPose().getRotation().getMeasure().isNear(Degrees.of(0), Degrees.of(90)));
+  }
+
+  public Rotation2d getAutoAimPositionFromJoystick() {
+    if (Math.abs(driveController.getLeftX()) > 0.15
+        || Math.abs(driveController.getLeftY()) > 0.15) {
+      return Rotation2d.fromRotations(profileState.position).plus(new Rotation2d(SOTMOffset));
+    } else {
+      return getAngleToTargetTOF()
+          .minus(
+              getAlliance().equals(DriverStation.Alliance.Red)
+                  ? new Rotation2d(Degrees.of(180))
+                  : new Rotation2d());
+    }
+  }
+
+  public AngularVelocity getAutoAimVelocityFromJoystick() {
+    if (Math.abs(driveController.getLeftX()) > 0.15
+        || Math.abs(driveController.getLeftY()) > 0.15) {
+      return RotationsPerSecond.of(getProfile().velocity);
+    } else {
+      return RotationsPerSecond.zero();
+    }
   }
 
   public Command endInCorner() {
