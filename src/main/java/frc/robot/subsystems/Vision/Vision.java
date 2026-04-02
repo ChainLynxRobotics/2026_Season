@@ -67,6 +67,13 @@ public class Vision extends SubsystemBase {
             new PhotonPoseEstimator(kTagLayout, kCameraOffsets.get(0)),
             new PhotonCamera("aprilTwo")));
 
+    for (int i = 0; i < cameras.size(); i++) {
+      xSTDevData.add(new ArrayList<>());
+      ySTDevData.add(new ArrayList<>());
+      thetaSTDevData.add(new ArrayList<>());
+    }
+    System.out.println(xSTDevData.size());
+
     if (!RobotBase.isReal()) {
       visionSim = new VisionSystemSim("main");
       visionSim.addAprilTags(kTagLayout);
