@@ -77,6 +77,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public boolean intakeBackward;
   public boolean intakeHeightUp;
 
+  public BooleanSupplier isActiveShootingPhase;
+
   public PositionVoltage positionRequest = new PositionVoltage(0.0).withEnableFOC(true);
 
   private DCMotorSim spinSim =
@@ -120,7 +122,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
                       .voltage(this.getHeightVoltage()),
               this));
 
-  public IntakeSubsystem(TalonFX spinMotor, TalonFX heightMotor) {
+  public IntakeSubsystem(
+      TalonFX spinMotor, TalonFX heightMotor, BooleanSupplier getActiveShootingPhase) {
     currentSpikeDetector =
         new CurrentSpikeDetector(() -> (heightMotor.getStatorCurrent().getValue()));
     this.spinMotor = spinMotor;
@@ -128,6 +131,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     spinConfiguration.Feedback.SensorToMechanismRatio = kInputToOutputSpinGearRatio;
     spinConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     spinMotor.getConfigurator().apply(spinConfiguration);
+
+    this.isActiveShootingPhase = getActiveShootingPhase;
 
     this.intakeBackward = true;
     this.intakeHeightUp = false;
@@ -345,7 +350,8 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
 
   public Command raiseIntakeOscillate() {
     return sequence(
-        runOnce(() -> spinMotor.setControl(new VoltageOut(kSpinVoltage.unaryMinus()))),
+        run(() -> spinMotor.setControl(new VoltageOut(kSpinVoltage.unaryMinus())))
+            .until(isActiveShootingPhase),
         waitSeconds(kTimeBeforeOccilation.in(Seconds)),
         repeatingSequence(
             runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(30)))),

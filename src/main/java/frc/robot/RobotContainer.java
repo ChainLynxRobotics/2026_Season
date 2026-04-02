@@ -24,6 +24,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -31,7 +32,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -54,6 +54,7 @@ import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.subsystems.led.LedSubsystem;
 import frc.robot.subsystems.led.LedSubsystem.RobotState;
 import frc.robot.utils.PointingUtil;
+import frc.robot.utils.TunableBoolean;
 import frc.robot.utils.TunableNumber;
 import frc.robot.utils.simulation.IntakeSim;
 import java.util.Optional;
@@ -63,6 +64,7 @@ public class RobotContainer {
 
   private boolean doDriving;
   private boolean doTrenchAlign;
+  private boolean doInstantShoot = true;
 
   private double MaxSpeed =
       1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -91,7 +93,8 @@ public class RobotContainer {
 
   @Logged
   private final IntakeSubsystem intake =
-      new IntakeSubsystem(new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio));
+      new IntakeSubsystem(
+          new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio), () -> getActiveShootingPhase());
 
   @Logged
   private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17, kCanBusBlinky));
@@ -113,6 +116,9 @@ public class RobotContainer {
   private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 0);
   private TunableNumber tunableHeadingFFMult = new TunableNumber("tunableHeadingFFMult", 1.0);
 
+  private TunableBoolean tunableAllianceWonAuto =
+      new TunableBoolean("tunableAllianceWonAuto", false);
+
   @Logged(name = "Shooter")
   public final Shooter shooter =
       new Shooter(
@@ -129,6 +135,8 @@ public class RobotContainer {
       new Telemetry(MaxSpeed, shooter::getHoodPose, indexer::getIndexerPose, intake::getHeightPose);
 
   public IntakeSim intakeSim;
+
+  private InterpolatingDoubleTreeMap tofMap = ShooterLUT.generateTOFMap();
 
   public RobotContainer() {
     NamedCommands.registerCommand(
@@ -305,7 +313,7 @@ public class RobotContainer {
 
     driveController.povRight().whileTrue(intake.raiseIntakeOscillate());
 
-    driveController.povLeft().whileTrue(drivetrain.followPathCommand(getPathToCorner()));
+    // driveController.povLeft().whileTrue(drivetrain.followPathCommand(getPathToCorner()));
 
     driveController
         .a()
@@ -316,6 +324,8 @@ public class RobotContainer {
     driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
 
     driveController.povDown().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+
+    driveController.povLeft().onTrue(runOnce(() -> doInstantShoot = !doInstantShoot));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -382,7 +392,8 @@ public class RobotContainer {
                       && isWithinTolerance(
                           shooter.getHoodPosition(),
                           Degrees.of(shooter.getHoodClosedLoopReference()),
-                          Degrees.of(1.5))) {
+                          Degrees.of(1.5))
+                      && getInstantShootActive()) {
                     indexer.spinInternal();
                     serializer.spinInternal();
                     if (RobotBase.isSimulation()) {
@@ -655,14 +666,19 @@ public class RobotContainer {
         drivetrain.getState().Pose)[1];
   }
 
-  @Logged
-  public boolean isScoringPhaseSoon() {
-    double time = Timer.getMatchTime();
-    if ((time > 130 && time < 135)
-        || (time > 100 && time < 105)
-        || (time > 80 && time < 85)
-        || (time > 55 && time < 60)
-        || (time > 30 && time < 35)) {
+  public boolean getInstantShootActive() {
+    return !doInstantShoot || (doInstantShoot && getActiveShootingPhase());
+  }
+
+  public boolean getActiveShootingPhase() {
+    // double time = Timer.getFPGATimestamp();
+    double time = DriverStation.getMatchTime();
+    time = time - tofMap.get(shooter.getDistance().in(Meters));
+    if (tunableAllianceWonAuto.get()
+        && ((10 < time && time < 35) || (60 < time && time < 85) || (110 < time))) {
+      return true;
+    } else if (!tunableAllianceWonAuto.get()
+        && ((35 < time && time < 60) || (85 < time && time < 110) || (110 < time))) {
       return true;
     } else {
       return false;
