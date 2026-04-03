@@ -772,6 +772,7 @@ public class RobotContainer {
         drivetrain.getState().Pose)[1];
   }
 
+  @Logged
   public boolean getInstantShootActive() {
     return !doInstantShoot || (doInstantShoot && getActiveShootingPhase());
   }
