@@ -117,6 +117,10 @@ public class Climber extends SubsystemBase implements AutoCloseable {
     motor.setPosition(Rotations.zero());
   }
 
+  public Command climberDeadReckoning(boolean up) {
+    return run(() -> motor.set(up ? 0.15 : -0.15));
+  }
+
   public Command goToStateCommand(ClimberState state) {
     return run(() -> setStateSetpoint(state));
     // .until(() -> limitSwitch.get())
