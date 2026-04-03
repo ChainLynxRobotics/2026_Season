@@ -5,15 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "deployIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Scoop Balls mirror 1"
+            "pathName": "mirror double scoop 1"
           }
         },
         {
@@ -44,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Scoop Balls mirror 2"
+            "pathName": "mirror double scoop 2"
           }
         },
         {
