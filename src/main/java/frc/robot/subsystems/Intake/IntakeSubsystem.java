@@ -77,7 +77,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public boolean intakeBackward;
   public boolean intakeHeightUp;
 
-  public BooleanSupplier isActiveShootingPhase;
+  public BooleanSupplier isInstantShoot;
 
   public PositionVoltage positionRequest = new PositionVoltage(0.0).withEnableFOC(true);
 
@@ -132,7 +132,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     spinConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     spinMotor.getConfigurator().apply(spinConfiguration);
 
-    this.isActiveShootingPhase = getActiveShootingPhase;
+    this.isInstantShoot = getActiveShootingPhase;
 
     this.intakeBackward = true;
     this.intakeHeightUp = false;
@@ -365,7 +365,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   public Command raiseIntakeOscillate() {
     return sequence(
         run(() -> spinMotor.setControl(new VoltageOut(kSpinVoltage.unaryMinus())))
-            .until(isActiveShootingPhase),
+            .until(isInstantShoot),
         waitSeconds(kTimeBeforeOccilation.in(Seconds)),
         repeatingSequence(
             runOnce(() -> heightMotor.setControl(heightControl.withPosition(Degrees.of(30)))),

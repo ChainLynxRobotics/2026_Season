@@ -95,7 +95,7 @@ public class RobotContainer {
   @Logged
   private final IntakeSubsystem intake =
       new IntakeSubsystem(
-          new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio), () -> getActiveShootingPhase());
+          new TalonFX(15, kCanBusRio), new TalonFX(16, kCanBusRio), () -> getInstantShootActive());
 
   @Logged
   private final IndexerSubsystem indexer = new IndexerSubsystem(new TalonFX(17, kCanBusBlinky));
