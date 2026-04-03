@@ -35,9 +35,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision extends SubsystemBase {
 
   private List<CamAndEstimator> cameras = new ArrayList<>();
-  private List<List<Double>> xSTDevData = new ArrayList<>();
-  private List<List<Double>> ySTDevData = new ArrayList<>();
-  private List<List<Double>> thetaSTDevData = new ArrayList<>();
+  @NotLogged private List<List<Double>> xSTDevData = new ArrayList<>();
+  @NotLogged private List<List<Double>> ySTDevData = new ArrayList<>();
+  @NotLogged private List<List<Double>> thetaSTDevData = new ArrayList<>();
 
   private Consumer<VisionPose> updateDrivetrain;
   private Supplier<Pose2d> getSimPose;
@@ -204,33 +204,45 @@ public class Vision extends SubsystemBase {
     xSTDevData = new ArrayList<>();
     ySTDevData = new ArrayList<>();
     thetaSTDevData = new ArrayList<>();
+
+    for (int i = 0; i < cameras.size(); i++) {
+      xSTDevData.add(new ArrayList<>());
+      ySTDevData.add(new ArrayList<>());
+      thetaSTDevData.add(new ArrayList<>());
+    }
   }
 
-  public List<Double> getXSTDDevs() {
-    if (!kKeepTrackOfSTDevs) return List.of();
-    var list = new ArrayList<Double>();
+  public double[] getXSTDDevs() {
+    if (!kKeepTrackOfSTDevs) return new double[0];
+    List<Double> list = new ArrayList<Double>();
     for (var data : xSTDevData) {
       list.add(STDevCalculator.calculateSTDevs(data));
     }
-    return list;
+    return list.stream().mapToDouble(Double::doubleValue).toArray();
   }
 
-  public List<Double> getYSTDDevs() {
-    if (!kKeepTrackOfSTDevs) return List.of();
+  public double[] getYSTDDevs() {
+    if (!kKeepTrackOfSTDevs) return new double[0];
     var list = new ArrayList<Double>();
     for (var data : ySTDevData) {
       list.add(STDevCalculator.calculateSTDevs(data));
     }
-    return list;
+    return list.stream().mapToDouble(Double::doubleValue).toArray();
   }
 
-  public List<Double> getThetaSTDDevs() {
-    if (!kKeepTrackOfSTDevs) return List.of();
+  @Logged
+  public double[] getThetaSTDDevs() {
+    if (!kKeepTrackOfSTDevs) return new double[0];
     var list = new ArrayList<Double>();
     for (var data : thetaSTDevData) {
       list.add(STDevCalculator.calculateSTDevs(data));
     }
-    return list;
+    return list.stream().mapToDouble(Double::doubleValue).toArray();
+  }
+
+  public double getSTDevSampleCount() {
+    if (!kKeepTrackOfSTDevs) return 0;
+    return xSTDevData.get(0).size();
   }
 
   Distance averageDistance = Units.Meters.of(0);
