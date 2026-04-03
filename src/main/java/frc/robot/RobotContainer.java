@@ -777,6 +777,7 @@ public class RobotContainer {
     return !doInstantShoot || (doInstantShoot && getActiveShootingPhase());
   }
 
+  @Logged
   public boolean getActiveShootingPhase() {
     // double time = Timer.getFPGATimestamp();
     double time = DriverStation.getMatchTime();
