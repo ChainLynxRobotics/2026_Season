@@ -783,10 +783,16 @@ public class RobotContainer {
     double time = DriverStation.getMatchTime();
     time = time - tofMap.get(shooter.getDistance().in(Meters));
     if (tunableAllianceWonAuto.get()
-        && ((10 < time && time < 35) || (60 < time && time < 85) || (110 < time))) {
+        && ((130 < time && time < 140)
+            || (80 < time && time < 105)
+            || (30 < time && time < 55)
+            || (time < 30))) {
       return true;
     } else if (!tunableAllianceWonAuto.get()
-        && ((35 < time && time < 60) || (85 < time && time < 110) || (110 < time))) {
+        && ((130 < time && time < 140)
+            || (105 < time && time < 130)
+            || (55 < time && time < 80)
+            || (time < 30))) {
       return true;
     } else {
       return false;
