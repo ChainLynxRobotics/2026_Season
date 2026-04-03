@@ -799,6 +799,11 @@ public class RobotContainer {
     }
   }
 
+  @Logged
+  public double getMatchTime() {
+    return DriverStation.getMatchTime();
+  }
+
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
 
