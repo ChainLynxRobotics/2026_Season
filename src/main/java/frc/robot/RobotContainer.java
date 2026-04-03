@@ -85,7 +85,7 @@ public class RobotContainer {
 
   private final CommandXboxController driveController = new CommandXboxController(0);
 
-  // private final CommandXboxController testingController = new CommandXboxController(1);
+  private final CommandXboxController testingController = new CommandXboxController(1);
 
   @Logged public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -356,6 +356,8 @@ public class RobotContainer {
     driveController.b().onTrue(runOnce(() -> doInstantShoot = !doInstantShoot));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    testingController.b().onTrue(runOnce(() -> vision.resetSTDevData()));
 
     if (RobotBase.isReal()) return;
   }
