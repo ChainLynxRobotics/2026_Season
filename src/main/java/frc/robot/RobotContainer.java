@@ -552,6 +552,14 @@ public class RobotContainer {
     return new Pose2d(drivetrainPose.getX(), drivetrainPose.getY(), angle);
   }
 
+  @Logged
+  public Pose3d[] getAdjustedCameraPositions() {
+    Pose3d robotPose = new Pose3d(drivetrain.getPose());
+    return new Pose3d[] {
+      robotPose.plus(vision.getCameraPositions()[0]), robotPose.plus(vision.getCameraPositions()[1])
+    };
+  }
+
   public PathPlannerPath getPathToCorner() {
     return new PathPlannerPath(
         PathPlannerPath.waypointsFromPoses(
