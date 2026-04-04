@@ -370,7 +370,7 @@ public class RobotContainer {
   }
 
   private SwerveRequest.FieldCentricFacingAngle shooterAiming =
-      new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.15 / kSlowMoveRate);
+      new SwerveRequest.FieldCentricFacingAngle().withDeadband(MaxSpeed * 0.15 / kSlowMoveRate / 2);
 
   private SwerveRequest.FieldCentricFacingAngle trenchAlign =
       new SwerveRequest.FieldCentricFacingAngle()
