@@ -11,19 +11,23 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import java.nio.file.Path;
 import java.util.List;
 
 public class VisionConstants {
 
+  // SET TO FALSE BEFORE COMP — uses hallway.json tag layout instead of the competition field
   public static final boolean isHallwayField = false;
 
   private static AprilTagFieldLayout getFieldLayout() {
     if (isHallwayField) {
       try {
         return new AprilTagFieldLayout(
-            "C:\\Users\\soora\\Documents\\8248\\2026_Season\\src\\main\\deploy\\hallway.json");
+            Path.of(Filesystem.getDeployDirectory().getAbsolutePath(), "hallway.json"));
       } catch (Exception ex) {
-        DriverStation.reportError("whoops field nono import", ex.getStackTrace());
+        DriverStation.reportError(
+            "Failed to load hallway.json, falling back to comp field", ex.getStackTrace());
         return AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
       }
     } else {
@@ -31,7 +35,7 @@ public class VisionConstants {
     }
   }
 
-  public static AprilTagFieldLayout kTagLayout = getFieldLayout();
+  public static final AprilTagFieldLayout kTagLayout = getFieldLayout();
 
   public static final boolean kKeepTrackOfSTDevs = true;
 
