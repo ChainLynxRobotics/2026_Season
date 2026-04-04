@@ -160,11 +160,17 @@ public class RobotContainer {
                     }))));
     NamedCommands.registerCommand("Scoop", new PrintCommand(""));
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand(""));
-    // NamedCommands.registerCommand("Auto Aim", autoAimShooterDriveBackwards());
-    // NamedCommands.registerCommand("endInCornerMirror", endInCorner());
-    // NamedCommands.registerCommand("runSOTMCommandsNoAutoAlign", runShootingCommandsAuto());
     NamedCommands.registerCommand("deployIntake", intake.deployIntake());
     NamedCommands.registerCommand("runShootingCommands", runShootingCommandsSlow());
+    NamedCommands.registerCommand(
+        "runShootingCommandsAutoNegX",
+        runShootingCommandsSlowAuto(-1.0, 0.0, kSOTMBackLeftPoseSquareBlueAlliance));
+    NamedCommands.registerCommand(
+        "runShootingCommandsAutoPosXPosY",
+        runShootingCommandsSlowAuto(0.75, 0.75, kSOTMTopTrenchPoseSquareBlueAlliance));
+    NamedCommands.registerCommand(
+        "runShootingCommandsAutoNegY",
+        runShootingCommandsSlowAuto(0, -1.0, kSOTMAfterDepoPoseSquareBlueAlliance));
     this.doDriving = true;
     this.doTrenchAlign = true;
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -635,6 +641,107 @@ public class RobotContainer {
                         tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
                     .withVelocityX(-driveController.getLeftY() * MaxSpeed / kSlowMoveRate / 2)
                     .withVelocityY(-driveController.getLeftX() * MaxSpeed / kSlowMoveRate / 2)));
+  }
+
+  public Command autoAimShooterMotionProfileAuto(double xSpeed, double ySpeed) {
+    return parallel(
+        runOnce(
+            () -> {
+              SOTMOffset = drivetrain.getPose().getRotation().getMeasure();
+              profileState =
+                  new State(
+                      0.0, drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
+              lastState = profileState;
+            }),
+        run(
+            () -> {
+              var turningRateFF =
+                  getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose()))
+                      .times(tunableHeadingFFMult.get());
+              lastState = profileState;
+              profileState =
+                  turningProfile.calculate(
+                      kDT.in(Second),
+                      lastState,
+                      new State(
+                          PointingUtil.optimiseRotation(
+                                  drivetrain
+                                      .getPose()
+                                      .getRotation()
+                                      .minus(new Rotation2d(SOTMOffset)),
+                                  getAngleToTargetTOF()
+                                      .minus(
+                                          getAlliance().equals(DriverStation.Alliance.Red)
+                                              ? new Rotation2d(Degrees.of(180))
+                                              : new Rotation2d())
+                                      .minus(new Rotation2d(SOTMOffset))
+                                  // We want our rotation to not be field centric
+                                  // but we do want our driving to be so we
+                                  // manually flip the rotation
+                                  )
+                              .getRotations() // We want our rotation to not be field centric
+                          // but we do want our driving to be so we
+                          // manually flip the rotation
+                          ,
+                          turningRateFF.in(RotationsPerSecond)));
+            }),
+        drivetrain.applyRequest(
+            () ->
+                shooterAiming
+                    .withTargetDirection(getAutoAimPositionFromJoystick())
+                    .withTargetRateFeedforward(getAutoAimVelocityFromJoystick())
+                    .withHeadingPID(
+                        tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
+                    .withVelocityX(xSpeed)
+                    .withVelocityY(ySpeed)));
+  }
+
+  private Command runShootingCommandsSlowAuto(double xSpeed, double ySpeed, Pose2d[] endPoses) {
+
+    return parallel(
+            runOnce(
+                () -> {
+                  shooter.isShooting = true;
+                }),
+            autoAimShooterMotionProfileAuto(xSpeed, ySpeed),
+            run(
+                () -> {
+                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 6
+                      && isWithinTolerance(
+                          shooter.getHoodPosition(),
+                          Degrees.of(shooter.getHoodClosedLoopReference()),
+                          Degrees.of(1.5))) {
+                    if (getInstantShootActive()) {
+                      indexer.spinInternal();
+                      serializer.spinInternal();
+                    }
+                    if (RobotBase.isSimulation()) {
+                      intakeSim.shootGamePiece();
+                    }
+                  } else {
+                    indexer.stopSpinInternal();
+                    serializer.stopSpinInternal();
+                  }
+                }),
+            run(
+                () -> {
+                  if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerSlowTime()
+                      && !indexer.isSlowIndexer) {
+                    indexer.isSlowIndexer = true;
+                    shooter.flywheelSpikeTimer.reset();
+                  } else if (shooter.timeSinceLastBall().in(Seconds)
+                          > indexer.getIndexerSpeedUpTime()
+                      && indexer.isSlowIndexer) {
+                    indexer.isSlowIndexer = false;
+                    shooter.flywheelSpikeTimer.reset();
+                  }
+                }),
+            intake.raiseIntakeOscillate())
+        .until(() -> RobotMath.isPoseInSquare(drivetrain.getPose(), endPoses[0], endPoses[1]))
+        .finallyDo(
+            () -> {
+              shooter.isShooting = false;
+            });
   }
 
   public Optional<Rotation2d> handleTrenchAlignmentAngle() {
