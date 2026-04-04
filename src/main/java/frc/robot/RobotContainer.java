@@ -383,7 +383,7 @@ public class RobotContainer {
         autoAimShooterMotionProfile(),
         run(
             () -> {
-              if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
+              if (Math.abs(targetTOFTrackingError().getDegrees()) < 6
                   && isWithinTolerance(
                       shooter.getHoodPosition(),
                       Degrees.of(shooter.getHoodClosedLoopReference()),
@@ -423,7 +423,7 @@ public class RobotContainer {
             autoAimShooterMotionProfile(),
             run(
                 () -> {
-                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
+                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 6
                       && isWithinTolerance(
                           shooter.getHoodPosition(),
                           Degrees.of(shooter.getHoodClosedLoopReference()),
@@ -470,7 +470,7 @@ public class RobotContainer {
             autoAimShooterMotionProfile(),
             run(
                 () -> {
-                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 3
+                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 6
                       && isWithinTolerance(
                           shooter.getHoodPosition(),
                           Degrees.of(shooter.getHoodClosedLoopReference()),
@@ -507,7 +507,7 @@ public class RobotContainer {
 
   @Logged
   public boolean shouldIndex() {
-    return (Math.abs(targetTOFTrackingError().getDegrees()) < 3
+    return (Math.abs(targetTOFTrackingError().getDegrees()) < 6
         && isWithinTolerance(
             shooter.getHoodPosition(),
             Degrees.of(shooter.getHoodClosedLoopReference()),
