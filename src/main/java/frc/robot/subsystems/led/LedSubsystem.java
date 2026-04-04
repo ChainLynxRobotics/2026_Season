@@ -34,12 +34,13 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   public Command solidPattern(Color color) {
-    LEDPattern pattern = LEDPattern.solid(color);
+    Color formattedColor = formatColorForRBG(color);
+    LEDPattern pattern = LEDPattern.solid(formattedColor);
     return run(() -> pattern.applyTo(buffer)).withName("Solid Color");
   }
 
   public Command teamColorPattern() {
-    LEDPattern pattern = LEDPattern.solid(getAllianceColor());
+    LEDPattern pattern = LEDPattern.solid(formatColorForRBG(getAllianceColor()));
     return run(() -> pattern.applyTo(buffer)).withName("Alliance Color");
   }
 
@@ -55,21 +56,26 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   public Command blinkPattern(Color color, double time) {
-    LEDPattern pattern = LEDPattern.solid(color);
+    Color formattedColor = formatColorForRBG(color);
+    LEDPattern pattern = LEDPattern.solid(formattedColor);
     LEDPattern blinkPattern = pattern.blink(Milliseconds.of(time));
     return run(() -> blinkPattern.applyTo(buffer)).withName("Blink Color");
   }
 
   public Command gradientScrollPattern(Color color1, Color color2, double scrollSpeed) {
-    LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
-    LEDPattern scrollingRainbow =
+    Color formattedColor1 = formatColorForRBG(color1);
+    Color formattedColor2 = formatColorForRBG(color2);
+    LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, formattedColor1, formattedColor2);
+    LEDPattern scroll =
         gradient.scrollAtAbsoluteSpeed(MetersPerSecond.of(scrollSpeed), kLedSpacing);
-    return run(() -> scrollingRainbow.applyTo(buffer)).withName("Gradient Scroll");
+    return run(() -> scroll.applyTo(buffer)).withName("Gradient Scroll");
   }
 
   public Command gradientPattern(Color color1, Color color2) {
+    Color formattedColor1 = formatColorForRBG(color1);
+    Color formattedColor2 = formatColorForRBG(color2);
     LEDPattern gradient =
-        LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, color1, color2);
+        LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, formattedColor1, formattedColor2);
     return run(() -> gradient.applyTo(buffer)).withName("Gradient Pattern");
   }
 
@@ -116,6 +122,10 @@ public class LedSubsystem extends SubsystemBase {
     } else {
       didYouWinAuto = false;
     }
+  }  
+
+  public Color formatColorForRBG(Color color) {
+    return new Color(color.red, color.blue, color.green);
   }
 
   public double getLedPower() {
@@ -149,7 +159,7 @@ public class LedSubsystem extends SubsystemBase {
             Color.kWhite,
             0.9,
             Color.kBlack),
-        LEDPattern.solid(getAllianceColor()),
+        LEDPattern.solid(formatColorForRBG(getAllianceColor())),
         8,
         false);
   }
@@ -198,7 +208,7 @@ public class LedSubsystem extends SubsystemBase {
             Color.kWhite,
             0.9,
             Color.kBlack),
-        LEDPattern.solid(Color.kWhite),
+        LEDPattern.solid(formatColorForRBG(Color.kWhite)),
         16,
         true);
   }
