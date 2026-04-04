@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.ironmaple.simulation.SimulatedArena;
+
 import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
@@ -74,6 +76,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    if (RobotBase.isSimulation()) {
+      SimulatedArena.getInstance().resetFieldForAuto();
+    }
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
@@ -89,6 +94,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    if (RobotBase.isSimulation()) {
+      SimulatedArena.getInstance().resetFieldForAuto();
+    }
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().cancel(m_autonomousCommand);
     }
