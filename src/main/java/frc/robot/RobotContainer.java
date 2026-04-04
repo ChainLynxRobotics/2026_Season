@@ -507,7 +507,7 @@ public class RobotContainer {
             Degrees.of(1.5)));
   }
 
-  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(1, 0.75));
+  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(2, 1.15));
 
   public void periodic() {
     double[] curInputs = {
