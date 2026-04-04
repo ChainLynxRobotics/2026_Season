@@ -39,4 +39,13 @@ public class VisionConstants {
               new Rotation3d(Degrees.zero(), Degrees.of(-30), Degrees.of(210))));
 
   public static final Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(1.5, 1.5, 10);
+
+  // Pinhole camera intrinsics — update with real calibration from PhotonVision coprocessor
+  // Defaults match a 1280x800 camera with ~70 deg diagonal FOV
+  public static final double kCameraFx = 1078;
+  public static final double kCameraFy = 1078;
+  public static final double kCameraCx = 640;
+  public static final double kCameraCy = 400;
+
+  public static final double kTagSizeMeters = 0.1651; // 6.5 inches
 }

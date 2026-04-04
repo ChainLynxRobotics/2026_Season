@@ -90,7 +90,8 @@ public class RobotContainer {
   @Logged public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   @Logged
-  public final Vision vision = new Vision(drivetrain::passVisionPose, drivetrain::getSimPose);
+  public final Vision vision =
+      new Vision(drivetrain::passVisionPose, drivetrain::getSimPose, drivetrain::getPose);
 
   @Logged
   private final IntakeSubsystem intake =
