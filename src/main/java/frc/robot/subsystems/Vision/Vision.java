@@ -288,6 +288,7 @@ public class Vision extends SubsystemBase {
   }
 
   private boolean isOnField(EstimatedRobotPose pose) {
+    if (isHallwayField) return true;
     return (pose.estimatedPose.getX() < kFieldWidth.in(Units.Meters))
         && (pose.estimatedPose.getX() > 0)
         && (pose.estimatedPose.getY() < kFieldHeight.in(Units.Meters))

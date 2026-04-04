@@ -10,11 +10,28 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
 import java.util.List;
 
 public class VisionConstants {
-  public static final AprilTagFieldLayout kTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+
+  public static final boolean isHallwayField = false;
+
+  private static AprilTagFieldLayout getFieldLayout() {
+    if (isHallwayField) {
+      try {
+        return new AprilTagFieldLayout(
+            "C:\\Users\\soora\\Documents\\8248\\2026_Season\\src\\main\\deploy\\hallway.json");
+      } catch (Exception ex) {
+        DriverStation.reportError("whoops field nono import", ex.getStackTrace());
+        return AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+      }
+    } else {
+      return AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+    }
+  }
+
+  public static AprilTagFieldLayout kTagLayout = getFieldLayout();
 
   public static final boolean kKeepTrackOfSTDevs = true;
 
@@ -31,12 +48,12 @@ public class VisionConstants {
               Inches.of(8.522),
               Inches.of(12.473),
               Inches.of(10.88),
-              new Rotation3d(Degrees.zero(), Degrees.of(-20), Degrees.of(90))),
+              new Rotation3d(Degrees.zero(), Degrees.of(5), Degrees.of(90))),
           new Transform3d(
               Inches.of(-12.55),
               Inches.of(-8.969),
               Inches.of(9.766),
-              new Rotation3d(Degrees.zero(), Degrees.of(-30), Degrees.of(210))));
+              new Rotation3d(Degrees.zero(), Degrees.of(5), Degrees.of(210))));
 
   public static final Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(1.5, 1.5, 10);
 
