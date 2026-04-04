@@ -427,10 +427,11 @@ public class RobotContainer {
                       && isWithinTolerance(
                           shooter.getHoodPosition(),
                           Degrees.of(shooter.getHoodClosedLoopReference()),
-                          Degrees.of(1.5))
-                      && getInstantShootActive()) {
+                          Degrees.of(1.5))) {
+                    if (getInstantShootActive()) {
                     indexer.spinInternal();
                     serializer.spinInternal();
+                    }
                     if (RobotBase.isSimulation()) {
                       intakeSim.shootGamePiece();
                     }
