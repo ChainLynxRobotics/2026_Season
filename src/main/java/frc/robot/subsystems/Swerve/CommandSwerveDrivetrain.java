@@ -13,6 +13,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -132,6 +133,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     };
   }
 
+  private void setPPSpeeds(ChassisSpeeds speeds, DriveFeedforwards feedforwards) {
+    setControl(
+        pathApplyRobotSpeeds
+            .withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
+            .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+            .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons()));
+  }
+
   public void configureAutoBuilder() {
     try {
       var config = RobotConfig.fromGUISettings();
@@ -140,12 +149,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           this::resetPose, // Consumer for seeding pose against auto
           () -> getState().Speeds, // Supplier of current robot speeds
           // Consumer of ChassisSpeeds and feedforwards to drive the robot
-          (speeds, feedforwards) ->
-              setControl(
-                  pathApplyRobotSpeeds
-                      .withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
-                      .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                      .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
+          this::setPPSpeeds,
           new PPHolonomicDriveController(
               // PID constants for translation
               new PIDConstants(3, 1, 0),
