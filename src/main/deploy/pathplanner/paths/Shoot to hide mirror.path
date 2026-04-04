@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6,
-        "y": 5.614
+        "x": 2.380571808510638,
+        "y": 6.355784574468085
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.870602216748769,
-        "y": 5.6290794334975365
+        "x": 1.6511740252594072,
+        "y": 6.370864007965622
       },
       "isLocked": false,
       "linkedName": "Shoot end Mirror"
@@ -48,7 +48,7 @@
   "folder": "Traversal",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -135.0
+    "rotation": -140.66728567823918
   },
   "useDefaultConstraints": true
 }

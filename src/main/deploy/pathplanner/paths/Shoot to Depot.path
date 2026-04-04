@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6,
-        "y": 5.614
+        "x": 2.380571808510638,
+        "y": 6.355784574468085
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4148648648648647,
-        "y": 5.589658783783783
+        "x": 1.1954366733755029,
+        "y": 6.331443358251868
       },
       "isLocked": false,
       "linkedName": "Shoot end Mirror"
@@ -64,12 +64,12 @@
     },
     {
       "anchor": {
-        "x": 2.6,
-        "y": 5.614
+        "x": 2.380571808510638,
+        "y": 6.355784574468085
       },
       "prevControl": {
-        "x": 2.581482263513514,
-        "y": 4.865122453649059
+        "x": 2.362054072024152,
+        "y": 5.606907028117145
       },
       "nextControl": null,
       "isLocked": false,
@@ -101,13 +101,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -135.0
+    "rotation": -140.66728567823918
   },
   "reversed": false,
   "folder": "Scoop",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -135.0
+    "rotation": -140.66728567823918
   },
   "useDefaultConstraints": true
 }

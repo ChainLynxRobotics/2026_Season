@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.386517857142857,
+        "x": 1.413,
         "y": 7.356
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.9168214285714282,
-        "y": 7.696125
+        "x": 0.8120013297872342,
+        "y": 7.7144348404255325
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.511910714285714,
-        "y": 6.8762906223437446
+        "x": 0.6778856382978724,
+        "y": 6.851429521276596
       },
       "prevControl": {
-        "x": 0.35920601099596394,
-        "y": 7.4189073996312525
+        "x": 0.7828457446808512,
+        "y": 7.422878989361703
       },
       "nextControl": {
-        "x": 0.6414821428571427,
-        "y": 6.415875
+        "x": 0.5946990775136461,
+        "y": 6.398524912562475
       },
       "isLocked": false,
       "linkedName": null
@@ -36,33 +36,21 @@
         "y": 5.379303571428571
       },
       "prevControl": {
-        "x": 0.4253361317181984,
-        "y": 5.406293031467657
-      },
-      "nextControl": {
-        "x": 2.4068928571428567,
-        "y": 5.191110808961555
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.6,
-        "y": 5.614
-      },
-      "prevControl": {
-        "x": 1.403846198962123,
-        "y": 5.65592369335227
+        "x": 0.49209986968800856,
+        "y": 5.207670818143955
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Shoot end Mirror"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
+      "waypointRelativePos": 0.8161350844277633,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 1.832082551594743,
       "rotationDegrees": -90.0
     }
   ],
@@ -79,7 +67,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -135.0
+    "rotation": -92.19588891731014
   },
   "reversed": false,
   "folder": "Traversal",
