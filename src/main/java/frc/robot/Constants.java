@@ -54,6 +54,17 @@ public class Constants {
   public static final Pose2d kRedAllienceCorner2 =
       new Pose2d(Inches.of(651.22), Inches.of(317.69), new Rotation2d());
 
+  public static final Pose2d[] kSOTMBackLeftPoseSquareBlueAlliance =
+      new Pose2d[] {new Pose2d(0, 8, Rotation2d.kZero), new Pose2d(1.013, 6.449, Rotation2d.kZero)};
+
+  public static final Pose2d[] kSOTMTopTrenchPoseSquareBlueAlliance =
+      new Pose2d[] {new Pose2d(2.5, 7.25, Rotation2d.kZero), new Pose2d(4.5, 8, Rotation2d.kZero)};
+
+  public static final Pose2d[] kSOTMAfterDepoPoseSquareBlueAlliance =
+      new Pose2d[] {
+        new Pose2d(0.077, 5.434, Rotation2d.kZero), new Pose2d(1.762, 4.379, Rotation2d.kZero)
+      };
+
   public enum Trench {
     LowerBlueTrench,
     UpperBlueTrench,
