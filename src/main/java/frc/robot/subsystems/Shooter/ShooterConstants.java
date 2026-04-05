@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.epilogue.*;
@@ -54,6 +55,7 @@ public class ShooterConstants {
     var config = new TalonFXConfiguration().withSlot0(gains);
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = kFlywheelGearRatio;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     // Current Limits
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
