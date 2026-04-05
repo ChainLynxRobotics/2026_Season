@@ -52,8 +52,6 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
-import frc.robot.subsystems.led.LedSubsystem;
-import frc.robot.subsystems.led.LedSubsystem.RobotState;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.RobotMath;
 import frc.robot.utils.TunableBoolean;
@@ -110,7 +108,7 @@ public class RobotContainer {
   private final Climber climber =
       new Climber(new TalonFX(ClimberConstants.kClimberId, kCanBusBlinky));
 
-  @Logged private final LedSubsystem ledSubsystem = new LedSubsystem();
+  // @Logged private final LedSubsystem ledSubsystem = new LedSubsystem();
 
   private SendableChooser<Command> autoChooser;
 
@@ -203,7 +201,7 @@ public class RobotContainer {
                   .andThen(waitSeconds(1)));
     }
 
-    new Trigger(DriverStation::isTeleopEnabled)
+    /*new Trigger(DriverStation::isTeleopEnabled)
         .onTrue(runOnce(() -> ledSubsystem.calculateShifts()));
     new Trigger(() -> ledSubsystem.getRobotState() == RobotState.AUTO)
         .whileTrue(ledSubsystem.autonomousPattern());
@@ -218,7 +216,7 @@ public class RobotContainer {
     new Trigger(() -> ledSubsystem.getRobotState() == RobotState.SHOOTING)
         .whileTrue(ledSubsystem.shootPattern());
     new Trigger(() -> ledSubsystem.getRobotState() == RobotState.DISABLED)
-        .whileTrue(ledSubsystem.teamColorPattern());
+        .whileTrue(ledSubsystem.teamColorPattern());*/
 
     configureBindings();
   }

@@ -30,7 +30,7 @@ public class LedSubsystem extends SubsystemBase {
     led.start();
     pDH.setSwitchableChannel(true);
 
-    setDefaultCommand(teamColorPattern());
+    setDefaultCommand(solidPattern(Color.kGreen));
   }
 
   public Command solidPattern(Color color) {
