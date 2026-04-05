@@ -144,8 +144,8 @@ public class RobotContainer {
   public RobotContainer() {
     NamedCommands.registerCommand(
         "goToHub", new PrintCommand("use pathplanner point at not commands"));
-    NamedCommands.registerCommand("Climb", new PrintCommand("climber disabled"));
-    // climber.run(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+    NamedCommands.registerCommand(
+        "Climb", climber.run(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     NamedCommands.registerCommand("shootBalls", (indexer.spin().alongWith(serializer.spin())));
     NamedCommands.registerCommand(
         "stopShoot",
@@ -349,7 +349,9 @@ public class RobotContainer {
 
     driveController.y().onTrue(intake.deployIntake());
 
-    driveController.povRight().whileTrue(intake.raiseIntakeOscillate());
+    driveController.povRight().onTrue(runOnce(() -> climber.zeroClimber()).ignoringDisable(true));
+
+    driveController.povLeft().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.REZERO)));
 
     driveController
         .a()
