@@ -17,20 +17,26 @@ public class ClimberConstants {
   public static final double kGearRatio = 23.0;
   public static final Distance kSpoolRadius = Inches.of(0.5);
   public static final Distance kSetpointTolerance = Inches.of(0.2);
-  public static final Distance kMaxHeight = Inches.of(8.5);
+  public static final Distance kMaxHeight = Inches.of(9.5);
   public static final Time kDT = Seconds.of(0.02);
 
   public enum ClimberState {
     TOP,
-    BOTTOM;
+    BOTTOM,
+    REZERO;
   }
 
   public static Map<ClimberState, Distance> climberMap =
       Map.of(
-          ClimberState.TOP, Inches.zero(), ClimberState.BOTTOM, kMaxHeight.minus(Inches.of(0.5)));
+          ClimberState.TOP,
+          Inches.zero(),
+          ClimberState.BOTTOM,
+          kMaxHeight.minus(Inches.of(0.5)),
+          ClimberState.REZERO,
+          kMaxHeight.unaryMinus().plus(Inches.of(0.5)));
 
   public static final double kP = 5;
-  public static final double kI = 3;
+  public static final double kI = 0;
   public static final double kD = 0.5;
   // meters to rotations
   public static final Per<DistanceUnit, AngleUnit> kPositionConversionFactor =
