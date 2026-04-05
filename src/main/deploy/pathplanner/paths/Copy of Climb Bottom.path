@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 0.8739999999999999,
-        "y": 4.494
+        "x": 1.2479,
+        "y": 3.052
       },
       "prevControl": {
-        "x": 0.893547413793103,
-        "y": 3.5654978448275827
+        "x": 1.267447413793103,
+        "y": 2.123497844827586
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "mirror side climb"
+      "linkedName": "normal side climb"
     }
   ],
   "rotationTargets": [],
@@ -56,7 +56,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 179.4856377428754
   },
   "reversed": false,
   "folder": "Possibly Retired",

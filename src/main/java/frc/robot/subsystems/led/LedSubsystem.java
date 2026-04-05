@@ -65,7 +65,8 @@ public class LedSubsystem extends SubsystemBase {
   public Command gradientScrollPattern(Color color1, Color color2, double scrollSpeed) {
     Color formattedColor1 = formatColorForRBG(color1);
     Color formattedColor2 = formatColorForRBG(color2);
-    LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, formattedColor1, formattedColor2);
+    LEDPattern gradient =
+        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, formattedColor1, formattedColor2);
     LEDPattern scroll =
         gradient.scrollAtAbsoluteSpeed(MetersPerSecond.of(scrollSpeed), kLedSpacing);
     return run(() -> scroll.applyTo(buffer)).withName("Gradient Scroll");
@@ -75,7 +76,8 @@ public class LedSubsystem extends SubsystemBase {
     Color formattedColor1 = formatColorForRBG(color1);
     Color formattedColor2 = formatColorForRBG(color2);
     LEDPattern gradient =
-        LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, formattedColor1, formattedColor2);
+        LEDPattern.gradient(
+            LEDPattern.GradientType.kDiscontinuous, formattedColor1, formattedColor2);
     return run(() -> gradient.applyTo(buffer)).withName("Gradient Pattern");
   }
 
@@ -122,7 +124,7 @@ public class LedSubsystem extends SubsystemBase {
     } else {
       didYouWinAuto = false;
     }
-  }  
+  }
 
   public Color formatColorForRBG(Color color) {
     return new Color(color.red, color.blue, color.green);

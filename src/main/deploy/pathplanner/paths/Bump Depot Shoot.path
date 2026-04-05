@@ -1,0 +1,105 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.538774038461538,
+        "y": 5.5030608974358985
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.070713141025641,
+        "y": 6.004527243589743
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.1985977564102561,
+        "y": 7.174615384615384
+      },
+      "prevControl": {
+        "x": 1.6709935897435924,
+        "y": 7.756025641025643
+      },
+      "nextControl": {
+        "x": 0.8206810897435896,
+        "y": 6.70948717948718
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.6099198717948715,
+        "y": 5.721089743589744
+      },
+      "prevControl": {
+        "x": 0.8059599012063935,
+        "y": 6.810201018098199
+      },
+      "nextControl": {
+        "x": 0.5445112179487177,
+        "y": 5.357708333333334
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.7945432692307688,
+        "y": 5.161482371794872
+      },
+      "prevControl": {
+        "x": 1.2640064102564095,
+        "y": 5.059735576923077
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Bump depot shoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.199551569506722,
+      "rotationDegrees": -105.33503063431232
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.084870848708486,
+      "maxWaypointRelativePos": 2.365313653136517,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -123.05582281155364
+  },
+  "reversed": false,
+  "folder": "Scoop",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -179.3904934233247
+  },
+  "useDefaultConstraints": true
+}
