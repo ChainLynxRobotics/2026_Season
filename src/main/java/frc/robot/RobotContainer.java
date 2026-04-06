@@ -147,8 +147,7 @@ public class RobotContainer {
   public RobotContainer() {
     NamedCommands.registerCommand(
         "goToHub", new PrintCommand("use pathplanner point at not commands"));
-    NamedCommands.registerCommand(
-        "Climb", climber.run(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+    NamedCommands.registerCommand("Climb", climber.climberDeadReckoning(false));
     NamedCommands.registerCommand("shootBalls", (indexer.spin().alongWith(serializer.spin())));
     NamedCommands.registerCommand(
         "stopShoot",
