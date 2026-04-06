@@ -32,6 +32,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,6 +66,8 @@ public class RobotContainer {
   private boolean doDriving;
   private boolean doTrenchAlign;
   private boolean doInstantShoot = true;
+
+  private Timer climbTimer = new Timer();
 
   private double MaxSpeed =
       1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -161,6 +164,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stop Scoop", new PrintCommand(""));
     NamedCommands.registerCommand("deployIntake", intake.deployIntake());
     NamedCommands.registerCommand("runShootingCommands", runShootingCommandsSlow());
+    NamedCommands.registerCommand("runTowerAlign", runTowerAlign());
     NamedCommands.registerCommand(
         "runShootingCommandsAutoNegX",
         runShootingCommandsSlowAuto(-1.0, 0.0, kSOTMBackLeftPoseSquareBlueAlliance));
@@ -378,6 +382,9 @@ public class RobotContainer {
           .withHeadingPID(8, 0, 0)
           .withDeadband(MaxSpeed * 0.15);
 
+  private SwerveRequest.FieldCentricFacingAngle climberAlign =
+      new SwerveRequest.FieldCentricFacingAngle().withHeadingPID(2, 0, 0);
+
   private Command runShootingCommands() {
 
     return parallel(
@@ -515,6 +522,11 @@ public class RobotContainer {
             Degrees.of(1.5)));
   }
 
+  @Logged
+  public double getClimbTimer() {
+    return climbTimer.get();
+  }
+
   private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(2, 1.15));
 
   public void periodic() {
@@ -532,6 +544,12 @@ public class RobotContainer {
           });
     }
     lastDriveInput = curInputs;
+
+    if (Math.abs(drivetrain.getPose().minus(kMirrorClimb).getX()) < kClimberTolerence
+        && Math.abs(drivetrain.getPose().minus(kMirrorClimb).getY()) < kClimberTolerence
+        && (getClimbTimer() > 5 || !climbTimer.isRunning())) {
+      resetClimbingTimer();
+    }
   }
 
   private State profileState = new State();
@@ -598,6 +616,11 @@ public class RobotContainer {
                 .withHeadingPID(tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
+  }
+
+  @Logged
+  public Pose2d getClimberAlignEndPoint() {
+    return kMirrorClimb;
   }
 
   public Command autoAimShooterMotionProfile() {
@@ -813,6 +836,48 @@ public class RobotContainer {
             ? 0
             : -driveController.getLeftY() * MaxSpeed;
     // double ySpeed = -driveController.getLeftX() * MaxSpeed / 2;
+    return new ChassisSpeeds(xSpeed, ySpeed, 0);
+  }
+
+  public Command runTowerAlign() {
+    return drivetrain
+        .applyRequest(
+            () ->
+                climberAlign
+                    .withVelocityX(calculateTowerAlignSpeeds().vxMetersPerSecond)
+                    .withVelocityY(calculateTowerAlignSpeeds().vyMetersPerSecond)
+                    .withTargetDirection(Rotation2d.kZero))
+        .until(
+            () ->
+                Math.abs(drivetrain.getPose().minus(kMirrorClimb).getX()) < kClimberTolerence
+                    && Math.abs(drivetrain.getPose().minus(kMirrorClimb).getY()) < kClimberTolerence
+                    && climbTimer.hasElapsed(1));
+  }
+
+  public void resetClimbingTimer() {
+    climbTimer.start();
+    climbTimer.reset();
+  }
+
+  @Logged
+  public ChassisSpeeds calculateTowerAlignSpeeds() {
+    Pose2d targetPose2d = kMirrorClimb;
+    Pose2d drivePose = drivetrain.getPose();
+
+    double xDisplacement = targetPose2d.getX() - drivePose.getX();
+
+    double yDisplacement = targetPose2d.getY() - drivePose.getY();
+
+    double xSpeed = 0;
+    double ySpeed = 0;
+
+    if (Math.abs(xDisplacement) > kClimberTolerence) {
+      xSpeed = (xDisplacement);
+    } else {
+      if (Math.abs(yDisplacement) > kClimberTolerence) {
+        ySpeed = (yDisplacement);
+      }
+    }
     return new ChassisSpeeds(xSpeed, ySpeed, 0);
   }
 
