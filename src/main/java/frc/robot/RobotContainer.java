@@ -534,12 +534,7 @@ public class RobotContainer {
             Degrees.of(1.5)));
   }
 
-  @Logged
-  public double getClimbTimer() {
-    return climbTimer.get();
-  }
-
-  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(2, 1.15));
+  private TrapezoidProfile turningProfile = new TrapezoidProfile(new Constraints(2, 1));
 
   public void periodic() {
     double[] curInputs = {
