@@ -350,19 +350,32 @@ public class RobotContainer {
 
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
 
-    driveController.y().onTrue(intake.deployIntake());
+    driveController.povUp().onTrue(intake.deployIntake());
 
-    driveController.povRight().onTrue(runOnce(() -> climber.zeroClimber()).ignoringDisable(true));
+    // driveController.povRight().onTrue(runOnce(() ->
+    // climber.zeroClimber()).ignoringDisable(true));
 
-    driveController.povLeft().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.REZERO)));
+    // driveController.povLeft().onTrue(runOnce(() ->
+    // climber.setStateSetpoint(ClimberState.REZERO)));
+
+    driveController
+        .povDown()
+        .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
+
+    // driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
+
+    // driveController.povDown().onTrue(runOnce(() ->
+    // climber.setStateSetpoint(ClimberState.BOTTOM)));
+
+    driveController
+        .y()
+        .whileTrue(climber.climberDeadReckoning(true))
+        .onFalse(runOnce(() -> climber.stopMotor()));
 
     driveController
         .a()
-        .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
-
-    driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
-
-    driveController.povDown().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
+        .whileTrue(climber.climberDeadReckoning(false))
+        .onFalse(runOnce(() -> climber.stopMotor()));
 
     driveController.b().onTrue(runOnce(() -> doInstantShoot = !doInstantShoot));
 
