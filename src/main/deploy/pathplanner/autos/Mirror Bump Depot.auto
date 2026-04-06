@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "deployIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Bump Depot Shoot"
@@ -39,18 +33,6 @@
           "type": "named",
           "data": {
             "name": "stopShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "depot shoot to climb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climb"
           }
         }
       ]
