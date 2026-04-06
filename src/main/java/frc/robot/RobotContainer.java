@@ -115,7 +115,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
-  private TunableNumber tunableHeadingP = new TunableNumber("tunableHeadingP", 6);
+  private TunableNumber tunableHeadingP = new TunableNumber("tunableHeadingP", 10);
   private TunableNumber tunableHeadingI = new TunableNumber("tunableHeadingI", 0);
   private TunableNumber tunableHeadingD = new TunableNumber("tunableHeadingD", 0);
   private TunableNumber tunableHeadingFFMult = new TunableNumber("tunableHeadingFFMult", 1.0);
