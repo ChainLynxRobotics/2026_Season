@@ -115,7 +115,7 @@ public class ShooterConstants {
   public static final DCMotor kHoodMotor = DCMotor.getKrakenX44Foc(1);
   public static final int kHoodLimitSwitchId = 0;
   protected static final double kHoodG = 0.098;
-  protected static final double kHoodS = 0.282;
+  protected static final double kHoodS = 0.352;
   protected static final double kHoodA = 0.0;
   protected static final double kHoodV = 0.44;
   protected static final double kHoodP = 50;
