@@ -52,12 +52,12 @@ public class VisionConstants {
               Inches.of(8.522),
               Inches.of(12.473),
               Inches.of(10.88),
-              new Rotation3d(Degrees.zero(), Degrees.of(5), Degrees.of(90))),
+              new Rotation3d(Degrees.zero(), Degrees.of(-20), Degrees.of(90))),
           new Transform3d(
               Inches.of(-12.55),
-              Inches.of(-8.969),
+              Inches.of(-11.969),
               Inches.of(9.766),
-              new Rotation3d(Degrees.zero(), Degrees.of(5), Degrees.of(210))));
+              new Rotation3d(Degrees.zero(), Degrees.of(-30), Degrees.of(210))));
 
   public static final Matrix<N3, N1> kBaseDeviation = VecBuilder.fill(1.5, 1.5, 10);
 
