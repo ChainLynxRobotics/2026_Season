@@ -351,7 +351,9 @@ public class RobotContainer {
 
     driveController.x().onTrue(runOnce(() -> intake.swapIntake()));
 
-    driveController.povUp().onTrue(intake.deployIntake());
+    // driveController.povUp().onTrue(intake.deployIntake());
+
+    driveController.povUp().onTrue(runTowerAlign());
 
     // driveController.povRight().onTrue(runOnce(() ->
     // climber.zeroClimber()).ignoringDisable(true));
@@ -636,6 +638,9 @@ public class RobotContainer {
         runOnce(
             () -> {
               SOTMOffset = drivetrain.getPose().getRotation().getMeasure();
+              if (getAlliance() == Alliance.Red) {
+                SOTMOffset = SOTMOffset.plus(Degrees.of(180));
+              }
               profileState =
                   new State(
                       0.0, drivetrain.getState().Speeds.omegaRadiansPerSecond / (2 * Math.PI));
