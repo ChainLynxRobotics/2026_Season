@@ -394,7 +394,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
           setFlywheelVelocityInternal(
               RotationsPerSecond.of(
                       calculateFlywheelVelocity(
-                              getCurrentSetpoint(getHubLocation2d()).flywheelSurfaceSpeed())
+                              getCurrentSetpoint(getShootingTarget(drivetrainPose.get()))
+                                  .flywheelSurfaceSpeed())
                           .in(MetersPerSecond))
                   .times(tunableLUTMult.get()));
           setHoodAngleInternal(calculateHoodAngle());
