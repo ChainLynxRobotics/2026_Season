@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.Constants.*;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kFunnlingLocation;
 import static frc.robot.utils.PointingUtil.*;
 import static frc.robot.utils.RobotMath.*;
 
@@ -169,7 +170,7 @@ public class RobotContainer {
         runShootingCommandsSlowAuto(-1.0, 0.0, kSOTMBackLeftPoseSquareBlueAlliance));
     NamedCommands.registerCommand(
         "runShootingCommandsAutoPosXPosY",
-        runShootingCommandsSlowAuto(0.75, 0.75, kSOTMTopTrenchPoseSquareBlueAlliance));
+        runShootingCommandsSlowAutoNoIntake(0.75, 0.75, kSOTMTopTrenchPoseSquareBlueAlliance));
     NamedCommands.registerCommand(
         "runShootingCommandsAutoNegY",
         runShootingCommandsSlowAuto(0, -1.0, kSOTMAfterDepoPoseSquareBlueAlliance));
@@ -554,7 +555,7 @@ public class RobotContainer {
 
     if (Math.abs(drivetrain.getPose().minus(kMirrorClimb).getX()) < kClimberTolerence
         && Math.abs(drivetrain.getPose().minus(kMirrorClimb).getY()) < kClimberTolerence
-        && (getClimbTimer() > 5 || !climbTimer.isRunning())) {
+        && (climbTimer.get() > 5 || !climbTimer.isRunning())) {
       resetClimbingTimer();
     }
   }
@@ -784,6 +785,53 @@ public class RobotContainer {
             });
   }
 
+  private Command runShootingCommandsSlowAutoNoIntake(double xSpeed, double ySpeed, Pose2d[] endPoses) {
+
+    return parallel(
+            runOnce(
+                () -> {
+                  shooter.isShooting = true;
+                }),
+            autoAimShooterMotionProfileAuto(xSpeed, ySpeed),
+            run(
+                () -> {
+                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 6
+                      && isWithinTolerance(
+                          shooter.getHoodPosition(),
+                          Degrees.of(shooter.getHoodClosedLoopReference()),
+                          Degrees.of(1.5))) {
+                    if (getInstantShootActive()) {
+                      indexer.spinInternal();
+                      serializer.spinInternal();
+                    }
+                    if (RobotBase.isSimulation()) {
+                      intakeSim.shootGamePiece();
+                    }
+                  } else {
+                    indexer.stopSpinInternal();
+                    serializer.stopSpinInternal();
+                  }
+                }),
+            run(
+                () -> {
+                  if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerSlowTime()
+                      && !indexer.isSlowIndexer) {
+                    indexer.isSlowIndexer = true;
+                    shooter.flywheelSpikeTimer.reset();
+                  } else if (shooter.timeSinceLastBall().in(Seconds)
+                          > indexer.getIndexerSpeedUpTime()
+                      && indexer.isSlowIndexer) {
+                    indexer.isSlowIndexer = false;
+                    shooter.flywheelSpikeTimer.reset();
+                  }
+                })
+        .until(() -> RobotMath.isPoseInSquare(drivetrain.getPose(), endPoses[0], endPoses[1])))
+        .finallyDo(
+            () -> {
+              shooter.isShooting = false;
+            });
+  }
+
   public Optional<Rotation2d> handleTrenchAlignmentAngle() {
     if (isForward()) {
       return Optional.of(new Rotation2d());
@@ -966,7 +1014,7 @@ public class RobotContainer {
 
   @Logged
   public boolean getInstantShootActive() {
-    return !doInstantShoot || (doInstantShoot && getActiveShootingPhase());
+    return !doInstantShoot || (doInstantShoot && getActiveShootingPhase()) || (getShootingTarget(drivetrain.getPose()) == PointingUtil.funnlingPoint1 || getShootingTarget(drivetrain.getPose()) == PointingUtil.funnlingPoint2);
   }
 
   @Logged

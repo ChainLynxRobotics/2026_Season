@@ -20,6 +20,19 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 
 public class PointingUtil {
 
+  public static final Pose2d funnlingPoint1 =
+        getAlliance() == Alliance.Blue
+            ? kFunnlingLocation
+            : new Pose2d(
+                kFieldWidth.minus(kFunnlingLocation.getMeasureX()),
+                kFunnlingLocation.getMeasureY(),
+                new Rotation2d());
+  public static final Pose2d funnlingPoint2 =
+        new Pose2d(
+            funnlingPoint1.getMeasureX(),
+            kFieldHeight.minus(funnlingPoint1.getMeasureY()),
+            new Rotation2d());
+
   public static Pose2d getShootingTarget(Pose2d robotPose) {
     var isInAllianceZone = false;
     if (getAlliance() == DriverStation.Alliance.Blue) {
