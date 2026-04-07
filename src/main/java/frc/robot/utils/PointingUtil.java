@@ -28,10 +28,10 @@ public class PointingUtil {
                 kFunnlingLocation.getMeasureY(),
                 new Rotation2d());
   public static final Pose2d funnlingPoint2 =
-        new Pose2d(
-            funnlingPoint1.getMeasureX(),
-            kFieldHeight.minus(funnlingPoint1.getMeasureY()),
-            new Rotation2d());
+      new Pose2d(
+          funnlingPoint1.getMeasureX(),
+          kFieldHeight.minus(funnlingPoint1.getMeasureY()),
+          new Rotation2d());
 
   public static Pose2d getShootingTarget(Pose2d robotPose) {
     var isInAllianceZone = false;
