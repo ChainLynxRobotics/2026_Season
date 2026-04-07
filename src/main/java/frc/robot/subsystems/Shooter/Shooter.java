@@ -683,7 +683,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public LinearVelocity calculateFlywheelVelocity(LinearVelocity speed) {
-    if (!driveController.get().rightTrigger().getAsBoolean() && !DriverStation.isAutonomous()) {
+    if ((!driveController.get().rightTrigger().getAsBoolean() || !driveController.get().rightBumper().getAsBoolean()) && !DriverStation.isAutonomous()) {
       return MetersPerSecond.of(60);
     } else {
       return speed;
