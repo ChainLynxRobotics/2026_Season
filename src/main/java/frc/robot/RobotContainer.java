@@ -555,9 +555,7 @@ public class RobotContainer {
     }
     lastDriveInput = curInputs;
 
-    if (Math.abs(drivetrain.getPose().minus(kMirrorClimb).getX()) < kClimberTolerence
-        && Math.abs(drivetrain.getPose().minus(kMirrorClimb).getY()) < kClimberTolerence
-        && (climbTimer.get() > 5 || !climbTimer.isRunning())) {
+    if (isClimberAligned() && (climbTimer.get() > 5 || !climbTimer.isRunning())) {
       resetClimbingTimer();
     }
   }
@@ -626,11 +624,6 @@ public class RobotContainer {
                 .withHeadingPID(tunableHeadingP.get(), tunableHeadingI.get(), tunableHeadingD.get())
                 .withVelocityX(-driveController.getLeftY() * MaxSpeed)
                 .withVelocityY(-driveController.getLeftX() * MaxSpeed));
-  }
-
-  @Logged
-  public Pose2d getClimberAlignEndPoint() {
-    return kMirrorClimb;
   }
 
   public Command autoAimShooterMotionProfile() {
@@ -907,12 +900,10 @@ public class RobotContainer {
                 climberAlign
                     .withVelocityX(calculateTowerAlignSpeeds().vxMetersPerSecond)
                     .withVelocityY(calculateTowerAlignSpeeds().vyMetersPerSecond)
-                    .withTargetDirection(Rotation2d.kZero))
-        .until(
-            () ->
-                Math.abs(drivetrain.getPose().minus(kMirrorClimb).getX()) < kClimberTolerence
-                    && Math.abs(drivetrain.getPose().minus(kMirrorClimb).getY()) < kClimberTolerence
-                    && climbTimer.hasElapsed(1));
+                    .withTargetDirection(
+                        Rotation2d.fromRotations(
+                            calculateTowerAlignSpeeds().omegaRadiansPerSecond)))
+        .until(() -> isClimberAligned() && climbTimer.hasElapsed(1));
   }
 
   public void resetClimbingTimer() {
@@ -920,9 +911,20 @@ public class RobotContainer {
     climbTimer.reset();
   }
 
+  public boolean isClimberAligned() {
+    Pose2d targetPose2d = getAlliance() == Alliance.Red ? kMirrorClimbRed : kMirrorClimbBlue;
+    return Math.abs(drivetrain.getPose().minus(targetPose2d).getX()) < kClimberTolerence
+        && Math.abs(drivetrain.getPose().minus(targetPose2d).getY()) < kClimberTolerence;
+  }
+
   @Logged
   public ChassisSpeeds calculateTowerAlignSpeeds() {
-    Pose2d targetPose2d = kMirrorClimb;
+    Pose2d targetPose2d;
+    if (getAlliance() == Alliance.Red) {
+      targetPose2d = kMirrorClimbRed;
+    } else {
+      targetPose2d = kMirrorClimbBlue;
+    }
     Pose2d drivePose = drivetrain.getPose();
 
     double xDisplacement = targetPose2d.getX() - drivePose.getX();
@@ -939,7 +941,7 @@ public class RobotContainer {
         ySpeed = (yDisplacement);
       }
     }
-    return new ChassisSpeeds(xSpeed, ySpeed, 0);
+    return new ChassisSpeeds(xSpeed, ySpeed, targetPose2d.getRotation().getRotations());
   }
 
   @Logged

@@ -23,7 +23,7 @@ public class Constants {
   public static final double kSlowMoveRate = 2;
   public static final boolean kShouldUseXBrakeWhenShooting = false;
 
-  public static final double kClimberTolerence = 0.01;
+  public static final double kClimberTolerence = 0.025;
   // dont ask its the answer to everything
   private static final Pose3d kBlueHubPose =
       new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
@@ -69,7 +69,10 @@ public class Constants {
         new Pose2d(0.077, 5.434, Rotation2d.kZero), new Pose2d(1.762, 4.379, Rotation2d.kZero)
       };
 
-  public static final Pose2d kMirrorClimb = new Pose2d(1.031, 4.554, Rotation2d.kZero);
+  public static final Pose2d kMirrorClimbBlue = new Pose2d(1.031, 4.554, Rotation2d.kZero);
+
+  public static final Pose2d kMirrorClimbRed =
+      new Pose2d(15.51, 3.545, Rotation2d.k180deg);
 
   public enum Trench {
     LowerBlueTrench,
