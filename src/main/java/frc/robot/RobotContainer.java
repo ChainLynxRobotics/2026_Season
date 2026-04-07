@@ -790,7 +790,8 @@ public class RobotContainer {
             });
   }
 
-  private Command runShootingCommandsSlowAutoNoIntake(double xSpeed, double ySpeed, Pose2d[] endPoses) {
+  private Command runShootingCommandsSlowAutoNoIntake(
+      double xSpeed, double ySpeed, Pose2d[] endPoses) {
 
     return parallel(
             runOnce(
@@ -817,8 +818,7 @@ public class RobotContainer {
                     serializer.stopSpinInternal();
                   }
                 }),
-            run(
-                () -> {
+            run(() -> {
                   if (shooter.timeSinceLastBall().in(Seconds) > indexer.getIndexerSlowTime()
                       && !indexer.isSlowIndexer) {
                     indexer.isSlowIndexer = true;
@@ -830,7 +830,8 @@ public class RobotContainer {
                     shooter.flywheelSpikeTimer.reset();
                   }
                 })
-        .until(() -> RobotMath.isPoseInSquare(drivetrain.getPose(), endPoses[0], endPoses[1])))
+                .until(
+                    () -> RobotMath.isPoseInSquare(drivetrain.getPose(), endPoses[0], endPoses[1])))
         .finallyDo(
             () -> {
               shooter.isShooting = false;
