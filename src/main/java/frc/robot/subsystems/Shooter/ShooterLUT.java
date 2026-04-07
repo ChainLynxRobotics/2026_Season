@@ -90,8 +90,9 @@ public class ShooterLUT {
       map.put(3.511, 62.0);
       map.put(4.21, 65.0);
       map.put(5.2400, 77.0);
-      map.put(6.114, 84.5);
-      map.put(7.27, 93.0);
+      map.put(5.4, 80.0);
+      map.put(6.114, 100.0);
+      map.put(7.27, 120.0);
       map.put(9.5, 140.0);
       map.put(11.938, 160.0);
       // map.put(1.041, 60.0);
