@@ -56,7 +56,6 @@ import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.climber.ClimberConstants.ClimberState;
 import frc.robot.utils.PointingUtil;
 import frc.robot.utils.RobotMath;
-import frc.robot.utils.TunableBoolean;
 import frc.robot.utils.TunableNumber;
 import frc.robot.utils.simulation.IntakeSim;
 import java.util.Optional;
@@ -122,9 +121,6 @@ public class RobotContainer {
   private TunableNumber tunableHeadingFFMult = new TunableNumber("tunableHeadingFFMult", 1.0);
 
   private double[] lastDriveInput = {0.0, 0.0};
-
-  private TunableBoolean tunableAllianceWonAuto =
-      new TunableBoolean("tunableAllianceWonAuto", false);
 
   @Logged(name = "Shooter")
   public final Shooter shooter =
@@ -1032,14 +1028,32 @@ public class RobotContainer {
   public boolean getActiveShootingPhase() {
     // double time = Timer.getFPGATimestamp();
     double time = DriverStation.getMatchTime();
+    String gameData = DriverStation.getGameSpecificMessage();
+
+    var optionalAlliance = DriverStation.getAlliance();
+    if (optionalAlliance.isEmpty()) return true;
+    var alliance = optionalAlliance.get();
+
+    boolean wonAuto;
+    if (gameData.length() == 0) return true;
+    switch (gameData.charAt(0)) {
+      case 'B':
+        wonAuto = alliance.equals(Alliance.Blue);
+        break;
+      case 'R':
+        wonAuto = alliance.equals(Alliance.Red);
+        break;
+      default:
+        return true;
+    }
     time = time - tofMap.get(shooter.getDistance().in(Meters));
-    if (tunableAllianceWonAuto.get()
+    if (wonAuto
         && ((130 < time && time < 140)
             || (80 < time && time < 105)
             || (30 < time && time < 55)
             || (time < 30))) {
       return true;
-    } else if (!tunableAllianceWonAuto.get()
+    } else if (!wonAuto
         && ((130 < time && time < 140)
             || (105 < time && time < 130)
             || (55 < time && time < 80)
