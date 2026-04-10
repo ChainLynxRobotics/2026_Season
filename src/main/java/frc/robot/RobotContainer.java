@@ -1046,7 +1046,8 @@ public class RobotContainer {
       default:
         return true;
     }
-    time = time - tofMap.get(shooter.getDistance().in(Meters));
+    // 0.55 is the minimum fuel processing time
+    time = time - (tofMap.get(shooter.getDistance().in(Meters)) + 0.55);
     if (wonAuto
         && ((130 < time && time < 140)
             || (80 < time && time < 105)
