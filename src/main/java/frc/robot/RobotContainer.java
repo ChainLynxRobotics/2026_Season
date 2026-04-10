@@ -1020,8 +1020,8 @@ public class RobotContainer {
   public boolean getInstantShootActive() {
     return !doInstantShoot
         || (doInstantShoot && getActiveShootingPhase())
-        || (getShootingTarget(drivetrain.getPose()) == PointingUtil.funnlingPoint1
-            || getShootingTarget(drivetrain.getPose()) == PointingUtil.funnlingPoint2);
+        || (getShootingTarget(drivetrain.getPose()) == PointingUtil.getFunnlingPoint1()
+            || getShootingTarget(drivetrain.getPose()) == PointingUtil.getFunnlingPoint2());
   }
 
   @Logged

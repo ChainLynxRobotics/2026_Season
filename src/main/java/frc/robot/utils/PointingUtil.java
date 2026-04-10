@@ -20,18 +20,21 @@ import frc.robot.subsystems.Shooter.ShooterLUT;
 
 public class PointingUtil {
 
-  public static final Pose2d funnlingPoint1 =
-      getAlliance() == Alliance.Blue
-          ? kFunnlingLocation
-          : new Pose2d(
-              kFieldWidth.minus(kFunnlingLocation.getMeasureX()),
-              kFunnlingLocation.getMeasureY(),
-              new Rotation2d());
-  public static final Pose2d funnlingPoint2 =
-      new Pose2d(
-          funnlingPoint1.getMeasureX(),
-          kFieldHeight.minus(funnlingPoint1.getMeasureY()),
-          new Rotation2d());
+  public static Pose2d getFunnlingPoint1() {
+    return getAlliance() == Alliance.Blue
+        ? kFunnlingLocation
+        : new Pose2d(
+            kFieldWidth.minus(kFunnlingLocation.getMeasureX()),
+            kFunnlingLocation.getMeasureY(),
+            new Rotation2d());
+  }
+
+  public static Pose2d getFunnlingPoint2() {
+    return new Pose2d(
+        getFunnlingPoint1().getMeasureX(),
+        kFieldHeight.minus(getFunnlingPoint1().getMeasureY()),
+        new Rotation2d());
+  }
 
   public static Pose2d getShootingTarget(Pose2d robotPose) {
     var isInAllianceZone = false;
@@ -43,23 +46,10 @@ public class PointingUtil {
 
     if (isInAllianceZone) return getHubLocation2d();
 
-    var funnlingPoint1 =
-        getAlliance() == Alliance.Blue
-            ? kFunnlingLocation
-            : new Pose2d(
-                kFieldWidth.minus(kFunnlingLocation.getMeasureX()),
-                kFunnlingLocation.getMeasureY(),
-                new Rotation2d());
-    var funnlingPoint2 =
-        new Pose2d(
-            funnlingPoint1.getMeasureX(),
-            kFieldHeight.minus(funnlingPoint1.getMeasureY()),
-            new Rotation2d());
-
-    return getDistanceBetweenPoses(funnlingPoint1, robotPose)
-            .lt(getDistanceBetweenPoses(funnlingPoint2, robotPose))
-        ? funnlingPoint1
-        : funnlingPoint2;
+    return getDistanceBetweenPoses(getFunnlingPoint1(), robotPose)
+            .lt(getDistanceBetweenPoses(getFunnlingPoint2(), robotPose))
+        ? getFunnlingPoint1()
+        : getFunnlingPoint2();
   }
 
   public static Rotation2d getAngleToPose(Pose2d robotPose, Pose2d targetPose) {
