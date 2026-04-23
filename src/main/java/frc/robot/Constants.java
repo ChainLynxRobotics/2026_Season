@@ -71,8 +71,7 @@ public class Constants {
 
   public static final Pose2d kMirrorClimbBlue = new Pose2d(1.031, 4.554, Rotation2d.kZero);
 
-  public static final Pose2d kMirrorClimbRed =
-      new Pose2d(15.51, 3.545, Rotation2d.k180deg);
+  public static final Pose2d kMirrorClimbRed = new Pose2d(15.51, 3.545, Rotation2d.k180deg);
 
   public enum Trench {
     LowerBlueTrench,
