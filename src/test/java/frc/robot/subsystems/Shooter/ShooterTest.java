@@ -82,7 +82,8 @@ public class ShooterTest {
 
   @Test
   void testGetFlywheelPosition() {
-    shooter.flywheelSim.setAngle(1);
+    // negative because its reversed
+    shooter.flywheelSim.setAngle(-1);
     for (int i = 0; i < 100; ++i) {
       shooter.simulationPeriodic();
       // System.out.println(shooter.getFlywheelPosition());
