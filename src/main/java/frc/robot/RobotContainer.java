@@ -10,6 +10,7 @@ import static frc.robot.Constants.*;
 import static frc.robot.utils.PointingUtil.*;
 import static frc.robot.utils.RobotMath.*;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -219,6 +220,18 @@ public class RobotContainer {
         .whileTrue(ledSubsystem.teamColorPattern());*/
 
     configureBindings();
+    if (kPlayFightSongOnStartup) {
+      var orchestra = new Orchestra();
+      drivetrain.addMotorsToOrchestra(orchestra);
+      shooter.addMotorsToOrchestra(orchestra);
+      intake.addMotorsToOrchestra(orchestra);
+      serializer.addMotorsToOrchestra(orchestra);
+      indexer.addMotorsToOrchestra(orchestra);
+      climber.addMotorsToOrchestra(orchestra);
+
+      orchestra.loadMusic("across-the-field.chrp");
+      orchestra.play();
+    }
   }
 
   public Pose3d[] getGamePieces() {

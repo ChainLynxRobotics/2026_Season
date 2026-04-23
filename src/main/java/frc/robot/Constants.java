@@ -146,4 +146,6 @@ public class Constants {
               new Rotation2d())))
     };
   }
+
+  public static final boolean kPlayFightSongOnStartup = true;
 }
