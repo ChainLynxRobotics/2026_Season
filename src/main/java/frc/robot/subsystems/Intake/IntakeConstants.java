@@ -89,6 +89,7 @@ public class IntakeConstants {
     config.CurrentLimits.StatorCurrentLimit = 100;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
+    config.Audio.AllowMusicDurDisable = true;
     // Joe: The constructor doesn't set an inversion but this does — what happens to the arm if the
     // motor direction flips while MotionMagic is holding position?
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;

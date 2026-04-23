@@ -71,6 +71,7 @@ public class IndexerSubsystem extends SubsystemBase {
     this.indexerMotor = indexerMotor;
 
     indexerConfiguration.Slot0 = kIntakeIndexerSlot0Config;
+    indexerConfiguration.Audio.AllowMusicDurDisable = true;
     indexerMotor.getConfigurator().apply(indexerConfiguration);
 
     indexerSimState = indexerMotor.getSimState();

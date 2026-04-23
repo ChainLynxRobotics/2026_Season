@@ -47,6 +47,7 @@ public class SerializerSubsystem extends SubsystemBase {
     this.serializerMotor = serializerMotor;
 
     serializerConfiguration.Slot0 = kIntakeSerializerSlot0Config;
+    serializerConfiguration.Audio.AllowMusicDurDisable = true;
     serializerMotor.getConfigurator().apply(serializerConfiguration);
 
     serializerSimState = serializerMotor.getSimState();

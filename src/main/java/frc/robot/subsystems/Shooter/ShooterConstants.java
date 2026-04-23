@@ -101,6 +101,8 @@ public class ShooterConstants {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.SupplyCurrentLimit = 40;
 
+    config.Audio.AllowMusicDurDisable = true;
+
     return config;
   }
 
