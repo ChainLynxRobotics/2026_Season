@@ -69,7 +69,7 @@ public class ShooterTest {
     shooter.hoodSim.setAngle(1);
     for (int i = 0; i < 100; ++i) {
       shooter.simulationPeriodic();
-      System.out.println(shooter.getHoodPosition().in(Radians));
+      // System.out.println(shooter.getHoodPosition().in(Radians));
       Timer.delay(0.02);
       if (RobotMath.isWithinTolerance(shooter.getHoodPosition(), Radians.of(1), Radians.of(1e-1))
           && i > 3) {
@@ -85,7 +85,7 @@ public class ShooterTest {
     shooter.flywheelSim.setAngle(1);
     for (int i = 0; i < 100; ++i) {
       shooter.simulationPeriodic();
-      System.out.println(shooter.getFlywheelPosition());
+      // System.out.println(shooter.getFlywheelPosition());
       Timer.delay(0.02);
       if (RobotMath.isWithinTolerance(
               shooter.getFlywheelPosition(), Radians.of(1), Radians.of(1e-3))
@@ -102,7 +102,7 @@ public class ShooterTest {
     shooter.setFlywheelVelocityInternal(RadiansPerSecond.of(20));
     for (int i = 0; i < 100; ++i) {
       shooter.simulationPeriodic();
-      System.out.println(shooter.getFlywheelVelocity());
+      // System.out.println(shooter.getFlywheelVelocity());
       Timer.delay(0.02);
       if (RobotMath.isWithinTolerance(
               shooter.getFlywheelVelocity(),
