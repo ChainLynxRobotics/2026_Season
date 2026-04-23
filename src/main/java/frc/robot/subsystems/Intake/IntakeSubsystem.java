@@ -7,6 +7,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 import static frc.robot.utils.RobotMath.isWithinTolerance;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -474,5 +475,10 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
     detectTunableIntakeSpinChanges();
 
     detectTunableHeightChanges();
+  }
+
+  public void addMotorsToOrchestra(Orchestra orchestra) {
+    orchestra.addInstrument(heightMotor);
+    orchestra.addInstrument(spinMotor);
   }
 }

@@ -3,6 +3,7 @@ package frc.robot.subsystems.Serializer;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Serializer.SerializerConstants.*;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -110,5 +111,9 @@ public class SerializerSubsystem extends SubsystemBase {
 
   public void stopSpinInternal() {
     serializerMotor.setControl(voltageOut.withOutput(Volts.of(0)));
+  }
+
+  public void addMotorsToOrchestra(Orchestra orchestra) {
+    orchestra.addInstrument(serializerMotor);
   }
 }

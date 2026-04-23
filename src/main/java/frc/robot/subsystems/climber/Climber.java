@@ -3,6 +3,7 @@ package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.climber.ClimberConstants.*;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -141,5 +142,9 @@ public class Climber extends SubsystemBase implements AutoCloseable {
         RotationsPerSecond.of(
             (ClimberConstants.convertToAngle(Meters.of(motorSim.getVelocityMetersPerSecond()))
                 .in(Rotations))));
+  }
+
+  public void addMotorsToOrchestra(Orchestra orchestra) {
+    orchestra.addInstrument(motor);
   }
 }

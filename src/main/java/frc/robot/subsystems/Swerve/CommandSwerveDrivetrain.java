@@ -2,6 +2,7 @@ package frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -509,5 +510,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   public void seedFieldCentric(Rotation2d rotation) {
     super.seedFieldCentric(rotation);
+  }
+
+  public void addMotorsToOrchestra(Orchestra orchestra) {
+    orchestra.addInstrument(getModule(0).getDriveMotor());
+    orchestra.addInstrument(getModule(0).getSteerMotor());
+    orchestra.addInstrument(getModule(1).getDriveMotor());
+    orchestra.addInstrument(getModule(1).getSteerMotor());
+    orchestra.addInstrument(getModule(2).getDriveMotor());
+    orchestra.addInstrument(getModule(2).getSteerMotor());
+    orchestra.addInstrument(getModule(3).getDriveMotor());
+    orchestra.addInstrument(getModule(3).getSteerMotor());
   }
 }

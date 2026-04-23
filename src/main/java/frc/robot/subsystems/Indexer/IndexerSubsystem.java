@@ -3,6 +3,7 @@ package frc.robot.subsystems.Indexer;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -211,5 +212,9 @@ public class IndexerSubsystem extends SubsystemBase {
 
   public void stopSpinInternal() {
     indexerMotor.setControl(new VoltageOut(Volts.of(0)));
+  }
+
+  public void addMotorsToOrchestra(Orchestra orchestra) {
+    orchestra.addInstrument(indexerMotor);
   }
 }

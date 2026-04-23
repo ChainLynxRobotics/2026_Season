@@ -7,6 +7,7 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import static frc.robot.utils.PointingUtil.getShootingTarget;
 import static frc.robot.utils.RobotMath.*;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -731,5 +732,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
                     .flywheelSurfaceSpeed()
                     .times(kEstimatedFlywheelSpeedToFuelSpeed),
                 getCurrentSetpoint(getHubLocation2d()).rotation().plus(Degrees.of(90))));
+  }
+
+  public void addMotorsToOrchestra(Orchestra orchestra) {
+    orchestra.addInstrument(flywheelMotor);
+    orchestra.addInstrument(flywheelFollower);
+    orchestra.addInstrument(hoodMotor);
   }
 }
