@@ -15,7 +15,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 
-public class TuneableTalonFX {
+public class TuneableTalonFX implements AutoCloseable{
   private final TalonFX motor;
 
   private final TunableNumber kG;
@@ -212,5 +212,10 @@ public class TuneableTalonFX {
 
   public String getControlModeString() {
     return getControlMode().toString();
+  }
+
+  @Override
+  public void close() throws Exception {
+      motor.close();
   }
 }
