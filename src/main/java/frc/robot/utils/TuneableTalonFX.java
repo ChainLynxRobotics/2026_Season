@@ -17,8 +17,6 @@ import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 
 public class TuneableTalonFX {
   private final TalonFX motor;
-  private TalonFXSimState simState = null;
-  private LinearSystemSim<N2, N1, N2> physicsSim = null;
 
   private final TunableNumber kG;
   private final TunableNumber kS;
@@ -105,10 +103,6 @@ public class TuneableTalonFX {
     statorCurrent = motor.getStatorCurrent();
     setpoint = motor.getClosedLoopReference();
     controlMode = motor.getControlMode();
-
-    if (RobotBase.isReal()) return;
-    simState = motor.getSimState();
-    this.physicsSim = physicsSim;
   }
 
   public void update() {
@@ -126,12 +120,7 @@ public class TuneableTalonFX {
     if (checkForConfigChanges()) {
       updateConfig();
     }
-    if (RobotBase.isSimulation()) {
-      simulationPeriodic();
-    }
   }
-
-  private void simulationPeriodic() {}
 
   private boolean checkForConfigChanges() {
     return kG.hasChanged()
