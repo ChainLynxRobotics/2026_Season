@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.ControlModeValue;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 
 public class TuneableTalonFX implements AutoCloseable{
@@ -49,16 +50,23 @@ public class TuneableTalonFX implements AutoCloseable{
    * @param CANId the CAN id of the talon fx
    * @param name the name of the motor to be shown on network tables / elastic
    * @param canBus the CAN bus the talon fx is on
-   * @param config the config you want to
+   * @param realConfig the TalonFXConfig you want to apply for the real robot
+   * @param simConfig the TalonFXConfig you want to apply for sim
    * @param physicsSim
    */
   public TuneableTalonFX(
       int CANId,
       String name,
       CANBus canBus,
-      TalonFXConfiguration config,
+      TalonFXConfiguration realConfig,
+      TalonFXConfiguration simConfig,
       LinearSystemSim<N2, N1, N2> physicsSim) {
     motor = new TalonFX(CANId, canBus);
+
+    this.config = RobotBase.isReal() ? realConfig.clone() : simConfig.clone();
+    // always enable current limits so they can be tuned
+    this.config.CurrentLimits.StatorCurrentLimitEnable = true;
+    this.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     kG = new TunableNumber(name + "/kG", config.Slot0.kG);
     kS = new TunableNumber(name + "/kS", config.Slot0.kS);
@@ -85,11 +93,6 @@ public class TuneableTalonFX implements AutoCloseable{
         new TunableNumber(name + "/motion magic expo kA", config.MotionMagic.MotionMagicExpo_kA);
     motionMagicExpoKV =
         new TunableNumber(name + "/motion magic expo kV", config.MotionMagic.MotionMagicExpo_kV);
-
-    this.config = config.clone();
-    // always enable current limits so they can be tuned
-    this.config.CurrentLimits.StatorCurrentLimitEnable = true;
-    this.config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     motor.getConfigurator().apply(this.config);
 
