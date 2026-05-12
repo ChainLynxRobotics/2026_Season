@@ -229,7 +229,8 @@ public class RobotContainer {
       indexer.addMotorsToOrchestra(orchestra);
       climber.addMotorsToOrchestra(orchestra);
 
-      orchestra.loadMusic("across-the-field.chrp");
+      // orchestra.loadMusic("across-the-field.chrp");
+      orchestra.loadMusic("smb.chrp");
       orchestra.play();
     }
   }
