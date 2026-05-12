@@ -513,13 +513,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public void addMotorsToOrchestra(Orchestra orchestra) {
-    orchestra.addInstrument(getModule(0).getDriveMotor());
-    orchestra.addInstrument(getModule(0).getSteerMotor());
-    orchestra.addInstrument(getModule(1).getDriveMotor());
-    orchestra.addInstrument(getModule(1).getSteerMotor());
-    orchestra.addInstrument(getModule(2).getDriveMotor());
-    orchestra.addInstrument(getModule(2).getSteerMotor());
-    orchestra.addInstrument(getModule(3).getDriveMotor());
-    orchestra.addInstrument(getModule(3).getSteerMotor());
+    orchestra.addInstrument(getModule(0).getDriveMotor(), 0);
+    orchestra.addInstrument(getModule(0).getSteerMotor(), 0);
+    orchestra.addInstrument(getModule(1).getDriveMotor(), 0);
+    orchestra.addInstrument(getModule(1).getSteerMotor(), 0);
+    orchestra.addInstrument(getModule(2).getDriveMotor(), 0);
+    orchestra.addInstrument(getModule(2).getSteerMotor(), 0);
+    orchestra.addInstrument(getModule(3).getDriveMotor(), 0);
+    orchestra.addInstrument(getModule(3).getSteerMotor(), 0);
   }
 }

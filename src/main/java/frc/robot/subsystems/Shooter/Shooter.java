@@ -735,8 +735,8 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
   }
 
   public void addMotorsToOrchestra(Orchestra orchestra) {
-    orchestra.addInstrument(flywheelMotor);
-    orchestra.addInstrument(flywheelFollower);
-    orchestra.addInstrument(hoodMotor);
+    orchestra.addInstrument(flywheelMotor, 0);
+    orchestra.addInstrument(flywheelFollower 0);
+    orchestra.addInstrument(hoodMotor, 0);
   }
 }

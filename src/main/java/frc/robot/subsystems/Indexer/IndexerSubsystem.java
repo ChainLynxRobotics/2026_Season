@@ -215,6 +215,6 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public void addMotorsToOrchestra(Orchestra orchestra) {
-    orchestra.addInstrument(indexerMotor);
+    orchestra.addInstrument(indexerMotor, 0);
   }
 }

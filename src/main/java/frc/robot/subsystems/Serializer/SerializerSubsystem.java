@@ -114,6 +114,6 @@ public class SerializerSubsystem extends SubsystemBase {
   }
 
   public void addMotorsToOrchestra(Orchestra orchestra) {
-    orchestra.addInstrument(serializerMotor);
+    orchestra.addInstrument(serializerMotor, 0);
   }
 }

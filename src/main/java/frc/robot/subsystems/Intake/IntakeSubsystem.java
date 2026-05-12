@@ -478,7 +478,7 @@ public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public void addMotorsToOrchestra(Orchestra orchestra) {
-    orchestra.addInstrument(heightMotor);
-    orchestra.addInstrument(spinMotor);
+    orchestra.addInstrument(heightMotor, 0);
+    orchestra.addInstrument(spinMotor, 0);
   }
 }

@@ -145,6 +145,6 @@ public class Climber extends SubsystemBase implements AutoCloseable {
   }
 
   public void addMotorsToOrchestra(Orchestra orchestra) {
-    orchestra.addInstrument(motor);
+    orchestra.addInstrument(motor, 0);
   }
 }
