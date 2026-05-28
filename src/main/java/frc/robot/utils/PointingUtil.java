@@ -52,6 +52,14 @@ public class PointingUtil {
         : getFunnlingPoint2();
   }
 
+  public static Pose2d getShootingTarget(Pose2d robotPose, boolean exhibitionShoot) {
+    if (exhibitionShoot) {
+      return kExhibitionPose;
+    } else {
+      return getShootingTarget(robotPose);
+    }
+  }
+
   public static Rotation2d getAngleToPose(Pose2d robotPose, Pose2d targetPose) {
     return Shooter.getShooterPose(robotPose)
         .getTranslation()

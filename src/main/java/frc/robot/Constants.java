@@ -29,6 +29,7 @@ public class Constants {
       new Pose3d(Inches.of(182.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
   private static final Pose3d kRedHubPose =
       new Pose3d(Inches.of(469.11), Inches.of(158.84), Inches.of(72), new Rotation3d());
+  public static final Pose2d kExhibitionPose = new Pose2d(16.514, 4.019, new Rotation2d());
 
   public static DriverStation.Alliance getAlliance() {
     if (DriverStation.getAlliance().isEmpty()) {
