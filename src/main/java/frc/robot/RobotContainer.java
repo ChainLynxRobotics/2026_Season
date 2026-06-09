@@ -496,15 +496,16 @@ public class RobotContainer {
                 () -> {
                   shooter.isShooting = true;
                 }),
-            autoAimShooterMotionProfile(),
+            // autoAimShooterMotionProfile(),
             run(
                 () -> {
-                  if (Math.abs(targetTOFTrackingError().getDegrees()) < 6
-                      && isWithinTolerance(
-                          shooter.getHoodPosition(),
-                          Degrees.of(shooter.getHoodClosedLoopReference()),
-                          Degrees.of(1.5))
-                      && getInstantShootActive()) {
+                  if (
+                  /* Math.abs(targetTOFTrackingError().getDegrees()) < 6
+                  && isWithinTolerance(
+                      shooter.getHoodPosition(),
+                      Degrees.of(shooter.getHoodClosedLoopReference()),
+                      Degrees.of(1.5))
+                  && getInstantShootActive()*/ true) {
                     indexer.spinInternal();
                     serializer.spinInternal();
                     if (RobotBase.isSimulation()) {
