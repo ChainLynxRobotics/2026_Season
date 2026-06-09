@@ -177,7 +177,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     shooter.setDefaultCommand(shooter.runShooterControl());
-    intake.setDefaultCommand(intake.runIntakeControl());
+    // intake.setDefaultCommand(intake.runIntakeControl());
 
     if (RobotBase.isSimulation()) {
       intakeSim =
@@ -194,7 +194,7 @@ public class RobotContainer {
           .onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.BOTTOM)));
     }
 
-    if (true) {
+    if (false) {
       new Trigger(shooter::hasAStuckBall)
           .onTrue(
               shooter
