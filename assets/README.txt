@@ -8,7 +8,3 @@ model.glb -- Entire robot with hopper slide extended and no intake, shooter hood
 model_0.glb -- Shooter hood.
 model_1.glb -- Indexer brush.
 model_2.glb -- Full intake model.
-
-config:
-
-config.json -- Configuration file that contains details about robot and camera dimensions and positions.
