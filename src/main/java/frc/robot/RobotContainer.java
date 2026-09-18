@@ -112,7 +112,6 @@ public class RobotContainer {
   private final Climber climber =
       new Climber(new TalonFX(ClimberConstants.kClimberId, kCanBusBlinky));
 
-  // @Logged private final LedSubsystem ledSubsystem = new LedSubsystem();
 
   private SendableChooser<Command> autoChooser;
 
@@ -202,24 +201,6 @@ public class RobotContainer {
                   .withName("Unjam ball")
                   .andThen(waitSeconds(1)));
     }
-
-    /*new Trigger(DriverStation::isTeleopEnabled)
-        .onTrue(runOnce(() -> ledSubsystem.calculateShifts()));
-    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.AUTO)
-        .whileTrue(ledSubsystem.autonomousPattern());
-    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.SHIFTCHANGE)
-        .whileTrue(ledSubsystem.hubShiftPattern());
-    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.INACTIVE)
-        .whileTrue(ledSubsystem.defendingPhasePattern());
-    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.ACTIVE)
-        .whileTrue(ledSubsystem.activePhasePattern());
-    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.ENDGAME)
-        .whileTrue(ledSubsystem.endGamePattern());
-    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.SHOOTING)
-        .whileTrue(ledSubsystem.shootPattern());
-    new Trigger(() -> ledSubsystem.getRobotState() == RobotState.DISABLED)
-        .whileTrue(ledSubsystem.teamColorPattern());*/
-
     configureBindings();
   }
 
