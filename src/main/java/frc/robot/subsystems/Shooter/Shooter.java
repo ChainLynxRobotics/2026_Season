@@ -94,8 +94,6 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
 
   public boolean isShooting = false;
 
-  protected BooleanSupplier exhibitionShoot;
-
   protected Supplier<CommandXboxController> driveController;
 
   public Shooter(
@@ -106,13 +104,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
       TalonFX flywheelFollower,
       TalonFX hoodMotor,
       BooleanSupplier hasVisionPose,
-      Supplier<CommandXboxController> driveController,
-      BooleanSupplier exhibitionShoot) {
+      Supplier<CommandXboxController> driveController) {
     this.drivetrainPose = drivetrainPose;
     this.simPose = simPose;
     this.chassisSpeeds = chassisSpeeds;
     this.driveController = driveController;
-    this.exhibitionShoot = exhibitionShoot;
     this.tunableFlywheelS = new TunableNumber("tunablekS", kFlywheelS);
     this.tunableFlywheelA = new TunableNumber("tunablekA", kFlywheelA);
     this.tunableFlywheelV = new TunableNumber("tunablekV", kFlywheelV);
@@ -399,9 +395,7 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
           setFlywheelVelocityInternal(
               RotationsPerSecond.of(
                       calculateFlywheelVelocity(
-                              getCurrentSetpoint(
-                                      getShootingTarget(
-                                          drivetrainPose.get(), exhibitionShoot.getAsBoolean()))
+                              getCurrentSetpoint(getShootingTarget(drivetrainPose.get()))
                                   .flywheelSurfaceSpeed())
                           .in(MetersPerSecond))
                   .times(tunableLUTMult.get()));

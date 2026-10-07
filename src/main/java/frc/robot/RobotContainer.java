@@ -66,7 +66,6 @@ public class RobotContainer {
   private boolean doDriving;
   private boolean doTrenchAlign;
   private boolean doInstantShoot = true;
-  private boolean exhibitionShoot = false;
 
   private Timer climbTimer = new Timer();
 
@@ -132,8 +131,7 @@ public class RobotContainer {
           new TalonFX(ShooterConstants.kFlywheelFollowerCANId, kCanBusBlinky),
           new TalonFX(ShooterConstants.kHoodCANId, kCanBusBlinky),
           () -> (vision.getVisionPose() != null),
-          () -> driveController,
-          () -> getExhibitionShoot());
+          () -> driveController);
 
   private final Telemetry logger =
       new Telemetry(MaxSpeed, shooter::getHoodPose, indexer::getIndexerPose, intake::getHeightPose);
@@ -343,14 +341,6 @@ public class RobotContainer {
     driveController
         .povDown()
         .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric).ignoringDisable(true));
-
-    driveController
-        .povLeft()
-        .onTrue(
-            runOnce(
-                () -> {
-                  exhibitionShoot = !exhibitionShoot;
-                }));
 
     // driveController.povUp().onTrue(runOnce(() -> climber.setStateSetpoint(ClimberState.TOP)));
 
@@ -629,8 +619,7 @@ public class RobotContainer {
         run(
             () -> {
               var turningRateFF =
-                  getTOFRotationalVelocityToTarget(
-                          getShootingTarget(drivetrain.getPose(), getExhibitionShoot()))
+                  getTOFRotationalVelocityToTarget(getShootingTarget(drivetrain.getPose()))
                       .times(tunableHeadingFFMult.get());
               lastState = profileState;
               profileState =
@@ -953,7 +942,7 @@ public class RobotContainer {
         drivetrain.getPose(),
         ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds, drivetrain.getPose().getRotation()),
-        getShootingTarget(drivetrain.getPose(), getExhibitionShoot()));
+        getShootingTarget(drivetrain.getPose()));
   }
 
   public AngularVelocity getTOFRotationalVelocityToTarget(Pose2d target) {
@@ -966,8 +955,7 @@ public class RobotContainer {
 
   @Logged
   public AngularVelocity getTOFRotationalVelocityReal() {
-    return getTOFRotationalVelocityToTarget(
-        PointingUtil.getShootingTarget(drivetrain.getPose(), getExhibitionShoot()));
+    return getTOFRotationalVelocityToTarget(PointingUtil.getShootingTarget(drivetrain.getPose()));
   }
 
   Pose2d lastTOFPose = new Pose2d();
@@ -979,7 +967,7 @@ public class RobotContainer {
             drivetrain.getPose(),
             ChassisSpeeds.fromRobotRelativeSpeeds(
                 drivetrain.getState().Speeds, drivetrain.getPose().getRotation()),
-            getShootingTarget(drivetrain.getPose(), getExhibitionShoot()));
+            getShootingTarget(drivetrain.getPose()));
     if (setpoint.isEmpty()) {
       return lastTOFPose;
     }
@@ -990,7 +978,7 @@ public class RobotContainer {
 
   @Logged
   public Pose2d getTarget() {
-    return getShootingTarget(drivetrain.getPose(), getExhibitionShoot());
+    return getShootingTarget(drivetrain.getPose());
   }
 
   @Logged
@@ -1013,10 +1001,8 @@ public class RobotContainer {
   public boolean getInstantShootActive() {
     return !doInstantShoot
         || (doInstantShoot && getActiveShootingPhase())
-        || (getShootingTarget(drivetrain.getPose(), getExhibitionShoot())
-                == PointingUtil.getFunnlingPoint1()
-            || getShootingTarget(drivetrain.getPose(), getExhibitionShoot())
-                == PointingUtil.getFunnlingPoint2());
+        || (getShootingTarget(drivetrain.getPose()) == PointingUtil.getFunnlingPoint1()
+            || getShootingTarget(drivetrain.getPose()) == PointingUtil.getFunnlingPoint2());
   }
 
   @Logged
@@ -1058,11 +1044,6 @@ public class RobotContainer {
     } else {
       return false;
     }
-  }
-
-  @Logged
-  public boolean getExhibitionShoot() {
-    return exhibitionShoot;
   }
 
   @Logged
