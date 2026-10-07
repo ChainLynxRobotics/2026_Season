@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.Constants.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
+import static frc.robot.utils.PointingUtil.getShootingTarget;
 import static frc.robot.utils.RobotMath.*;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -375,11 +376,11 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
    */
   public Command runShooterControl() {
 
-    return run(() -> {
-          setFlywheelVelocityInternal(RotationsPerSecond.of(tunableShooterSpeed.get()));
-          setHoodAngleInternal(Degrees.of(tunableHoodAngle.get()));
-        })
-        .withName("Shooter Tuning");
+    // return run(() -> {
+    //       setFlywheelVelocityInternal(RotationsPerSecond.of(tunableShooterSpeed.get()));
+    //       setHoodAngleInternal(Degrees.of(tunableHoodAngle.get()));
+    //     })
+    //     .withName("Shooter Tuning");
     // TODO: REPLACE HUB WITH VARIABLE TARGET
     // return run(() -> {
     //       setFlywheelVelocityInternal(RotationsPerSecond.of(tunableShooterSpeed.get()));
@@ -394,19 +395,19 @@ public class Shooter extends SubsystemBase implements AutoCloseable {
     //   setFlywheelVelocityInternal(RotationsPerSecond.of(60).times(tunableLUTMult.get()));
     //   setHoodAngleInternal(calculateHoodAngle());
     // }
-    // return run(() -> {
-    //       setFlywheelVelocityInternal(
-    //           RotationsPerSecond.of(
-    //                   calculateFlywheelVelocity(
-    //                           getCurrentSetpoint(
-    //                                   getShootingTarget(
-    //                                       drivetrainPose.get(), exhibitionShoot.getAsBoolean()))
-    //                               .flywheelSurfaceSpeed())
-    //                       .in(MetersPerSecond))
-    //               .times(tunableLUTMult.get()));
-    //       setHoodAngleInternal(calculateHoodAngle());
-    //     })
-    //     .withName("Shooter control");
+    return run(() -> {
+          setFlywheelVelocityInternal(
+              RotationsPerSecond.of(
+                      calculateFlywheelVelocity(
+                              getCurrentSetpoint(
+                                      getShootingTarget(
+                                          drivetrainPose.get(), exhibitionShoot.getAsBoolean()))
+                                  .flywheelSurfaceSpeed())
+                          .in(MetersPerSecond))
+                  .times(tunableLUTMult.get()));
+          setHoodAngleInternal(calculateHoodAngle());
+        })
+        .withName("Shooter control");
   }
 
   public Command raiseIntakeOscillate() {
